@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.maxhenkel.audioplayer.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "RecordItemMixin",
+    "JukeboxBlockEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
