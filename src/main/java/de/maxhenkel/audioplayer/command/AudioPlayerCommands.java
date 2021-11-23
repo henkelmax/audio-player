@@ -134,6 +134,8 @@ public class AudioPlayerCommands {
         tag.put(ItemStack.TAG_DISPLAY, display);
 
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
+
+        context.getSource().sendSuccess(new TextComponent("Successfully updated music disc"), false);
     }
 
 }
