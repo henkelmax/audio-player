@@ -5,6 +5,13 @@ It uses [Filebin](https://github.com/espebra/filebin2/) to upload files to the s
 
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat).
 
+## Features
+
+- On the fly audio uploading
+- No server restart needed
+- No resource pack needed
+- No changes needed on the client
+
 ## Commands
 
 **Uploading Audio Files**
@@ -16,6 +23,7 @@ Run `/audioplayer upload` and follow the instructions.
 Run `/audioplayer musicdisc <ID>` and hold a music disc in your main hand.
 Additionally, you can add a custom name for the music disc `/audioplayer musicdisc <ID> "<CUSTOM-TEXT>"`.
 
+---
 
 ![](https://user-images.githubusercontent.com/13237524/142997949-3c29fcf2-ed68-423a-9e7b-8c39c9560c8f.png)
 
