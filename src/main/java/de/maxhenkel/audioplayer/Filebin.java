@@ -55,6 +55,12 @@ public class Filebin {
             String contentType = file.get("content-type").getAsString();
 
             if (contentType.equals("audio/wav")) {
+                long size = file.get("bytes").getAsLong();
+
+                if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get().longValue()) {
+                    throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) size / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
+                }
+
                 String filename = file.get("filename").getAsString();
                 AudioManager.saveSound(server, sound, url + "/" + filename);
                 return;

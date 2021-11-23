@@ -4,6 +4,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
 import javax.sound.sampled.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -44,9 +46,18 @@ public class AudioManager {
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
         }
-
         Files.createDirectories(soundFile.getParent());
-        AudioSystem.write(in, AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        AudioSystem.write(in, AudioFileFormat.Type.WAVE, baos);
+
+        byte[] data = baos.toByteArray();
+
+        if (data.length > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
+            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) data.length / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
+        }
+
+        AudioSystem.write(AudioSystem.getAudioInputStream(new ByteArrayInputStream(data)), AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
     }
 
 }
