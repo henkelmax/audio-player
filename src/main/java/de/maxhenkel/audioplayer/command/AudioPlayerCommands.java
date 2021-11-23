@@ -126,7 +126,7 @@ public class AudioPlayerCommands {
 
         ListTag lore = new ListTag();
         if (name != null) {
-            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(new TextComponent(name).withStyle(ChatFormatting.GRAY))));
+            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(new TextComponent(name).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
         }
 
         CompoundTag display = new CompoundTag();
