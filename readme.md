@@ -15,3 +15,12 @@ Run `/audioplayer upload` and follow the instructions.
 
 Run `/audioplayer musicdisc <ID>` and hold a music disc in your main hand.
 Additionally, you can add a custom name for the music disc `/audioplayer musicdisc <ID> "<CUSTOM-TEXT>"`.
+
+
+![](https://user-images.githubusercontent.com/13237524/142997949-3c29fcf2-ed68-423a-9e7b-8c39c9560c8f.png)
+
+![](https://user-images.githubusercontent.com/13237524/142997956-c7f0c2c2-dc61-43da-9165-92dfcad0d117.png)
+
+![](https://user-images.githubusercontent.com/13237524/142997959-9120d038-4ee6-45bb-8815-2179884ef958.png)
+
+![](https://user-images.githubusercontent.com/13237524/142997963-448d61f4-ba59-4082-a733-6aa06d802a6e.png)
