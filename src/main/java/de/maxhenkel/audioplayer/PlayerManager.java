@@ -4,6 +4,7 @@ import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +24,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID play(VoicechatServerApi api, ServerLevel level, BlockPos pos, UUID sound) {
+    public UUID play(VoicechatServerApi api, ServerLevel level, BlockPos pos, UUID sound, @Nullable ServerPlayer p) {
         UUID channelID = UUID.randomUUID();
         LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
         if (channel == null) {
@@ -44,7 +45,10 @@ public class PlayerManager {
             players.put(channelID, player);
             player.startPlaying();
         } catch (Exception e) {
-            AudioPlayer.LOGGER.error("Failed to start audio player: {}", e.getMessage());
+            AudioPlayer.LOGGER.error("Failed to play audio: {}", e.getMessage());
+            if (p != null) {
+                p.displayClientMessage(new TextComponent("Failed to play audio: %s".formatted(e.getMessage())).withStyle(ChatFormatting.DARK_RED), true);
+            }
             return null;
         }
         return channelID;

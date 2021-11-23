@@ -7,6 +7,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -45,7 +46,7 @@ public class RecordItemMixin {
             return;
         }
 
-        @Nullable UUID channelID = PlayerManager.instance().play(api, (ServerLevel) useOnContext.getLevel(), blockPos, customSound);
+        @Nullable UUID channelID = PlayerManager.instance().play(api, (ServerLevel) useOnContext.getLevel(), blockPos, customSound, (useOnContext.getPlayer() instanceof ServerPlayer player) ? player : null);
 
         if (level.getBlockEntity(blockPos) instanceof IJukebox jukebox) {
             jukebox.setChannelID(channelID);
