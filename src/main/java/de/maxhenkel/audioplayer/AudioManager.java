@@ -7,6 +7,7 @@ import javax.sound.sampled.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 public class AudioManager {
 
-    public static LevelResource SOUNDS = new LevelResource("sounds");
+    public static LevelResource AUDIO_DATA = new LevelResource("audio_player_data");
     public static AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 48000F, 16, 1, 2, 48000F, false);
 
     public static short[] getSound(MinecraftServer server, UUID id) throws IOException, UnsupportedAudioFileException {
@@ -34,12 +35,16 @@ public class AudioManager {
     }
 
     public static Path getSoundFile(MinecraftServer server, UUID id) {
-        return server.getWorldPath(SOUNDS).resolve(id.toString() + ".wav");
+        return server.getWorldPath(AUDIO_DATA).resolve(id.toString() + ".wav");
     }
 
     public static void saveSound(MinecraftServer server, UUID id, String url) throws UnsupportedAudioFileException, IOException {
         AudioInputStream in = AudioSystem.getAudioInputStream(new URL(url));
         Path soundFile = getSoundFile(server, id);
+        if (Files.exists(soundFile)) {
+            throw new FileAlreadyExistsException("This audio already exists");
+        }
+
         Files.createDirectories(soundFile.getParent());
         AudioSystem.write(in, AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
     }
