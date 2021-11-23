@@ -12,6 +12,7 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - No resource pack needed
 - No changes needed on the client
 - Configurable upload limit
+- Configurable command permissions
 
 ## Commands
 
