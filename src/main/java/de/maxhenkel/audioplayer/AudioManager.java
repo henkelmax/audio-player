@@ -31,7 +31,7 @@ public class AudioManager {
     public static short[] readSound(Path file) throws IOException, UnsupportedAudioFileException {
         AudioInputStream in = AudioSystem.getAudioInputStream(file.toFile());
         AudioInputStream convertedIn = AudioSystem.getAudioInputStream(FORMAT, in);
-        return bytesToShorts(convertedIn.readAllBytes());
+        return Plugin.voicechatApi.getAudioConverter().bytesToShorts(convertedIn.readAllBytes());
     }
 
     public static Path getSoundFile(MinecraftServer server, UUID id) {
@@ -47,22 +47,6 @@ public class AudioManager {
 
         Files.createDirectories(soundFile.getParent());
         AudioSystem.write(in, AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
-    }
-
-    //TODO move to API
-    public static short[] bytesToShorts(byte[] bytes) {
-        if (bytes.length % 2 != 0) {
-            throw new IllegalArgumentException("Input bytes need to be divisible by 2");
-        }
-        short[] data = new short[bytes.length / 2];
-        for (int i = 0; i < bytes.length; i += 2) {
-            data[i / 2] = bytesToShort(bytes[i], bytes[i + 1]);
-        }
-        return data;
-    }
-
-    public static short bytesToShort(byte b1, byte b2) {
-        return (short) (((b2 & 0xFF) << 8) | (b1 & 0xFF));
     }
 
 }

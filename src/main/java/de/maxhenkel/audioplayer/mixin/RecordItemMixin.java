@@ -39,7 +39,7 @@ public class RecordItemMixin {
 
         UUID customSound = tag.getUUID("CustomSound");
 
-        VoicechatServerApi api = Plugin.voicechatApi;
+        VoicechatServerApi api = Plugin.voicechatServerApi;
         if (api == null) {
             ci.setReturnValue(InteractionResult.sidedSuccess(false));
             return;

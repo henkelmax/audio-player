@@ -10,8 +10,9 @@ import javax.annotation.Nullable;
 
 public class Plugin implements VoicechatPlugin {
 
+    public static VoicechatApi voicechatApi;
     @Nullable
-    public static VoicechatServerApi voicechatApi;
+    public static VoicechatServerApi voicechatServerApi;
 
     @Override
     public String getPluginId() {
@@ -20,7 +21,7 @@ public class Plugin implements VoicechatPlugin {
 
     @Override
     public void initialize(VoicechatApi api) {
-
+        voicechatApi = api;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class Plugin implements VoicechatPlugin {
     }
 
     private void onServerStarted(VoicechatServerStartedEvent event) {
-        voicechatApi = event.getVoicechat();
+        voicechatServerApi = event.getVoicechat();
     }
 
 }
