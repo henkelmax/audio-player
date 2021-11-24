@@ -37,7 +37,7 @@ Additionally, you can add a custom name for the music disc `/audioplayer musicdi
 
 ![](https://user-images.githubusercontent.com/13237524/142997959-9120d038-4ee6-45bb-8815-2179884ef958.png)
 
-![](https://user-images.githubusercontent.com/13237524/142997963-448d61f4-ba59-4082-a733-6aa06d802a6e.png)
+![](https://user-images.githubusercontent.com/13237524/143213769-99a6b03a-887a-4b30-8b18-baf394be6b6c.png)
 
 
 *Note that the files you upload to Filebin are publicly available if the upload link is disclosed!*
