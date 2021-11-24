@@ -1,4 +1,13 @@
+![](http://cf.way2muchnoise.eu/full_549719_downloads.svg) ![](http://cf.way2muchnoise.eu/versions/549719.svg)
+
 # AudioPlayer
+
+## Links
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/audioplayer)
+- [Simple Voice Chat Discord](https://discord.gg/4dH2zwTmyX)
+- [GitHub](https://github.com/henkelmax/audio-player)
+
+---
 
 This server side Fabric mod enables uploading custom audio for music discs.
 
