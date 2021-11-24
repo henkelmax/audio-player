@@ -1,13 +1,14 @@
 # AudioPlayer
 
-This mod enables uploading custom audio for music discs.
+This server side Fabric mod enables uploading custom audio for music discs.
 
 It uses [Filebin](https://github.com/espebra/filebin2/) to upload files to the server.
-This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat).
+This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
 
 ## Features
 
 - On the fly audio uploading
+- Server side only
 - No server restart needed
 - No resource pack needed
 - No changes needed on the client
