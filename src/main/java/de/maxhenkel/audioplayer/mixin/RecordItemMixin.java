@@ -1,13 +1,8 @@
 package de.maxhenkel.audioplayer.mixin;
 
-import de.maxhenkel.audioplayer.PlayerManager;
-import de.maxhenkel.audioplayer.Plugin;
-import de.maxhenkel.audioplayer.interfaces.IJukebox;
-import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import de.maxhenkel.audioplayer.AudioManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -22,9 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import javax.annotation.Nullable;
-import java.util.UUID;
-
 @Mixin(RecordItem.class)
 public class RecordItemMixin {
 
@@ -33,23 +25,9 @@ public class RecordItemMixin {
         if (useOnContext.getLevel().isClientSide()) {
             return;
         }
-        CompoundTag tag = itemStack.getTag();
-        if (tag == null || !tag.hasUUID("CustomSound")) {
+
+        if (!AudioManager.playCustomMusicDisc((ServerLevel) level, blockPos, itemStack, useOnContext.getPlayer())) {
             return;
-        }
-
-        UUID customSound = tag.getUUID("CustomSound");
-
-        VoicechatServerApi api = Plugin.voicechatServerApi;
-        if (api == null) {
-            ci.setReturnValue(InteractionResult.sidedSuccess(false));
-            return;
-        }
-
-        @Nullable UUID channelID = PlayerManager.instance().play(api, (ServerLevel) useOnContext.getLevel(), blockPos, customSound, (useOnContext.getPlayer() instanceof ServerPlayer player) ? player : null);
-
-        if (level.getBlockEntity(blockPos) instanceof IJukebox jukebox) {
-            jukebox.setChannelID(channelID);
         }
 
         itemStack.shrink(1);

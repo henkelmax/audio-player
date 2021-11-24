@@ -45,11 +45,11 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
         setChanged();
     }
 
-
     @Inject(method = "setRecord", at = @At(value = "RETURN"))
     private void setRecord(ItemStack record, CallbackInfo ci) {
         if (record.isEmpty() && channelID != null) {
             PlayerManager.instance().stop(channelID);
+            channelID = null;
         }
     }
 

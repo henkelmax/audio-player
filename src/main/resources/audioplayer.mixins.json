@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "RecordItemMixin",
-    "JukeboxBlockEntityMixin"
+    "JukeboxBlockEntityMixin",
+    "JukeboxBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

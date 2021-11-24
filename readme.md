@@ -1,8 +1,8 @@
 # AudioPlayer
 
-This mod enables uploading custom sounds for music discs.
-It uses [Filebin](https://github.com/espebra/filebin2/) to upload files to the server.
+This mod enables uploading custom audio for music discs.
 
+It uses [Filebin](https://github.com/espebra/filebin2/) to upload files to the server.
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat).
 
 ## Features
@@ -13,6 +13,8 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - No changes needed on the client
 - Configurable upload limit
 - Configurable command permissions
+- Music discs can be inserted with hoppers, droppers and dispensers
+- Music discs can be taken out with hoppers
 
 ## Commands
 

@@ -1,8 +1,17 @@
 package de.maxhenkel.audioplayer;
 
+import de.maxhenkel.audioplayer.interfaces.IJukebox;
+import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
 
+import javax.annotation.Nullable;
 import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +67,37 @@ public class AudioManager {
         }
 
         AudioSystem.write(AudioSystem.getAudioInputStream(new ByteArrayInputStream(data)), AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
+    }
+
+    @Nullable
+    public static UUID getCustomSound(ItemStack itemStack) {
+        CompoundTag tag = itemStack.getTag();
+        if (tag == null || !tag.hasUUID("CustomSound")) {
+            return null;
+        }
+
+        return tag.getUUID("CustomSound");
+    }
+
+    public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
+        UUID customSound = AudioManager.getCustomSound(musicDisc);
+
+        if (customSound == null) {
+            return false;
+        }
+
+        VoicechatServerApi api = Plugin.voicechatServerApi;
+        if (api == null) {
+            return false;
+        }
+
+        @Nullable UUID channelID = PlayerManager.instance().play(api, level, pos, customSound, (player instanceof ServerPlayer p) ? p : null);
+
+        if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
+            jukebox.setChannelID(channelID);
+        }
+
+        return true;
     }
 
 }
