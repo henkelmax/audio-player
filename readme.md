@@ -23,8 +23,8 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - No changes needed on the client
 - Configurable upload limit
 - Configurable command permissions
-- Music discs can be inserted with hoppers, droppers and dispensers
-- Music discs can be taken out with hoppers
+- Music discs can be inserted with hoppers, droppers and dispensers (Can be disabled in the config)
+- Music discs can be taken out with hoppers (Can be disabled in the config)
 
 ## Commands
 
