@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -62,8 +61,8 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
         }
     }
 
-    @Inject(method = "save", at = @At(value = "RETURN"))
-    private void save(CompoundTag compound, CallbackInfoReturnable<CompoundTag> ci) {
+    @Inject(method = "saveAdditional", at = @At(value = "RETURN"))
+    private void save(CompoundTag compound, CallbackInfo ci) {
         if (channelID != null && !record.isEmpty()) {
             compound.putUUID("ChannelID", channelID);
         }
