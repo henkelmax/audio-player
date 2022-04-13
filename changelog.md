@@ -1,1 +1,1 @@
-- Updated to 1.18.2
+- Fixed only "cat" playing when inserting vanilla discs with a hopper or dropper
