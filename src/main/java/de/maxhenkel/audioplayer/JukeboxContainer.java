@@ -111,7 +111,7 @@ public class JukeboxContainer {
             if (level == null) {
                 return;
             }
-            InteractionResult result = Items.MUSIC_DISC_CAT.useOn(new UseOnContext(
+            InteractionResult result = itemStack.getItem().useOn(new UseOnContext(
                     level,
                     null,
                     InteractionHand.MAIN_HAND,
