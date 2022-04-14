@@ -8,7 +8,6 @@ import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -33,7 +32,7 @@ public class RecordDispenseBehavior implements DispenseItemBehavior {
             return DEFAULT.dispense(blockSource, itemStack);
         }
 
-        InteractionResult result = Items.MUSIC_DISC_CAT.useOn(new UseOnContext(
+        InteractionResult result = itemStack.useOn(new UseOnContext(
                 blockSource.getLevel(),
                 null,
                 InteractionHand.MAIN_HAND,
