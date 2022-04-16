@@ -5,7 +5,6 @@
 ## Links
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/audioplayer)
 - [Simple Voice Chat Discord](https://discord.gg/4dH2zwTmyX)
-- [GitHub](https://github.com/henkelmax/audio-player)
 
 ---
 
