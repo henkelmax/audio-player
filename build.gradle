@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id "fabric-loom" version "0.10-SNAPSHOT"
+    id "fabric-loom" version "0.12-SNAPSHOT"
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "com.github.johnrengelman.shadow" version "7.0.0"
 }
@@ -32,6 +32,15 @@ repositories {
     mavenCentral()
     maven { url = "https://maven.fabricmc.net/" }
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
+    repositories {
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        }
+    }
 }
 
 runClient.doFirst {
@@ -40,7 +49,7 @@ runClient.doFirst {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings minecraft.officialMojangMappings()
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
@@ -50,6 +59,8 @@ dependencies {
     shadow "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
 
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
+
+    modImplementation "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
 }
 
 processResources {
@@ -129,7 +140,10 @@ shadowJar {
     relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.${mod_id}.configbuilder"
 }
 
-remapJar {
+prepareRemapJar {
     dependsOn shadowJar
-    input.set shadowJar.archiveFile.get()
+}
+
+remapJar {
+    input = shadowJar.archiveFile.get()
 }
