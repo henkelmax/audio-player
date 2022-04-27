@@ -10,13 +10,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
+import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
 import javax.sound.sampled.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -50,18 +48,13 @@ public class AudioManager {
     }
 
     public static void saveSound(MinecraftServer server, UUID id, String url) throws UnsupportedAudioFileException, IOException {
-        AudioInputStream in = AudioSystem.getAudioInputStream(new URL(url));
         Path soundFile = getSoundFile(server, id);
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
         }
         Files.createDirectories(soundFile.getParent());
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        AudioSystem.write(in, AudioFileFormat.Type.WAVE, baos);
-
-        byte[] data = baos.toByteArray();
-
+        byte[] data = IOUtils.toByteArray(new URL(url));
         if (data.length > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
             throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) data.length / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
         }
