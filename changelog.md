@@ -1,1 +1,1 @@
-- Fixed some audio formats not being downloaded correctly
+- Updated to 1.19

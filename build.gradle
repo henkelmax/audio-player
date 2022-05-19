@@ -11,7 +11,7 @@ buildscript {
 plugins {
     id "fabric-loom" version "0.12-SNAPSHOT"
     id "com.matthewprenger.cursegradle" version "1.4.0"
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
 }
 
 apply plugin: 'forge-update'
@@ -60,7 +60,7 @@ dependencies {
 
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
-    modImplementation "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
+//    modImplementation "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
 }
 
 processResources {
@@ -98,7 +98,7 @@ curseforge {
         releaseType = curse_release_type
         addGameVersion curseforge_minecraft_version
         addGameVersion "Fabric"
-        addGameVersion "Java 16"
+        addGameVersion "Java 17"
         mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
             displayName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
             relations {

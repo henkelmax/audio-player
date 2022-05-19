@@ -34,24 +34,24 @@ public class AudioPlayerCommands {
                     UUID uuid = UUID.randomUUID();
                     String uploadURL = Filebin.getBin(uuid);
 
-                    MutableComponent msg = new TextComponent("Click ")
-                            .append(new TextComponent("this link")
+                    MutableComponent msg = Component.literal("Click ")
+                            .append(Component.literal("this link")
                                     .withStyle(style -> {
                                         return style
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadURL))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to open")));
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
                                     })
                                     .withStyle(ChatFormatting.GREEN)
                             )
                             .append(" and upload your sound as ")
-                            .append(new TextComponent("wav").withStyle(ChatFormatting.GRAY))
+                            .append(Component.literal("wav").withStyle(ChatFormatting.GRAY))
                             .append(".\n")
                             .append("Once you have uploaded the file, click ")
-                            .append(new TextComponent("here")
+                            .append(Component.literal("here")
                                     .withStyle(style -> {
                                         return style
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer load " + uuid))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to confirm upload")));
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to confirm upload")));
                                     })
                                     .withStyle(ChatFormatting.GREEN)
                             )
@@ -70,23 +70,23 @@ public class AudioPlayerCommands {
 
                             new Thread(() -> {
                                 try {
-                                    context.getSource().sendSuccess(new TextComponent("Downloading sound, please wait..."), false);
+                                    context.getSource().sendSuccess(Component.literal("Downloading sound, please wait..."), false);
                                     Filebin.downloadSound(context.getSource().getServer(), sound);
-                                    MutableComponent tc = new TextComponent("Successfully downloaded sound. ")
-                                            .append(ComponentUtils.wrapInSquareBrackets(new TextComponent("Copy ID"))
+                                    MutableComponent tc = Component.literal("Successfully downloaded sound. ")
+                                            .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
                                                     .withStyle(style -> {
                                                         return style
                                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, sound.toString()))
-                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Copy sound ID")));
+                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Copy sound ID")));
                                                     })
                                                     .withStyle(ChatFormatting.GREEN)
                                             )
                                             .append(" ")
-                                            .append(ComponentUtils.wrapInSquareBrackets(new TextComponent("Put on music disc"))
+                                            .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on music disc"))
                                                     .withStyle(style -> {
                                                         return style
                                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer musicdisc %s".formatted(sound.toString())))
-                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Put the sound on a music disc")));
+                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a music disc")));
                                                     })
                                                     .withStyle(ChatFormatting.GREEN)
                                             );
@@ -94,7 +94,7 @@ public class AudioPlayerCommands {
                                     context.getSource().sendSuccess(tc, false);
                                 } catch (Exception e) {
                                     AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.getMessage());
-                                    context.getSource().sendFailure(new TextComponent("Failed to download sound: %s".formatted(e.getMessage())));
+                                    context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
                                 }
                             }).start();
 
@@ -130,7 +130,7 @@ public class AudioPlayerCommands {
 
     private static void renameRecord(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
         if (!(stack.getItem() instanceof RecordItem)) {
-            context.getSource().sendFailure(new TextComponent("You don't have a music disc in your main hand"));
+            context.getSource().sendFailure(Component.literal("You don't have a music disc in your main hand"));
             return;
         }
 
@@ -139,7 +139,7 @@ public class AudioPlayerCommands {
 
         ListTag lore = new ListTag();
         if (name != null) {
-            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(new TextComponent(name).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
+            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(Component.literal(name).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
         }
 
         CompoundTag display = new CompoundTag();
@@ -148,7 +148,7 @@ public class AudioPlayerCommands {
 
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
 
-        context.getSource().sendSuccess(new TextComponent("Successfully updated music disc"), false);
+        context.getSource().sendSuccess(Component.literal("Successfully updated music disc"), false);
     }
 
 }

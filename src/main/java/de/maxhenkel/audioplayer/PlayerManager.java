@@ -6,7 +6,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public class PlayerManager {
             }
             return true;
         }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(player -> {
-            player.displayClientMessage(new TextComponent("You need to enable voice chat to hear this music disc"), true);
+            player.displayClientMessage(Component.literal("You need to enable voice chat to hear this music disc"), true);
         });
 
         try {
@@ -47,7 +47,7 @@ public class PlayerManager {
         } catch (Exception e) {
             AudioPlayer.LOGGER.error("Failed to play audio: {}", e.getMessage());
             if (p != null) {
-                p.displayClientMessage(new TextComponent("Failed to play audio: %s".formatted(e.getMessage())).withStyle(ChatFormatting.DARK_RED), true);
+                p.displayClientMessage(Component.literal("Failed to play audio: %s".formatted(e.getMessage())).withStyle(ChatFormatting.DARK_RED), true);
             }
             return null;
         }
