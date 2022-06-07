@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.audioplayer.Filebin;
 import de.maxhenkel.audioplayer.AudioPlayer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.UuidArgument;
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 public class AudioPlayerCommands {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx, Commands.CommandSelection environment) {
         LiteralArgumentBuilder<CommandSourceStack> literalBuilder = Commands.literal("audioplayer")
                 .requires((commandSource) -> commandSource.hasPermission(Math.min(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get(), AudioPlayer.SERVER_CONFIG.musicDiscPermissionLevel.get())));
 
