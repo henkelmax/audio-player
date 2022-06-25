@@ -12,6 +12,7 @@ plugins {
     id "fabric-loom" version "0.12-SNAPSHOT"
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 apply plugin: 'forge-update'
@@ -95,7 +96,7 @@ curseforge {
         id = curse_id
         changelogType = 'markdown'
         changelog = file('changelog.md')
-        releaseType = curse_release_type
+        releaseType = release_type
         addGameVersion curseforge_minecraft_version
         addGameVersion "Fabric"
         addGameVersion "Java 17"
@@ -115,6 +116,30 @@ curseforge {
     }
 }
 
+tasks.modrinth.configure({
+    group = 'upload'
+})
+tasks.modrinthSyncBody.configure({
+    group = 'upload'
+})
+
+modrinth {
+    token = file("${rootDir}/modrinth_token.txt").exists() ? file("${rootDir}/modrinth_token.txt").text : ''
+    projectId = modrinth_id
+    versionNumber = "fabric-${mod_version}"
+    versionName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
+    uploadFile = remapJar
+    versionType = release_type.toUpperCase()
+    changelog = file("changelog.md").text
+    gameVersions = [minecraft_version]
+    loaders = ['fabric']
+    syncBodyFrom = file("readme.md").text
+    dependencies {
+        optional.project "9eGKb6K1" // Simple Voice Chat
+    }
+}
+tasks.modrinth.dependsOn(build)
+
 forgeUpdate {
     def messages = []
     file('changelog.md').eachLine { String line ->
@@ -130,7 +155,7 @@ forgeUpdate {
     modLoader = "fabric"
     modVersion = mod_version
     updateMessages = messages
-    releaseType = curse_release_type
+    releaseType = release_type
     tags = recommended == 'true' ? ['recommended'] : []
 }
 
