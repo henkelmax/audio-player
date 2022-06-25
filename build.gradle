@@ -135,6 +135,7 @@ modrinth {
     loaders = ['fabric']
     syncBodyFrom = file("readme.md").text
     dependencies {
+        required.project "P7dR8mSH" // Fabric API
         required.project "9eGKb6K1" // Simple Voice Chat
     }
 }
