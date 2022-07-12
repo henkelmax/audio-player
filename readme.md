@@ -12,7 +12,7 @@
 
 <!-- modrinth_exclude.end -->
 
-This server side Fabric mod enables uploading custom audio for music discs.
+This server side Fabric mod enables uploading custom audio for music discs and goat horns.
 
 It uses [Filebin](https://github.com/espebra/filebin2/) to upload files to the server.
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
@@ -26,6 +26,8 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - No changes needed on the client
 - Configurable upload limit
 - Configurable command permissions
+- Configurable goat horn range
+- Configurable goat horn cooldown
 - Music discs can be inserted with hoppers, droppers and dispensers (Can be disabled in the config)
 - Music discs can be taken out with hoppers (Can be disabled in the config)
 
@@ -39,6 +41,11 @@ Run `/audioplayer upload` and follow the instructions.
 
 Run `/audioplayer musicdisc <ID>` and hold a music disc in your main hand.
 Additionally, you can add a custom name for the music disc `/audioplayer musicdisc <ID> "<CUSTOM-TEXT>"`.
+
+**Putting Custom Audio on a Goat Horn**
+
+Run `/audioplayer goathorn <ID>` and hold a goat horn in your main hand.
+Additionally, you can add a custom name for the goat horn `/audioplayer goathorn <ID> "<CUSTOM-TEXT>"`.
 
 ---
 [![](https://user-images.githubusercontent.com/13237524/143098106-ee53f2f7-dc4a-41f7-956e-c875a9aea8c1.png)](https://youtu.be/tixidvB4Zko)

@@ -84,12 +84,28 @@ public class AudioManager {
             return false;
         }
 
-        @Nullable UUID channelID = PlayerManager.instance().play(api, level, pos, customSound, (player instanceof ServerPlayer p) ? p : null);
+        @Nullable UUID channelID = PlayerManager.instance().playLocational(api, level, pos, customSound, (player instanceof ServerPlayer p) ? p : null);
 
         if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
             jukebox.setChannelID(channelID);
         }
 
+        return true;
+    }
+
+    public static boolean playGoatHorn(ServerLevel level, ItemStack goatHorn, ServerPlayer player) {
+        UUID customSound = AudioManager.getCustomSound(goatHorn);
+
+        if (customSound == null) {
+            return false;
+        }
+
+        VoicechatServerApi api = Plugin.voicechatServerApi;
+        if (api == null) {
+            return false;
+        }
+
+        PlayerManager.instance().playGlobalRange(api, level, customSound, player, AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue());
         return true;
     }
 

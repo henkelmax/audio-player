@@ -1,1 +1,1 @@
-- Updated to 1.19
+- Added custom goat horn sounds

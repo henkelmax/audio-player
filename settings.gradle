@@ -1,9 +1,13 @@
 pluginManagement {
     repositories {
-        jcenter()
+        mavenCentral()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            name = 'Cotton'
+            url = 'https://server.bbkr.space/artifactory/libs-release/'
         }
         gradlePluginPortal()
     }

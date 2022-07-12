@@ -6,7 +6,8 @@
   "mixins": [
     "RecordItemMixin",
     "JukeboxBlockEntityMixin",
-    "JukeboxBlockMixin"
+    "JukeboxBlockMixin",
+    "InstrumentItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

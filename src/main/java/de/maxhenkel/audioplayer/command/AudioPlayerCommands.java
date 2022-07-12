@@ -14,20 +14,23 @@ import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class AudioPlayerCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx, Commands.CommandSelection environment) {
         LiteralArgumentBuilder<CommandSourceStack> literalBuilder = Commands.literal("audioplayer")
-                .requires((commandSource) -> commandSource.hasPermission(Math.min(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get(), AudioPlayer.SERVER_CONFIG.musicDiscPermissionLevel.get())));
+                .requires((commandSource) -> commandSource.hasPermission(Math.min(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get(), AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get())));
 
         literalBuilder.then(Commands.literal("upload")
                 .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get()))
@@ -90,6 +93,14 @@ public class AudioPlayerCommands {
                                                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a music disc")));
                                                     })
                                                     .withStyle(ChatFormatting.GREEN)
+                                            ).append(" ")
+                                            .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on goat horn"))
+                                                    .withStyle(style -> {
+                                                        return style
+                                                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer goathorn %s".formatted(sound.toString())))
+                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a goat horn")));
+                                                    })
+                                                    .withStyle(ChatFormatting.GREEN)
                                             );
 
                                     context.getSource().sendSuccess(tc, false);
@@ -102,41 +113,48 @@ public class AudioPlayerCommands {
                             return 1;
                         })));
 
-        literalBuilder.then(Commands.literal("musicdisc")
-                .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.musicDiscPermissionLevel.get()))
+        literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
+        literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
+
+        dispatcher.register(literalBuilder);
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
+        return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
                 .then(Commands.argument("sound", UuidArgument.uuid())
                         .executes((context) -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             UUID sound = UuidArgument.getUuid(context, "sound");
                             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-                            renameRecord(context, itemInHand, sound, null);
+                            if (validator.test(itemInHand)) {
+                                renameItem(context, itemInHand, sound, null);
+                            } else {
+                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                            }
                             return 1;
-                        })));
-
-        literalBuilder.then(Commands.literal("musicdisc")
-                .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.musicDiscPermissionLevel.get()))
-                .then(Commands.argument("sound", UuidArgument.uuid())
+                        })
                         .then(Commands.argument("custom_name", StringArgumentType.string())
                                 .executes((context) -> {
                                     ServerPlayer player = context.getSource().getPlayerOrException();
                                     UUID sound = UuidArgument.getUuid(context, "sound");
                                     ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                                     String customName = StringArgumentType.getString(context, "custom_name");
-                                    renameRecord(context, itemInHand, sound, customName);
+                                    if (validator.test(itemInHand)) {
+                                        renameItem(context, itemInHand, sound, customName);
+                                    } else {
+                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                                    }
                                     return 1;
-                                }))));
-
-        dispatcher.register(literalBuilder);
+                                })));
     }
 
-    private static void renameRecord(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
-        if (!(stack.getItem() instanceof RecordItem)) {
-            context.getSource().sendFailure(Component.literal("You don't have a music disc in your main hand"));
-            return;
-        }
-
+    private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putUUID("CustomSound", soundID);
+
+        if (tag.contains("instrument", Tag.TAG_STRING)) {
+            tag.putString("instrument", "");
+        }
 
         ListTag lore = new ListTag();
         if (name != null) {
@@ -149,7 +167,7 @@ public class AudioPlayerCommands {
 
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
 
-        context.getSource().sendSuccess(Component.literal("Successfully updated music disc"), false);
+        context.getSource().sendSuccess(Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
 
 }
