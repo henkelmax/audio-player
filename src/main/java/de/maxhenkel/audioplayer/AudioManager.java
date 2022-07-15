@@ -69,6 +69,12 @@ public class AudioManager {
         if (!Files.exists(file) || !Files.isRegularFile(file)) {
             throw new NoSuchFileException("The file %s does not exist".formatted(file.toString()));
         }
+
+        long size = Files.size(file);
+        if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
+            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) size / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
+        }
+
         Path soundFile = getSoundFile(server, id);
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
