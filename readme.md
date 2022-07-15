@@ -19,7 +19,9 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 
 ## Features
 
-- On the fly audio uploading
+- On the fly audio uploading without needing to restart the server
+- Upload audio via [Filebin](https://github.com/espebra/filebin2/)
+- Upload audio directly to your server
 - Server side only
 - No server restart needed
 - No resource pack needed
@@ -33,9 +35,16 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 
 ## Commands
 
-**Uploading Audio Files**
+Run `/audioplayer` to get general information on how to upload files.
+
+**Uploading Audio Files via Filebin**
 
 Run `/audioplayer upload` and follow the instructions.
+
+**Uploading Audio Files directly to the server**
+
+Copy your `.wav` file to the `audioplayer_uploads` folder in your server.
+Run `/audioplayer serverfile "yourfile.wav"` where `yourfile.wav` is the name of the file you put on the server.
 
 **Putting Custom Audio on a Music Disc**
 
