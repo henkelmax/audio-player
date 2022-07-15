@@ -4,8 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import de.maxhenkel.audioplayer.Filebin;
+import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.Filebin;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -23,14 +24,44 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AudioPlayerCommands {
+
+    public static final Pattern WAV_FILE_PATTERN = Pattern.compile("^[a-z0-9_ -]+.wav$", Pattern.CASE_INSENSITIVE);
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx, Commands.CommandSelection environment) {
         LiteralArgumentBuilder<CommandSourceStack> literalBuilder = Commands.literal("audioplayer")
                 .requires((commandSource) -> commandSource.hasPermission(Math.min(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get(), AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get())));
+
+        literalBuilder.executes(context -> {
+            context.getSource().sendSuccess(
+                    Component.literal("Upload audio via Filebin ")
+                            .append(Component.literal("here").withStyle(style -> {
+                                return style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer upload"))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                            }).withStyle(ChatFormatting.GREEN))
+                            .append(".")
+                    , false);
+            context.getSource().sendSuccess(
+                    Component.literal("Upload audio with access to the servers file system ")
+                            .append(Component.literal("here").withStyle(style -> {
+                                return style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer serverfile"))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                            }).withStyle(ChatFormatting.GREEN))
+                            .append(".")
+                    , false);
+            return 1;
+        });
 
         literalBuilder.then(Commands.literal("upload")
                 .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get()))
@@ -54,7 +85,7 @@ public class AudioPlayerCommands {
                             .append(Component.literal("here")
                                     .withStyle(style -> {
                                         return style
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer load " + uuid))
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer filebin " + uuid))
                                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to confirm upload")));
                                     })
                                     .withStyle(ChatFormatting.GREEN)
@@ -66,7 +97,7 @@ public class AudioPlayerCommands {
                     return 1;
                 }));
 
-        literalBuilder.then(Commands.literal("load")
+        literalBuilder.then(Commands.literal("filebin")
                 .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get()))
                 .then(Commands.argument("id", UuidArgument.uuid())
                         .executes((context) -> {
@@ -76,34 +107,7 @@ public class AudioPlayerCommands {
                                 try {
                                     context.getSource().sendSuccess(Component.literal("Downloading sound, please wait..."), false);
                                     Filebin.downloadSound(context.getSource().getServer(), sound);
-                                    MutableComponent tc = Component.literal("Successfully downloaded sound. ")
-                                            .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
-                                                    .withStyle(style -> {
-                                                        return style
-                                                                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, sound.toString()))
-                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Copy sound ID")));
-                                                    })
-                                                    .withStyle(ChatFormatting.GREEN)
-                                            )
-                                            .append(" ")
-                                            .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on music disc"))
-                                                    .withStyle(style -> {
-                                                        return style
-                                                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer musicdisc %s".formatted(sound.toString())))
-                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a music disc")));
-                                                    })
-                                                    .withStyle(ChatFormatting.GREEN)
-                                            ).append(" ")
-                                            .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on goat horn"))
-                                                    .withStyle(style -> {
-                                                        return style
-                                                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer goathorn %s".formatted(sound.toString())))
-                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a goat horn")));
-                                                    })
-                                                    .withStyle(ChatFormatting.GREEN)
-                                            );
-
-                                    context.getSource().sendSuccess(tc, false);
+                                    context.getSource().sendSuccess(sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
                                 } catch (Exception e) {
                                     AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.getMessage());
                                     context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
@@ -113,10 +117,103 @@ public class AudioPlayerCommands {
                             return 1;
                         })));
 
+        literalBuilder.then(Commands.literal("serverfile")
+                .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get()))
+                .then(Commands.argument("filename", StringArgumentType.string())
+                        .executes((context) -> {
+                            String fileName = StringArgumentType.getString(context, "filename");
+                            Matcher matcher = WAV_FILE_PATTERN.matcher(fileName);
+                            if (!matcher.matches()) {
+                                context.getSource().sendFailure(Component.literal("Invalid file name! Valid characters are ")
+                                        .append(Component.literal("A-Z").withStyle(ChatFormatting.GRAY))
+                                        .append(", ")
+                                        .append(Component.literal("0-9").withStyle(ChatFormatting.GRAY))
+                                        .append(", ")
+                                        .append(Component.literal("_").withStyle(ChatFormatting.GRAY))
+                                        .append(" and ")
+                                        .append(Component.literal("-").withStyle(ChatFormatting.GRAY))
+                                        .append(". The name must also end in ")
+                                        .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
+                                        .append(".")
+                                );
+                                return 1;
+                            }
+                            UUID uuid = UUID.randomUUID();
+                            new Thread(() -> {
+                                Path file = AudioManager.getUploadFolder().resolve(fileName);
+                                try {
+                                    AudioManager.saveSound(context.getSource().getServer(), uuid, file);
+                                    context.getSource().sendSuccess(sendUUIDMessage(uuid, Component.literal("Successfully copied sound.")), false);
+                                } catch (NoSuchFileException e) {
+                                    context.getSource().sendFailure(Component.literal("Could not find file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."));
+                                    return;
+                                } catch (Exception e) {
+                                    AudioPlayer.LOGGER.warn("{} failed to copy a sound", context.getSource().getTextName(), e);
+                                    context.getSource().sendFailure(Component.literal("Failed to copy sound: %s".formatted(e.getMessage())));
+                                    return;
+                                }
+                                try {
+                                    if (Files.deleteIfExists(file)) {
+                                        context.getSource().sendSuccess(Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
+                                    }
+                                } catch (IOException e) {
+                                    AudioPlayer.LOGGER.warn("Failed to delete sound", e);
+                                }
+                            }).start();
+
+                            return 1;
+                        }))
+                .executes(context -> {
+                    context.getSource().sendSuccess(
+                            Component.literal("Upload a ")
+                                    .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
+                                    .append(" file to ")
+                                    .append(Component.literal(AudioManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
+                                    .append(" on the server and run the command ")
+                                    .append(Component.literal("/audioplayer serverfile \"yourfile.wav\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
+                                        return style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer serverfile "))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
+                                    }))
+                                    .append(".")
+                            , false);
+                    return 1;
+                })
+        );
+
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
 
         dispatcher.register(literalBuilder);
+    }
+
+    public static MutableComponent sendUUIDMessage(UUID soundID, MutableComponent component) {
+        return component.append(" ")
+                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
+                        .withStyle(style -> {
+                            return style
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, soundID.toString()))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Copy sound ID")));
+                        })
+                        .withStyle(ChatFormatting.GREEN)
+                )
+                .append(" ")
+                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on music disc"))
+                        .withStyle(style -> {
+                            return style
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer musicdisc %s".formatted(soundID.toString())))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a music disc")));
+                        })
+                        .withStyle(ChatFormatting.GREEN)
+                ).append(" ")
+                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on goat horn"))
+                        .withStyle(style -> {
+                            return style
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer goathorn %s".formatted(soundID.toString())))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a goat horn")));
+                        })
+                        .withStyle(ChatFormatting.GREEN)
+                );
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {

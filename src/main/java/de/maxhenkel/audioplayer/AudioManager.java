@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.audioplayer.interfaces.IJukebox;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -16,10 +17,7 @@ import javax.annotation.Nullable;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.UUID;
 
 public class AudioManager {
@@ -47,6 +45,10 @@ public class AudioManager {
         return server.getWorldPath(AUDIO_DATA).resolve(id.toString() + ".wav");
     }
 
+    public static Path getUploadFolder() {
+        return FabricLoader.getInstance().getGameDir().resolve("audioplayer_uploads");
+    }
+
     public static void saveSound(MinecraftServer server, UUID id, String url) throws UnsupportedAudioFileException, IOException {
         Path soundFile = getSoundFile(server, id);
         if (Files.exists(soundFile)) {
@@ -58,8 +60,24 @@ public class AudioManager {
         if (data.length > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
             throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) data.length / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
         }
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
+        AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
+        audioInputStream.close();
+    }
 
-        AudioSystem.write(AudioSystem.getAudioInputStream(new ByteArrayInputStream(data)), AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
+    public static void saveSound(MinecraftServer server, UUID id, Path file) throws UnsupportedAudioFileException, IOException {
+        if (!Files.exists(file) || !Files.isRegularFile(file)) {
+            throw new NoSuchFileException("The file %s does not exist".formatted(file.toString()));
+        }
+        Path soundFile = getSoundFile(server, id);
+        if (Files.exists(soundFile)) {
+            throw new FileAlreadyExistsException("This audio already exists");
+        }
+        Files.createDirectories(soundFile.getParent());
+
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file.toFile());
+        AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
+        audioInputStream.close();
     }
 
     @Nullable
