@@ -1,1 +1,1 @@
-- Added file size limit for direct server uploads
+- Added direct URL uploading

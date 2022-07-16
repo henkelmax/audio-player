@@ -56,13 +56,29 @@ public class AudioManager {
         }
         Files.createDirectories(soundFile.getParent());
 
-        byte[] data = IOUtils.toByteArray(new URL(url));
-        if (data.length > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
-            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) data.length / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
-        }
+        byte[] data = download(new URL(url), AudioPlayer.SERVER_CONFIG.maxUploadSize.get());
+
         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
         AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, Files.newOutputStream(soundFile, StandardOpenOption.CREATE_NEW));
         audioInputStream.close();
+    }
+
+    private static byte[] download(URL url, int limit) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        BufferedInputStream bis = new BufferedInputStream(url.openStream());
+
+        int nRead;
+        byte[] data = new byte[32768];
+
+        while ((nRead = bis.read(data, 0, data.length)) != -1) {
+            bos.write(data, 0, nRead);
+            if (bos.size() > limit) {
+                bis.close();
+                throw new IOException("Maximum file size of %sMB exceeded".formatted((int) (((float) limit) / 1_000_000F)));
+            }
+        }
+        bis.close();
+        return bos.toByteArray();
     }
 
     public static void saveSound(MinecraftServer server, UUID id, Path file) throws UnsupportedAudioFileException, IOException {
@@ -72,7 +88,7 @@ public class AudioManager {
 
         long size = Files.size(file);
         if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
-            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) size / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
+            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
         }
 
         Path soundFile = getSoundFile(server, id);

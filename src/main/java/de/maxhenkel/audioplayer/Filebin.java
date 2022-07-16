@@ -58,7 +58,7 @@ public class Filebin {
                 long size = file.get("bytes").getAsLong();
 
                 if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get().longValue()) {
-                    throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted((float) size / 1_000_000F, AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F));
+                    throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
                 }
 
                 String filename = file.get("filename").getAsString();
