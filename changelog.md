@@ -1,1 +1,2 @@
 - Added direct URL uploading
+- Added mp3 support

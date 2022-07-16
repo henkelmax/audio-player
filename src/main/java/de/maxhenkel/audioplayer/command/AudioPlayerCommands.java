@@ -26,9 +26,7 @@ import net.minecraft.world.item.RecordItem;
 import org.jetbrains.annotations.Nullable;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.IOException;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -38,7 +36,7 @@ import java.util.regex.Pattern;
 
 public class AudioPlayerCommands {
 
-    public static final Pattern WAV_FILE_PATTERN = Pattern.compile("^[a-z0-9_ -]+.wav$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern SOUND_FILE_PATTERN = Pattern.compile("^[a-z0-9_ -]+.((wav)|(mp3))$", Pattern.CASE_INSENSITIVE);
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx, Commands.CommandSelection environment) {
         LiteralArgumentBuilder<CommandSourceStack> literalBuilder = Commands.literal("audioplayer")
@@ -107,6 +105,8 @@ public class AudioPlayerCommands {
                 .executes(context -> {
                     context.getSource().sendSuccess(
                             Component.literal("If you have a direct link to a ")
+                                    .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
+                                    .append(" or ")
                                     .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
                                     .append(" file, enter the following command: ")
                                     .append(Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
@@ -148,11 +148,13 @@ public class AudioPlayerCommands {
                 .executes(context -> {
                     context.getSource().sendSuccess(
                             Component.literal("Upload a ")
+                                    .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
+                                    .append(" or ")
                                     .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
                                     .append(" file to ")
                                     .append(Component.literal(AudioManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
                                     .append(" on the server and run the command ")
-                                    .append(Component.literal("/audioplayer serverfile \"yourfile.wav\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
+                                    .append(Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                         return style
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer serverfile "))
                                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
@@ -164,7 +166,7 @@ public class AudioPlayerCommands {
                 .then(Commands.argument("filename", StringArgumentType.string())
                         .executes((context) -> {
                             String fileName = StringArgumentType.getString(context, "filename");
-                            Matcher matcher = WAV_FILE_PATTERN.matcher(fileName);
+                            Matcher matcher = SOUND_FILE_PATTERN.matcher(fileName);
                             if (!matcher.matches()) {
                                 context.getSource().sendFailure(Component.literal("Invalid file name! Valid characters are ")
                                         .append(Component.literal("A-Z").withStyle(ChatFormatting.GRAY))
@@ -175,6 +177,8 @@ public class AudioPlayerCommands {
                                         .append(" and ")
                                         .append(Component.literal("-").withStyle(ChatFormatting.GRAY))
                                         .append(". The name must also end in ")
+                                        .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
+                                        .append(" or ")
                                         .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
                                         .append(".")
                                 );
@@ -186,20 +190,12 @@ public class AudioPlayerCommands {
                                 try {
                                     AudioManager.saveSound(context.getSource().getServer(), uuid, file);
                                     context.getSource().sendSuccess(sendUUIDMessage(uuid, Component.literal("Successfully copied sound.")), false);
+                                    context.getSource().sendSuccess(Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
                                 } catch (NoSuchFileException e) {
                                     context.getSource().sendFailure(Component.literal("Could not find file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."));
-                                    return;
                                 } catch (Exception e) {
                                     AudioPlayer.LOGGER.warn("{} failed to copy a sound: {}", context.getSource().getTextName(), e.getMessage());
                                     context.getSource().sendFailure(Component.literal("Failed to copy sound: %s".formatted(e.getMessage())));
-                                    return;
-                                }
-                                try {
-                                    if (Files.deleteIfExists(file)) {
-                                        context.getSource().sendSuccess(Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
-                                    }
-                                } catch (IOException e) {
-                                    AudioPlayer.LOGGER.warn("Failed to delete sound", e);
                                 }
                             }).start();
 
@@ -257,6 +253,8 @@ public class AudioPlayerCommands {
                             .withStyle(ChatFormatting.GREEN)
                     )
                     .append(" and upload your sound as ")
+                    .append(Component.literal("mp3").withStyle(ChatFormatting.GRAY))
+                    .append(" or ")
                     .append(Component.literal("wav").withStyle(ChatFormatting.GRAY))
                     .append(".\n")
                     .append("Once you have uploaded the file, click ")

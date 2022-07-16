@@ -60,6 +60,13 @@ dependencies {
     implementation "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
     shadow "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
 
+    implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
+        exclude group: 'junit', module: 'junit'
+    }
+    shadow("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
+        exclude group: 'junit', module: 'junit'
+    }
+
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
     modImplementation "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
@@ -165,6 +172,9 @@ shadowJar {
     configurations = [project.configurations.shadow]
     classifier 'shadow-dev'
     relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.${mod_id}.configbuilder"
+    //TODO check why we can't relocate it
+    // relocate 'javazoom', "de.maxhenkel.${mod_id}.javazoom"
+    // relocate 'org.tritonus', "de.maxhenkel.${mod_id}.tritonus"
 }
 
 prepareRemapJar {
