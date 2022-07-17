@@ -14,14 +14,15 @@
 
 This server side Fabric mod enables uploading custom audio for music discs and goat horns.
 
-It uses [Filebin](https://github.com/espebra/filebin2/) to upload files to the server.
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
 
 ## Features
 
 - On the fly audio uploading without needing to restart the server
-- Upload audio via [Filebin](https://github.com/espebra/filebin2/)
+- Support for `mp3` and `wav`
+- Upload audio via a URL
 - Upload audio directly to your server
+- Upload audio via [Filebin](https://github.com/espebra/filebin2/)
 - Server side only
 - No server restart needed
 - No resource pack needed
@@ -37,14 +38,18 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 
 Run `/audioplayer` to get general information on how to upload files.
 
-**Uploading Audio Files via Filebin**
+**Uploading Audio Files via URL**
 
-Run `/audioplayer upload` and follow the instructions.
+Run `/audioplayer url "https://example.com/myaudio.mp3"` where `https://example.com/myaudio.mp3` is the link to your `.mp3` or `.wav` file.
 
 **Uploading Audio Files directly to the server**
 
-Copy your `.wav` file to the `audioplayer_uploads` folder in your server.
-Run `/audioplayer serverfile "yourfile.wav"` where `yourfile.wav` is the name of the file you put on the server.
+Copy your `.mp3` or `.wav` file to the `audioplayer_uploads` folder in your server.
+Run `/audioplayer serverfile "yourfile.mp3"` where `yourfile.mp3` is the name of the file you put on the server.
+
+**Uploading Audio Files via Filebin**
+
+Run `/audioplayer filebin` and follow the instructions.
 
 **Putting Custom Audio on a Music Disc**
 
