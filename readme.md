@@ -6,6 +6,7 @@
 
 ## Links
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/audioplayer)
+- [Modrinth](https://modrinth.com/mod/audioplayer)
 - [Simple Voice Chat Discord](https://discord.gg/4dH2zwTmyX)
 
 ---
