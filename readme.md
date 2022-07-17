@@ -62,11 +62,11 @@ Run `/audioplayer goathorn <ID>` and hold a goat horn in your main hand.
 Additionally, you can add a custom name for the goat horn `/audioplayer goathorn <ID> "<CUSTOM-TEXT>"`.
 
 ---
-[![](https://user-images.githubusercontent.com/13237524/143098106-ee53f2f7-dc4a-41f7-956e-c875a9aea8c1.png)](https://youtu.be/tixidvB4Zko)
+[![](https://user-images.githubusercontent.com/13237524/179395180-05f2ec3b-2ed3-412d-8639-72c7f13a8068.png)](https://youtu.be/j8GRcYnjUp8)
 
-![](https://user-images.githubusercontent.com/13237524/142997949-3c29fcf2-ed68-423a-9e7b-8c39c9560c8f.png)
+[![](https://user-images.githubusercontent.com/13237524/179395233-582b70bc-f308-47c7-96ff-541257e86545.png)](https://youtu.be/tixidvB4Zko)
 
-![](https://user-images.githubusercontent.com/13237524/142997956-c7f0c2c2-dc61-43da-9165-92dfcad0d117.png)
+![](https://user-images.githubusercontent.com/13237524/179395296-be3643eb-1c23-4300-ac17-25d11d53d6f3.png)
 
 ![](https://user-images.githubusercontent.com/13237524/142997959-9120d038-4ee6-45bb-8815-2179884ef958.png)
 
