@@ -3,3 +3,4 @@
 - Made music disc range in line with vanilla music discs
 - Added config options to disallow uploading mp3s or wavs
 - Added volume categories for music disc and goat horn sounds
+- Made loading custom sounds threaded
