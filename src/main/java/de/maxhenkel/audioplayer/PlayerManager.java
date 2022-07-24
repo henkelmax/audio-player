@@ -5,15 +5,13 @@ import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
-import de.maxhenkel.voicechat.api.audiochannel.StaticAudioChannel;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,20 +25,22 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID playLocational(VoicechatServerApi api, ServerLevel level, BlockPos pos, UUID sound, @Nullable ServerPlayer p) {
+    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, String category) {
         UUID channelID = UUID.randomUUID();
-        LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
+        LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z));
         if (channel == null) {
             return null;
         }
-        api.getPlayersInRange(api.fromServerLevel(level), channel.getLocation(), api.getBroadcastRange(), serverPlayer -> {
+        channel.setCategory(category);
+        channel.setDistance(distance);
+        api.getPlayersInRange(api.fromServerLevel(level), channel.getLocation(), distance + 1F, serverPlayer -> {
             VoicechatConnection connection = api.getConnectionOf(serverPlayer);
             if (connection != null) {
                 return connection.isDisabled();
             }
             return true;
         }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(player -> {
-            player.displayClientMessage(Component.literal("You need to enable voice chat to hear this music disc"), true);
+            player.displayClientMessage(Component.literal("You need to enable voice chat to hear custom audio"), true);
         });
 
         de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = playChannel(api, channel, level, sound, p);
@@ -49,32 +49,6 @@ public class PlayerManager {
         }
         players.put(channelID, audioPlayer);
         return channelID;
-    }
-
-    public void playGlobalRange(VoicechatServerApi api, ServerLevel level, UUID sound, ServerPlayer p, float range) {
-        List<ServerPlayer> nearbyPlayers = level.getPlayers(p1 -> p1.distanceTo(p) <= range);
-
-        for (ServerPlayer player : nearbyPlayers) {
-            playStaticToPlayer(api, level, sound, player);
-        }
-    }
-
-    public void playStaticToPlayer(VoicechatServerApi api, ServerLevel level, UUID sound, ServerPlayer p) {
-        UUID channelID = UUID.randomUUID();
-        VoicechatConnection connection = api.getConnectionOf(p.getUUID());
-        if (connection == null) {
-            return;
-        }
-        if (connection.isDisabled()) {
-            p.displayClientMessage(Component.literal("You need to enable voice chat to hear goat horns"), true);
-        }
-
-        StaticAudioChannel channel = api.createStaticAudioChannel(channelID, api.fromServerLevel(level), connection);
-        if (channel == null) {
-            return;
-        }
-
-        playChannel(api, channel, level, sound, p);
     }
 
     @Nullable
