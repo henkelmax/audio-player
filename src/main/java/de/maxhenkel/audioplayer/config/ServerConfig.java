@@ -14,6 +14,8 @@ public class ServerConfig {
     public final ConfigEntry<Integer> goatHornCooldown;
     public final ConfigEntry<Double> musicDiscRange;
     public final ConfigEntry<Double> goatHornRange;
+    public final ConfigEntry<Boolean> allowWavUpload;
+    public final ConfigEntry<Boolean> allowMp3Upload;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry("filebin_url", "https://filebin.net/");
@@ -25,6 +27,8 @@ public class ServerConfig {
         goatHornCooldown = builder.integerEntry("goat_horn_cooldown", 140, 1, Short.MAX_VALUE);
         musicDiscRange = builder.doubleEntry("music_disc_range", 65D, 1D, Integer.MAX_VALUE);
         goatHornRange = builder.doubleEntry("goat_horn_range", 256D, 1D, Integer.MAX_VALUE);
+        allowWavUpload = builder.booleanEntry("allow_wav_upload", true);
+        allowMp3Upload = builder.booleanEntry("allow_mp3_upload", true);
     }
 
 }

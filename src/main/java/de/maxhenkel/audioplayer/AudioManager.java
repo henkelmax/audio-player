@@ -63,7 +63,10 @@ public class AudioManager {
 
         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
 
-        Path soundFile = getSoundFile(server, id, getExtension(audioInputStream.getFormat()));
+        String extension = getExtension(audioInputStream.getFormat());
+        checkExtensionAllowed(extension);
+
+        Path soundFile = getSoundFile(server, id, extension);
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
         }
@@ -92,13 +95,29 @@ public class AudioManager {
             }
         }
 
-        Path soundFile = getSoundFile(server, id, getExtension(audioInputStream.getFormat()));
+        String extension = getExtension(audioInputStream.getFormat());
+        checkExtensionAllowed(extension);
+
+        Path soundFile = getSoundFile(server, id, extension);
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
         }
         Files.createDirectories(soundFile.getParent());
 
         Files.move(file, soundFile);
+    }
+
+    public static void checkExtensionAllowed(String extension) throws UnsupportedAudioFileException {
+        if (extension.equalsIgnoreCase(MP3_EXTENSION)) {
+            if (!AudioPlayer.SERVER_CONFIG.allowMp3Upload.get()) {
+                throw new UnsupportedAudioFileException("Uploading mp3 files is not allowed on this server");
+            }
+        }
+        if (extension.equalsIgnoreCase(WAV_EXTENSION)) {
+            if (!AudioPlayer.SERVER_CONFIG.allowWavUpload.get()) {
+                throw new UnsupportedAudioFileException("Uploading wav files is not allowed on this server");
+            }
+        }
     }
 
     public static String getExtension(AudioFormat format) throws UnsupportedAudioFileException {
