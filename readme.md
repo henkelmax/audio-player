@@ -30,6 +30,7 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - No changes needed on the client
 - Configurable upload limit
 - Configurable command permissions
+- Configurable music disc range
 - Configurable goat horn range
 - Configurable goat horn cooldown
 - Music discs can be inserted with hoppers, droppers and dispensers (Can be disabled in the config)
