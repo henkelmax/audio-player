@@ -25,10 +25,12 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": ">=${fabric_version}",
     "minecraft": "${minecraft_dependency}",
     "java": ">=17",
     "voicechat": ">=${minecraft_version}-${voicechat_api_version}"
+  },
+  "breaks": {
+    "fabric": "<${fabric_version}"
   },
   "accessWidener": "audioplayer.accesswidener"
 }
