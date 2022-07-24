@@ -12,6 +12,7 @@ public class ServerConfig {
     public final ConfigEntry<Boolean> jukeboxHopperInteraction;
     public final ConfigEntry<Boolean> jukeboxDispenserInteraction;
     public final ConfigEntry<Integer> goatHornCooldown;
+    public final ConfigEntry<Double> musicDiscRange;
     public final ConfigEntry<Double> goatHornRange;
 
     public ServerConfig(ConfigBuilder builder) {
@@ -22,7 +23,8 @@ public class ServerConfig {
         jukeboxHopperInteraction = builder.booleanEntry("jukebox_hopper_interaction", true);
         jukeboxDispenserInteraction = builder.booleanEntry("jukebox_dispenser_interaction", true);
         goatHornCooldown = builder.integerEntry("goat_horn_cooldown", 140, 1, Short.MAX_VALUE);
-        goatHornRange = builder.doubleEntry("goat_horn_range", 256F, 1F, Integer.MAX_VALUE);
+        musicDiscRange = builder.doubleEntry("music_disc_range", 65D, 1D, Integer.MAX_VALUE);
+        goatHornRange = builder.doubleEntry("goat_horn_range", 256D, 1D, Integer.MAX_VALUE);
     }
 
 }

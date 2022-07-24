@@ -1,2 +1,3 @@
-- Added direct URL uploading
-- Added mp3 support
+- Added directional goat horn sounds
+- Made music disc hearing range configurable
+- Made music disc range in line with vanilla music discs

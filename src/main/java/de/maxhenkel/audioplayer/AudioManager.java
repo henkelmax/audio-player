@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
@@ -165,7 +166,15 @@ public class AudioManager {
             return false;
         }
 
-        @Nullable UUID channelID = PlayerManager.instance().playLocational(api, level, pos, customSound, (player instanceof ServerPlayer p) ? p : null);
+        @Nullable UUID channelID = PlayerManager.instance().playLocational(
+                api,
+                level,
+                new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
+                customSound,
+                (player instanceof ServerPlayer p) ? p : null,
+                AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue(),
+                Plugin.MUSIC_DISC_CATEGORY
+        );
 
         if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
             jukebox.setChannelID(channelID);
@@ -186,7 +195,15 @@ public class AudioManager {
             return false;
         }
 
-        PlayerManager.instance().playGlobalRange(api, level, customSound, player, AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue());
+        PlayerManager.instance().playLocational(
+                api,
+                level,
+                player.position(),
+                customSound,
+                player,
+                AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue(),
+                Plugin.GOAT_HORN_CATEGORY
+        );
         return true;
     }
 
