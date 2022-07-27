@@ -1,2 +1,1 @@
-- Added direct URL uploading
-- Added mp3 support
+- Updated to 1.19.1
