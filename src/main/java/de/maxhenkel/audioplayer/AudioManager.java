@@ -30,8 +30,8 @@ public class AudioManager {
     public static final String MP3_EXTENSION = "mp3";
     public static final String WAV_EXTENSION = "wav";
 
-    public static short[] getSound(MinecraftServer server, UUID id) throws IOException, UnsupportedAudioFileException {
-        return readSound(getExistingSoundFile(server, id));
+    public static short[] getSound(MinecraftServer server, UUID id) throws Exception {
+        return AudioPlayer.AUDIO_CACHE.get(id, () -> readSound(getExistingSoundFile(server, id)));
     }
 
     public static short[] readSound(Path file) throws IOException, UnsupportedAudioFileException {

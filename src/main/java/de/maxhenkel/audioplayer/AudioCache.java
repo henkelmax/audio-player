@@ -1,7 +1,6 @@
 package de.maxhenkel.audioplayer;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 public class AudioCache {
 
@@ -15,10 +14,10 @@ public class AudioCache {
         this.orderedKeys = new ArrayDeque<>();
     }
 
-    public synchronized short[] get(UUID id, Supplier<short[]> getter) {
+    public synchronized short[] get(UUID id, AudioSupplier supplier) throws Exception {
         short[] data = audioCache.get(id);
         if (data == null) {
-            short[] uncachedData = getter.get();
+            short[] uncachedData = supplier.get();
             pushCache(id, uncachedData);
             return uncachedData;
         }
@@ -26,6 +25,9 @@ public class AudioCache {
     }
 
     private void pushCache(UUID id, short[] data) {
+        if (size <= 0) {
+            return;
+        }
         if (audioCache.containsKey(id)) {
             return;
         }
@@ -35,6 +37,10 @@ public class AudioCache {
         }
         orderedKeys.add(id);
         audioCache.put(id, data);
+    }
+
+    public interface AudioSupplier {
+        short[] get() throws Exception;
     }
 
 }

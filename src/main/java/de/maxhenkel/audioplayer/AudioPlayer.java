@@ -21,6 +21,8 @@ public class AudioPlayer implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static ServerConfig SERVER_CONFIG;
 
+    public static AudioCache AUDIO_CACHE;
+
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register(AudioPlayerCommands::register);
@@ -33,7 +35,8 @@ public class AudioPlayer implements ModInitializer {
             LOGGER.warn("Failed to create upload folder", e);
         }
 
-
         Registry.ITEM.stream().filter(item -> item instanceof RecordItem).forEach(item -> DispenserBlock.registerBehavior(item, RecordDispenseBehavior.RECORD));
+
+        AUDIO_CACHE = new AudioCache(SERVER_CONFIG.cacheSize.get());
     }
 }
