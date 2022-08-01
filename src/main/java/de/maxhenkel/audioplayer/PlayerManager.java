@@ -35,7 +35,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, String category) {
+    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, String category, int maxLengthSeconds) {
         UUID channelID = UUID.randomUUID();
         LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z));
         if (channel == null) {
@@ -67,7 +67,7 @@ public class PlayerManager {
         });
 
         executor.execute(() -> {
-            de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = playChannel(api, channel, level, sound, p);
+            de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = playChannel(api, channel, level, sound, p, maxLengthSeconds);
             if (audioPlayer == null) {
                 players.remove(channelID);
                 return;
@@ -87,10 +87,20 @@ public class PlayerManager {
     }
 
     @Nullable
-    private de.maxhenkel.voicechat.api.audiochannel.AudioPlayer playChannel(VoicechatServerApi api, AudioChannel
-            channel, ServerLevel level, UUID sound, ServerPlayer p) {
+    private de.maxhenkel.voicechat.api.audiochannel.AudioPlayer playChannel(VoicechatServerApi api, AudioChannel channel, ServerLevel level, UUID sound, ServerPlayer p, int maxLengthSeconds) {
         try {
-            de.maxhenkel.voicechat.api.audiochannel.AudioPlayer player = api.createAudioPlayer(channel, api.createEncoder(), AudioManager.getSound(level.getServer(), sound));
+            short[] audio = AudioManager.getSound(level.getServer(), sound);
+
+            if (AudioManager.getLengthSeconds(audio) > maxLengthSeconds) {
+                if (p != null) {
+                    p.displayClientMessage(Component.literal("Audio is too long to play").withStyle(ChatFormatting.DARK_RED), true);
+                } else {
+                    AudioPlayer.LOGGER.error("Audio {} was too long to play", sound);
+                }
+                return null;
+            }
+
+            de.maxhenkel.voicechat.api.audiochannel.AudioPlayer player = api.createAudioPlayer(channel, api.createEncoder(), audio);
             player.startPlaying();
             return player;
         } catch (Exception e) {

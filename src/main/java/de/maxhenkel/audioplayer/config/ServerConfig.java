@@ -16,10 +16,12 @@ public class ServerConfig {
     public final ConfigEntry<Double> goatHornRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
+    public final ConfigEntry<Integer> maxMusicDiscDuration;
+    public final ConfigEntry<Integer> maxGoatHornDuration;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry("filebin_url", "https://filebin.net/");
-        maxUploadSize = builder.integerEntry("max_upload_size", 1000 * 1000 * 50, 1, Integer.MAX_VALUE);
+        maxUploadSize = builder.integerEntry("max_upload_size", 1000 * 1000 * 20, 1, Integer.MAX_VALUE);
         uploadPermissionLevel = builder.integerEntry("upload_permission_level", 0, 0, Integer.MAX_VALUE);
         applyToItemPermissionLevel = builder.integerEntry("apply_to_item_permission_level", 0, 0, Integer.MAX_VALUE);
         jukeboxHopperInteraction = builder.booleanEntry("jukebox_hopper_interaction", true);
@@ -29,6 +31,8 @@ public class ServerConfig {
         goatHornRange = builder.doubleEntry("goat_horn_range", 256D, 1D, Integer.MAX_VALUE);
         allowWavUpload = builder.booleanEntry("allow_wav_upload", true);
         allowMp3Upload = builder.booleanEntry("allow_mp3_upload", true);
+        maxMusicDiscDuration = builder.integerEntry("max_music_disc_duration", 60 * 5, 1, Integer.MAX_VALUE);
+        maxGoatHornDuration = builder.integerEntry("max_goat_horn_duration", 10, 1, Integer.MAX_VALUE);
     }
 
 }

@@ -192,7 +192,8 @@ public class AudioManager {
                 customSound,
                 (player instanceof ServerPlayer p) ? p : null,
                 AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue(),
-                Plugin.MUSIC_DISC_CATEGORY
+                Plugin.MUSIC_DISC_CATEGORY,
+                AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
         );
 
         if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
@@ -221,9 +222,14 @@ public class AudioManager {
                 customSound,
                 player,
                 AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue(),
-                Plugin.GOAT_HORN_CATEGORY
+                Plugin.GOAT_HORN_CATEGORY,
+                AudioPlayer.SERVER_CONFIG.maxGoatHornDuration.get()
         );
         return true;
+    }
+
+    public static float getLengthSeconds(short[] audio) {
+        return (float) audio.length / FORMAT.getSampleRate();
     }
 
 }
