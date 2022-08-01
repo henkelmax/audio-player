@@ -1,1 +1,2 @@
 - Added music disc and goat horn max duration
+- Added audio cache config option
