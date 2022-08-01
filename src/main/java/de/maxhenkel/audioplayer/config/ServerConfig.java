@@ -18,6 +18,7 @@ public class ServerConfig {
     public final ConfigEntry<Boolean> allowMp3Upload;
     public final ConfigEntry<Integer> maxMusicDiscDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
+    public final ConfigEntry<Integer> cacheSize;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry("filebin_url", "https://filebin.net/");
@@ -32,7 +33,8 @@ public class ServerConfig {
         allowWavUpload = builder.booleanEntry("allow_wav_upload", true);
         allowMp3Upload = builder.booleanEntry("allow_mp3_upload", true);
         maxMusicDiscDuration = builder.integerEntry("max_music_disc_duration", 60 * 5, 1, Integer.MAX_VALUE);
-        maxGoatHornDuration = builder.integerEntry("max_goat_horn_duration", 10, 1, Integer.MAX_VALUE);
+        maxGoatHornDuration = builder.integerEntry("max_goat_horn_duration", 20, 1, Integer.MAX_VALUE);
+        cacheSize = builder.integerEntry("cache_size", 16, 0, Integer.MAX_VALUE);
     }
 
 }
