@@ -1,2 +1,1 @@
-- Added music disc and goat horn max duration
-- Added audio cache config option
+- Updated to 1.19.2
