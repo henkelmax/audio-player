@@ -2,7 +2,6 @@ package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.audioplayer.interfaces.IJukebox;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
-import javazoom.spi.mpeg.sampled.file.MpegEncoding;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -16,26 +15,21 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
-import javax.sound.sampled.*;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.UUID;
 
 public class AudioManager {
 
     public static LevelResource AUDIO_DATA = new LevelResource("audio_player_data");
-    public static AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 48000F, 16, 1, 2, 48000F, false);
-
-    public static final String MP3_EXTENSION = "mp3";
-    public static final String WAV_EXTENSION = "wav";
 
     public static short[] getSound(MinecraftServer server, UUID id) throws Exception {
-        return AudioPlayer.AUDIO_CACHE.get(id, () -> readSound(getExistingSoundFile(server, id)));
-    }
-
-    public static short[] readSound(Path file) throws IOException, UnsupportedAudioFileException {
-        return Plugin.voicechatApi.getAudioConverter().bytesToShorts(convert(file, FORMAT));
+        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(server, id)));
     }
 
     public static Path getSoundFile(MinecraftServer server, UUID id, String extension) {
@@ -43,11 +37,11 @@ public class AudioManager {
     }
 
     public static Path getExistingSoundFile(MinecraftServer server, UUID id) throws FileNotFoundException {
-        Path file = getSoundFile(server, id, MP3_EXTENSION);
+        Path file = getSoundFile(server, id, AudioConverter.AudioType.MP3.getExtension());
         if (Files.exists(file)) {
             return file;
         }
-        file = getSoundFile(server, id, WAV_EXTENSION);
+        file = getSoundFile(server, id, AudioConverter.AudioType.WAV.getExtension());
         if (Files.exists(file)) {
             return file;
         }
@@ -61,12 +55,10 @@ public class AudioManager {
     public static void saveSound(MinecraftServer server, UUID id, String url) throws UnsupportedAudioFileException, IOException {
         byte[] data = download(new URL(url), AudioPlayer.SERVER_CONFIG.maxUploadSize.get());
 
-        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
+        AudioConverter.AudioType audioType = AudioConverter.getAudioType(data);
+        checkExtensionAllowed(audioType);
 
-        String extension = getExtension(audioInputStream.getFormat());
-        checkExtensionAllowed(extension);
-
-        Path soundFile = getSoundFile(server, id, extension);
+        Path soundFile = getSoundFile(server, id, audioType.getExtension());
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
         }
@@ -86,19 +78,11 @@ public class AudioManager {
         if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
             throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
         }
-        AudioInputStream audioInputStream = null;
-        try {
-            audioInputStream = AudioSystem.getAudioInputStream(file.toFile());
-        } finally {
-            if (audioInputStream != null) {
-                audioInputStream.close();
-            }
-        }
 
-        String extension = getExtension(audioInputStream.getFormat());
-        checkExtensionAllowed(extension);
+        AudioConverter.AudioType audioType = AudioConverter.getAudioType(file);
+        checkExtensionAllowed(audioType);
 
-        Path soundFile = getSoundFile(server, id, extension);
+        Path soundFile = getSoundFile(server, id, audioType.getExtension());
         if (Files.exists(soundFile)) {
             throw new FileAlreadyExistsException("This audio already exists");
         }
@@ -107,41 +91,19 @@ public class AudioManager {
         Files.move(file, soundFile);
     }
 
-    public static void checkExtensionAllowed(String extension) throws UnsupportedAudioFileException {
-        if (extension.equalsIgnoreCase(MP3_EXTENSION)) {
+    public static void checkExtensionAllowed(@Nullable AudioConverter.AudioType audioType) throws UnsupportedAudioFileException {
+        if (audioType == null) {
+            throw new UnsupportedAudioFileException("Unsupported audio format");
+        }
+        if (audioType.equals(AudioConverter.AudioType.MP3)) {
             if (!AudioPlayer.SERVER_CONFIG.allowMp3Upload.get()) {
                 throw new UnsupportedAudioFileException("Uploading mp3 files is not allowed on this server");
             }
         }
-        if (extension.equalsIgnoreCase(WAV_EXTENSION)) {
+        if (audioType.equals(AudioConverter.AudioType.WAV)) {
             if (!AudioPlayer.SERVER_CONFIG.allowWavUpload.get()) {
                 throw new UnsupportedAudioFileException("Uploading wav files is not allowed on this server");
             }
-        }
-    }
-
-    public static String getExtension(AudioFormat format) throws UnsupportedAudioFileException {
-        if (format.getEncoding().equals(MpegEncoding.MPEG1L3)) {
-            return MP3_EXTENSION;
-        } else if (
-                format.getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED) ||
-                        format.getEncoding().equals(AudioFormat.Encoding.PCM_UNSIGNED) ||
-                        format.getEncoding().equals(AudioFormat.Encoding.PCM_FLOAT) ||
-                        format.getEncoding().equals(AudioFormat.Encoding.ALAW) ||
-                        format.getEncoding().equals(AudioFormat.Encoding.ULAW)
-        ) {
-            return WAV_EXTENSION;
-        }
-        throw new UnsupportedAudioFileException("Unsupported encoding: %s".formatted(format.getEncoding().toString()));
-    }
-
-    public static byte[] convert(Path file, AudioFormat audioFormat) throws IOException, UnsupportedAudioFileException {
-        try (AudioInputStream source = AudioSystem.getAudioInputStream(file.toFile())) {
-            AudioFormat sourceFormat = source.getFormat();
-            AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
-            AudioInputStream stream1 = AudioSystem.getAudioInputStream(convertFormat, source);
-            AudioInputStream stream2 = AudioSystem.getAudioInputStream(audioFormat, stream1);
-            return stream2.readAllBytes();
         }
     }
 
@@ -229,7 +191,8 @@ public class AudioManager {
     }
 
     public static float getLengthSeconds(short[] audio) {
-        return (float) audio.length / FORMAT.getSampleRate();
+        return (float) audio.length / AudioConverter.FORMAT.getSampleRate();
     }
+
 
 }
