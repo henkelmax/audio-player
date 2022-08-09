@@ -1,1 +1,1 @@
-- Updated to 1.19.2
+- Use voice chats builtin mp3 decoder
