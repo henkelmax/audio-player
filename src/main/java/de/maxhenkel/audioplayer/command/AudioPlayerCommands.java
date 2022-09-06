@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.Filebin;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -205,6 +206,46 @@ public class AudioPlayerCommands {
 
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
+
+        literalBuilder.then(Commands.literal("clear")
+                .executes((context) -> {
+                    ServerPlayer player = context.getSource().getPlayerOrException();
+                    ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+                    if (!(itemInHand.getItem() instanceof RecordItem) && !(itemInHand.getItem() instanceof InstrumentItem)) {
+                        context.getSource().sendFailure(Component.literal("Invalid item"));
+                        return 1;
+                    }
+
+                    if (!itemInHand.hasTag()) {
+                        context.getSource().sendFailure(Component.literal("Item does not contain NBT data"));
+                        return 1;
+                    }
+
+                    CompoundTag tag = itemInHand.getTag();
+
+                    if (tag == null) {
+                        return 1;
+                    }
+
+                    if (!tag.contains("CustomSound")) {
+                        context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+                        return 1;
+                    }
+
+                    tag.remove("CustomSound");
+
+                    if (itemInHand.getItem() instanceof InstrumentItem) {
+                        tag.putString("instrument", "minecraft:ponder_goat_horn");
+                    }
+
+                    tag.remove(ItemStack.TAG_DISPLAY);
+                    tag.remove("HideFlags");
+
+                    context.getSource().sendSuccess(Component.literal("Successfully cleared item"), false);
+                    return 1;
+                })
+        );
 
         dispatcher.register(literalBuilder);
     }
