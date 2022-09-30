@@ -1,1 +1,1 @@
-- Added clear command
+- Added id command

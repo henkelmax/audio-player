@@ -40,28 +40,32 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 
 Run `/audioplayer` to get general information on how to upload files.
 
-**Uploading Audio Files via URL**
+**Uploading audio files via URL**
 
 Run `/audioplayer url "https://example.com/myaudio.mp3"` where `https://example.com/myaudio.mp3` is the link to your `.mp3` or `.wav` file.
 
-**Uploading Audio Files directly to the server**
+**Uploading audio files directly to the server**
 
 Copy your `.mp3` or `.wav` file to the `audioplayer_uploads` folder in your server.
 Run `/audioplayer serverfile "yourfile.mp3"` where `yourfile.mp3` is the name of the file you put on the server.
 
-**Uploading Audio Files via Filebin**
+**Uploading audio files via Filebin**
 
 Run `/audioplayer filebin` and follow the instructions.
 
-**Putting Custom Audio on a Music Disc**
+**Putting custom audio on a music disc**
 
 Run `/audioplayer musicdisc <ID>` and hold a music disc in your main hand.
 Additionally, you can add a custom name for the music disc `/audioplayer musicdisc <ID> "<CUSTOM-TEXT>"`.
 
-**Putting Custom Audio on a Goat Horn**
+**Putting custom audio on a goat horn**
 
 Run `/audioplayer goathorn <ID>` and hold a goat horn in your main hand.
 Additionally, you can add a custom name for the goat horn `/audioplayer goathorn <ID> "<CUSTOM-TEXT>"`.
+
+**Getting the audio from an existing item**
+
+Run `/audioplayer id` and hold a music disc or a goat horn with custom audio in your main hand.
 
 ---
 [![](https://user-images.githubusercontent.com/13237524/179395180-05f2ec3b-2ed3-412d-8639-72c7f13a8068.png)](https://youtu.be/j8GRcYnjUp8)

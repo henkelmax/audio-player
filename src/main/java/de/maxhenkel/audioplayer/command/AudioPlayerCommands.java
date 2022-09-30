@@ -247,6 +247,37 @@ public class AudioPlayerCommands {
                 })
         );
 
+        literalBuilder.then(Commands.literal("id")
+                .executes((context) -> {
+                    ServerPlayer player = context.getSource().getPlayerOrException();
+                    ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+                    if (!(itemInHand.getItem() instanceof RecordItem) && !(itemInHand.getItem() instanceof InstrumentItem)) {
+                        context.getSource().sendFailure(Component.literal("Invalid item"));
+                        return 1;
+                    }
+
+                    if (!itemInHand.hasTag()) {
+                        context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+                        return 1;
+                    }
+
+                    CompoundTag tag = itemInHand.getTag();
+
+                    if (tag == null) {
+                        return 1;
+                    }
+
+                    if (!tag.contains("CustomSound")) {
+                        context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+                        return 1;
+                    }
+
+                    context.getSource().sendSuccess(sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
+                    return 1;
+                })
+        );
+
         dispatcher.register(literalBuilder);
     }
 
