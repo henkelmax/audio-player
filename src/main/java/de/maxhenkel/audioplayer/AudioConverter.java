@@ -89,15 +89,20 @@ public class AudioConverter {
     }
 
     public static short[] convertMp3(Path file) throws IOException, UnsupportedAudioFileException {
-        Mp3Decoder mp3Decoder = Plugin.voicechatApi.createMp3Decoder(Files.newInputStream(file));
-        if (mp3Decoder == null) {
-            throw new IOException("Error creating mp3 decoder");
+        try {
+            Mp3Decoder mp3Decoder = Plugin.voicechatApi.createMp3Decoder(Files.newInputStream(file));
+            if (mp3Decoder == null) {
+                throw new IOException("Error creating mp3 decoder");
+            }
+            byte[] data = Plugin.voicechatApi.getAudioConverter().shortsToBytes(mp3Decoder.decode());
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+            AudioFormat audioFormat = mp3Decoder.getAudioFormat();
+            AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());
+            return convert(source);
+        } catch (Exception e) {
+            AudioPlayer.LOGGER.warn("Error converting mp3 file with native decoder");
+            return convert(AudioSystem.getAudioInputStream(file.toFile()));
         }
-        byte[] data = Plugin.voicechatApi.getAudioConverter().shortsToBytes(mp3Decoder.decode());
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-        AudioFormat audioFormat = mp3Decoder.getAudioFormat();
-        AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());
-        return convert(source);
     }
 
     public enum AudioType {

@@ -71,6 +71,13 @@ dependencies {
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
     modRuntimeOnly fileTree(dir: 'libs', include: '*.jar')
     modRuntimeOnly "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
+        exclude group: 'junit', module: 'junit'
+    }
+    shadow("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
+        exclude group: 'junit', module: 'junit'
+    }
 }
 
 processResources {
@@ -173,6 +180,8 @@ shadowJar {
     configurations = [project.configurations.shadow]
     classifier 'shadow-dev'
     relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.${mod_id}.configbuilder"
+    relocate 'javazoom', "de.maxhenkel.${mod_id}.javazoom"
+    relocate 'org.tritonus', "de.maxhenkel.${mod_id}.tritonus"
 }
 
 prepareRemapJar {

@@ -78,5 +78,9 @@ Run `/audioplayer id` and hold a music disc or a goat horn with custom audio in 
 
 ![](https://user-images.githubusercontent.com/13237524/143213769-99a6b03a-887a-4b30-8b18-baf394be6b6c.png)
 
+## Credits
+
+- [MP3SPI](https://github.com/umjammer/mp3spi)
+- [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat)
 
 *Note that the files you upload to Filebin are publicly available if the upload link is disclosed!*
