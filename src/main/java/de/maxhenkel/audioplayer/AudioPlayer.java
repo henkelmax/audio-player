@@ -6,7 +6,7 @@ import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.DispenserBlock;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +35,7 @@ public class AudioPlayer implements ModInitializer {
             LOGGER.warn("Failed to create upload folder", e);
         }
 
-        Registry.ITEM.stream().filter(item -> item instanceof RecordItem).forEach(item -> DispenserBlock.registerBehavior(item, RecordDispenseBehavior.RECORD));
+        BuiltInRegistries.ITEM.stream().filter(item -> item instanceof RecordItem).forEach(item -> DispenserBlock.registerBehavior(item, RecordDispenseBehavior.RECORD));
 
         AUDIO_CACHE = new AudioCache(SERVER_CONFIG.cacheSize.get());
     }

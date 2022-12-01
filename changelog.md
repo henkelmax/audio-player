@@ -1,1 +1,1 @@
-- Added non native mp3 decoder fallback
+- Update to 1.19.3

@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id "fabric-loom" version "0.12-SNAPSHOT"
+    id "fabric-loom" version "1.0-SNAPSHOT"
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "com.github.johnrengelman.shadow" version "7.1.0"
     id "com.modrinth.minotaur" version "2.+"
@@ -21,9 +21,9 @@ apply plugin: 'forge-update'
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
+archivesBaseName = archives_base_name
+version = mod_version
+group = maven_group
 
 loom {
     accessWidenerPath = file("src/main/resources/audioplayer.accesswidener")
@@ -116,7 +116,7 @@ curseforge {
         addGameVersion curseforge_minecraft_version
         addGameVersion "Fabric"
         addGameVersion "Java 17"
-        mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
+        mainArtifact(file("${buildDir}/libs/${archivesBaseName}-${version}.jar")) {
             displayName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
             relations {
                 requiredDependency 'fabric-api'
