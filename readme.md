@@ -33,8 +33,6 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - Configurable music disc range
 - Configurable goat horn range
 - Configurable goat horn cooldown
-- Music discs can be inserted with hoppers, droppers and dispensers (Can be disabled in the config)
-- Music discs can be taken out with hoppers (Can be disabled in the config)
 
 ## Commands
 
