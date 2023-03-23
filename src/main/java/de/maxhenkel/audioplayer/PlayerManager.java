@@ -104,7 +104,7 @@ public class PlayerManager {
             player.startPlaying();
             return player;
         } catch (Exception e) {
-            AudioPlayer.LOGGER.error("Failed to play audio: {}", e.getMessage());
+            AudioPlayer.LOGGER.error("Failed to play audio", e);
             if (p != null) {
                 p.displayClientMessage(Component.literal("Failed to play audio: %s".formatted(e.getMessage())).withStyle(ChatFormatting.DARK_RED), true);
             }
