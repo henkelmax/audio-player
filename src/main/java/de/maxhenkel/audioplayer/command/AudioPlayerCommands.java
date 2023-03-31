@@ -21,9 +21,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import org.jetbrains.annotations.Nullable;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -206,6 +208,7 @@ public class AudioPlayerCommands {
 
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -368,6 +371,50 @@ public class AudioPlayerCommands {
                                     String customName = StringArgumentType.getString(context, "custom_name");
                                     if (validator.test(itemInHand)) {
                                         renameItem(context, itemInHand, sound, customName);
+                                    } else {
+                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                                    }
+                                    return 1;
+                                })));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
+        return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
+                .then(Commands.argument("sound", UuidArgument.uuid())
+                        .executes((context) -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            UUID sound = UuidArgument.getUuid(context, "sound");
+                            ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+                            if (validator.test(itemInHand)) {
+                                // Gather a list of the items in the shulker box
+                                ListTag shulkerContents = itemInHand.getTag().getCompound("BlockEntityTag").getList("Items", 10);
+
+                                // Iterate through the list of items
+                                for (int i = 0; i < shulkerContents.size(); i++) {
+                                    // Grab item from the list and convert from CompoundTag to ItemStack
+                                    ItemStack selectedItem = ItemStack.of(shulkerContents.getCompound(i));
+                                    // Check if the item is a music disc and apply the custom data, otherwise move on
+                                    if (selectedItem.getItem() instanceof RecordItem) {
+                                        renameItem(context, selectedItem, sound, null);
+                                    }
+                                }
+
+                                // Stuck. At this point we would need to translate back into an acceptable format to write the data back into the Shulker Box object.
+
+                            } else {
+                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                            }
+                            return 1;
+                        })
+                        .then(Commands.argument("custom_name", StringArgumentType.string())
+                                .executes((context) -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    UUID sound = UuidArgument.getUuid(context, "sound");
+                                    ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+                                    String customName = StringArgumentType.getString(context, "custom_name");
+                                    if (validator.test(itemInHand)) {
+                                        // renameItem(context, itemInHand, sound, customName);
+                                        // Will copy solution into this section once complete.
                                     } else {
                                         context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                                     }
