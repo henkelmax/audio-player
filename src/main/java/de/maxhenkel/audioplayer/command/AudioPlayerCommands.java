@@ -417,7 +417,7 @@ public class AudioPlayerCommands {
             ItemStack itemStack = ItemStack.of(currentItem);
             if (itemValidator.test(itemStack)) {
                 renameItem(context, itemStack, soundID, name);
-                shulkerContents.getCompound(i).put("tag", itemStack.getOrCreateTag());
+                currentItem.put("tag", itemStack.getOrCreateTag());
             }
         }
         itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
