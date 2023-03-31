@@ -409,7 +409,7 @@ public class AudioPlayerCommands {
     }
 
     private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, String actionItem, String itemTypeName, UUID soundID, @Nullable String name) {
-        ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items", 10);
+        ListTag shulkerContents = itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG).getList("Items", 10);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
@@ -418,7 +418,7 @@ public class AudioPlayerCommands {
                 shulkerContents.getCompound(i).put("tag", itemStack.getTag());
             }
         }
-        itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
+        itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG).put("Items", shulkerContents);
         context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
