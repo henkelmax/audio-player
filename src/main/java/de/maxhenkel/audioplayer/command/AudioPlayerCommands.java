@@ -208,7 +208,7 @@ public class AudioPlayerCommands {
 
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
-        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -378,7 +378,7 @@ public class AudioPlayerCommands {
                                 })));
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator) {
+    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
         return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
                 .then(Commands.argument("sound", UuidArgument.uuid())
                         .executes((context) -> {
@@ -396,9 +396,9 @@ public class AudioPlayerCommands {
                                     }
                                 }
                                 itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
-                                context.getSource().sendSuccess(Component.literal("Successfully updated Shulker Box contents"), false);
+                                context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
                             } else {
-                                context.getSource().sendFailure(Component.literal("You don't have a Shulker Box in your main hand"));
+                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                             }
                             return 1;
                         })
@@ -419,9 +419,9 @@ public class AudioPlayerCommands {
                                             }
                                         }
                                         itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
-                                        context.getSource().sendSuccess(Component.literal("Successfully updated Shulker Box contents"), false);
+                                        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
                                     } else {
-                                        context.getSource().sendFailure(Component.literal("You don't have a Shulker Box in your main hand"));
+                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                                     }
                                     return 1;
                                 })));
