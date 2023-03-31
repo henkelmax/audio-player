@@ -208,8 +208,8 @@ public class AudioPlayerCommands {
 
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
-        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
-        literalBuilder.then(bulkApplyCommand(Commands.literal("goathorn_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), "musicdisc", itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("goathorn_bulk"), "goathorn", itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -379,7 +379,7 @@ public class AudioPlayerCommands {
                                 })));
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
+    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, String actionItem, Predicate<ItemStack> validator, String itemTypeName) {
         return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
                 .then(Commands.argument("sound", UuidArgument.uuid())
                         .executes((context) -> {
@@ -387,7 +387,7 @@ public class AudioPlayerCommands {
                             UUID sound = UuidArgument.getUuid(context, "sound");
                             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                             if (validator.test(itemInHand)) {
-                                processShulker(context, itemInHand, itemTypeName, sound, null);
+                                processShulker(context, itemInHand, actionItem, itemTypeName, sound, null);
                             } else {
                                 context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                             }
@@ -400,7 +400,7 @@ public class AudioPlayerCommands {
                                     ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                                     String customName = StringArgumentType.getString(context, "custom_name");
                                     if (validator.test(itemInHand)) {
-                                        processShulker(context, itemInHand, itemTypeName, sound, customName);
+                                        processShulker(context, itemInHand, actionItem, itemTypeName, sound, customName);
                                     } else {
                                         context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                                     }
@@ -408,12 +408,12 @@ public class AudioPlayerCommands {
                                 })));
     }
 
-    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, String itemTypeName, UUID soundID, @Nullable String name) {
+    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, String actionItem, String itemTypeName, UUID soundID, @Nullable String name) {
         ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items", 10);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
-            if (itemStack.getItem() instanceof RecordItem) {
+            if ((itemStack.getItem() instanceof RecordItem && actionItem.equals("musicdisc")) || (itemStack.getItem() instanceof InstrumentItem && actionItem.equals("goathorn"))) {
                 renameItem(context, itemStack, soundID, name);
                 shulkerContents.getCompound(i).put("tag", itemStack.getTag());
             }
