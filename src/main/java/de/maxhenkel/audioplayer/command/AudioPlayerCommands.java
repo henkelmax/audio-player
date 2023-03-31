@@ -386,17 +386,7 @@ public class AudioPlayerCommands {
                             UUID sound = UuidArgument.getUuid(context, "sound");
                             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                             if (validator.test(itemInHand)) {
-                                ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items",10);
-                                for (int i = 0; i < shulkerContents.size(); i++) {
-                                    CompoundTag currentItem = shulkerContents.getCompound(i);
-                                    ItemStack itemStack = ItemStack.of(currentItem);
-                                    if (itemStack.getItem() instanceof RecordItem) {
-                                        renameItem(context, itemStack, sound, null);
-                                        shulkerContents.getCompound(i).put("tag", itemStack.getTag());
-                                    }
-                                }
-                                itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
-                                context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
+                                processShulker(context, itemInHand, sound, null);
                             } else {
                                 context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                             }
@@ -409,22 +399,26 @@ public class AudioPlayerCommands {
                                     ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                                     String customName = StringArgumentType.getString(context, "custom_name");
                                     if (validator.test(itemInHand)) {
-                                        ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items",10);
-                                        for (int i = 0; i < shulkerContents.size(); i++) {
-                                            CompoundTag currentItem = shulkerContents.getCompound(i);
-                                            ItemStack itemStack = ItemStack.of(currentItem);
-                                            if (itemStack.getItem() instanceof RecordItem) {
-                                                renameItem(context, itemStack, sound, customName);
-                                                shulkerContents.getCompound(i).put("tag", itemStack.getTag());
-                                            }
-                                        }
-                                        itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
-                                        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
+                                        processShulker(context, itemInHand, sound, customName);
                                     } else {
                                         context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
                                     }
                                     return 1;
                                 })));
+    }
+
+    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, UUID soundID, @Nullable String name) {
+        ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items", 10);
+        for (int i = 0; i < shulkerContents.size(); i++) {
+            CompoundTag currentItem = shulkerContents.getCompound(i);
+            ItemStack itemStack = ItemStack.of(currentItem);
+            if (itemStack.getItem() instanceof RecordItem) {
+                renameItem(context, itemStack, soundID, name);
+                shulkerContents.getCompound(i).put("tag", itemStack.getTag());
+            }
+        }
+        itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
+        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemInHand.getHoverName())), false);
     }
 
     private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
