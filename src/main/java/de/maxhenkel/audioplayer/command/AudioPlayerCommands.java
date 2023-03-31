@@ -26,6 +26,7 @@ import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -409,7 +410,7 @@ public class AudioPlayerCommands {
     }
 
     private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, String actionItem, String itemTypeName, UUID soundID, @Nullable String name) {
-        ListTag shulkerContents = itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG).getList("Items", 10);
+        ListTag shulkerContents = itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, 10);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
