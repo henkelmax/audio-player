@@ -411,16 +411,16 @@ public class AudioPlayerCommands {
     }
 
     private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, Predicate<ItemStack> itemValidator, String itemTypeName, UUID soundID, @Nullable String name) {
-        ListTag shulkerContents = Objects.requireNonNull(itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG)).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
+        ListTag shulkerContents = itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
             if (itemValidator.test(itemStack)) {
                 renameItem(context, itemStack, soundID, name);
-                shulkerContents.getCompound(i).put("tag", itemStack.getTag());
+                shulkerContents.getCompound(i).put("tag", itemStack.getOrCreateTag());
             }
         }
-        Objects.requireNonNull(itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG)).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
+        itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
         context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
