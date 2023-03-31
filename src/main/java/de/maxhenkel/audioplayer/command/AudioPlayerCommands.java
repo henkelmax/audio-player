@@ -33,6 +33,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.net.UnknownHostException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -410,7 +411,7 @@ public class AudioPlayerCommands {
     }
 
     private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, String actionItem, String itemTypeName, UUID soundID, @Nullable String name) {
-        ListTag shulkerContents = itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, 10);
+        ListTag shulkerContents = Objects.requireNonNull(itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG)).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
@@ -419,7 +420,7 @@ public class AudioPlayerCommands {
                 shulkerContents.getCompound(i).put("tag", itemStack.getTag());
             }
         }
-        itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG).put("Items", shulkerContents);
+        Objects.requireNonNull(itemInHand.getTagElement(BlockItem.BLOCK_ENTITY_TAG)).put("Items", shulkerContents);
         context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
