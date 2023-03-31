@@ -386,21 +386,15 @@ public class AudioPlayerCommands {
                             UUID sound = UuidArgument.getUuid(context, "sound");
                             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                             if (validator.test(itemInHand)) {
-                                // Gather a list of the items in the shulker box
                                 ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items",10);
-                                // Iterate through the list of items
                                 for (int i = 0; i < shulkerContents.size(); i++) {
-                                    // All data on current item
                                     CompoundTag currentItem = shulkerContents.getCompound(i);
-                                    // Make a copy with type converted from Tag to ItemStack
                                     ItemStack itemStack = ItemStack.of(currentItem);
-                                    // Check if the item is a music disc. If so, perform custom tagging and overwrite tag in original list
                                     if (itemStack.getItem() instanceof RecordItem) {
                                         renameItem(context, itemStack, sound, null);
                                         shulkerContents.getCompound(i).put("tag", itemStack.getTag());
                                     }
                                 }
-                                // Overwrite shulker box item data with the updated list
                                 itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
                                 context.getSource().sendSuccess(Component.literal("Successfully updated Shulker Box contents"), false);
                             } else {
