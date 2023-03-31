@@ -208,7 +208,7 @@ public class AudioPlayerCommands {
 
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
-        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock));
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -378,7 +378,7 @@ public class AudioPlayerCommands {
                                 })));
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
+    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator) {
         return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
                 .then(Commands.argument("sound", UuidArgument.uuid())
                         .executes((context) -> {
@@ -388,34 +388,23 @@ public class AudioPlayerCommands {
                             if (validator.test(itemInHand)) {
                                 // Gather a list of the items in the shulker box
                                 ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items",10);
-
                                 // Iterate through the list of items
                                 for (int i = 0; i < shulkerContents.size(); i++) {
                                     // All data on current item
                                     CompoundTag currentItem = shulkerContents.getCompound(i);
-
                                     // Make a copy with type converted from Tag to ItemStack
                                     ItemStack itemStack = ItemStack.of(currentItem);
-
-                                    // Check if the item is a music disc and apply the custom data, otherwise move on
+                                    // Check if the item is a music disc. If so, perform custom tagging and overwrite tag in original list
                                     if (itemStack.getItem() instanceof RecordItem) {
                                         renameItem(context, itemStack, sound, null);
-                                    }
-
-                                    // Once processed, save any tag data back to the original list
-                                    if (itemStack.hasTag()) {
                                         shulkerContents.getCompound(i).put("tag", itemStack.getTag());
                                     }
                                 }
-
                                 // Overwrite shulker box item data with the updated list
                                 itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
-
-                                System.out.println("Printing shulker Items");
-                                System.out.println(itemInHand.getTag());
-
+                                context.getSource().sendSuccess(Component.literal("Successfully updated Shulker Box contents"), false);
                             } else {
-                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                                context.getSource().sendFailure(Component.literal("You don't have a Shulker Box in your main hand"));
                             }
                             return 1;
                         })
@@ -426,10 +415,19 @@ public class AudioPlayerCommands {
                                     ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
                                     String customName = StringArgumentType.getString(context, "custom_name");
                                     if (validator.test(itemInHand)) {
-                                        // renameItem(context, itemInHand, sound, customName);
-                                        // Will copy solution into this section once complete.
+                                        ListTag shulkerContents = itemInHand.getTagElement("BlockEntityTag").getList("Items",10);
+                                        for (int i = 0; i < shulkerContents.size(); i++) {
+                                            CompoundTag currentItem = shulkerContents.getCompound(i);
+                                            ItemStack itemStack = ItemStack.of(currentItem);
+                                            if (itemStack.getItem() instanceof RecordItem) {
+                                                renameItem(context, itemStack, sound, customName);
+                                                shulkerContents.getCompound(i).put("tag", itemStack.getTag());
+                                            }
+                                        }
+                                        itemInHand.getTagElement("BlockEntityTag").put("Items", shulkerContents);
+                                        context.getSource().sendSuccess(Component.literal("Successfully updated Shulker Box contents"), false);
                                     } else {
-                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                                        context.getSource().sendFailure(Component.literal("You don't have a Shulker Box in your main hand"));
                                     }
                                     return 1;
                                 })));
