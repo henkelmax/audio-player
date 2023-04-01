@@ -1,1 +1,1 @@
-- Updated to 1.19.4
+- Added bulk music disc assignment (Thanks jacobukk)
