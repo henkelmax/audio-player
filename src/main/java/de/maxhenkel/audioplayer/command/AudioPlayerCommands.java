@@ -20,15 +20,19 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.net.UnknownHostException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -205,6 +209,8 @@ public class AudioPlayerCommands {
 
         literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
         literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("goathorn_bulk"), itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -372,6 +378,49 @@ public class AudioPlayerCommands {
                                     }
                                     return 1;
                                 })));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> itemValidator, Predicate<ItemStack> containerValidator, String itemTypeName) {
+        return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
+                .then(Commands.argument("sound", UuidArgument.uuid())
+                        .executes((context) -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            UUID sound = UuidArgument.getUuid(context, "sound");
+                            ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+                            if (containerValidator.test(itemInHand)) {
+                                processShulker(context, itemInHand, itemValidator, itemTypeName, sound, null);
+                            } else {
+                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                            }
+                            return 1;
+                        })
+                        .then(Commands.argument("custom_name", StringArgumentType.string())
+                                .executes((context) -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    UUID sound = UuidArgument.getUuid(context, "sound");
+                                    ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+                                    String customName = StringArgumentType.getString(context, "custom_name");
+                                    if (containerValidator.test(itemInHand)) {
+                                        processShulker(context, itemInHand, itemValidator, itemTypeName, sound, customName);
+                                    } else {
+                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+                                    }
+                                    return 1;
+                                })));
+    }
+
+    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, Predicate<ItemStack> itemValidator, String itemTypeName, UUID soundID, @Nullable String name) {
+        ListTag shulkerContents = itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
+        for (int i = 0; i < shulkerContents.size(); i++) {
+            CompoundTag currentItem = shulkerContents.getCompound(i);
+            ItemStack itemStack = ItemStack.of(currentItem);
+            if (itemValidator.test(itemStack)) {
+                renameItem(context, itemStack, soundID, name);
+                currentItem.put("tag", itemStack.getOrCreateTag());
+            }
+        }
+        itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
+        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
     private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
