@@ -1,1 +1,1 @@
-- Added non native mp3 decoder fallback
+- Added bulk music disc assignment (Thanks jacobukk)
