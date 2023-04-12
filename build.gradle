@@ -1,22 +1,11 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.maxhenkel.de/repository/public' }
-        mavenLocal()
-    }
-    dependencies {
-        classpath group: 'de.maxhenkel.forge-update', name: 'forge-update', version: '1.0.4'
-    }
-}
-
 plugins {
-    id "fabric-loom" version "1.1-SNAPSHOT"
-    id "com.matthewprenger.cursegradle" version "1.4.0"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "com.modrinth.minotaur" version "2.+"
+    id 'fabric-loom' version '1.1-SNAPSHOT'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.modrinth.minotaur' version '2.+'
     id 'io.github.juuxel.loom-quiltflower' version '1.8.0'
+    id 'mod-update' version '2.0.0'
 }
-
-apply plugin: 'forge-update'
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -26,17 +15,16 @@ version = project.mod_version
 group = project.maven_group
 
 loom {
-    accessWidenerPath = file("src/main/resources/audioplayer.accesswidener")
+    accessWidenerPath = file('src/main/resources/audioplayer.accesswidener')
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = 'https://maven.fabricmc.net/' }
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
     maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
+        url = 'https://api.modrinth.com/maven'
         content {
             includeGroup "maven.modrinth"
         }
@@ -53,8 +41,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
 
     Set<String> apiModules = [
-            "fabric-api-base",
-            "fabric-command-api-v2"
+            'fabric-api-base',
+            'fabric-command-api-v2'
     ]
 
     apiModules.forEach {
@@ -81,18 +69,18 @@ dependencies {
 }
 
 processResources {
-    filesMatching("fabric.mod.json") {
-        expand "version": version,
-                "minecraft_dependency": minecraft_dependency,
-                "minecraft_version": minecraft_version,
-                "loader_version": loader_version,
-                "fabric_version": fabric_version,
-                "voicechat_api_version": voicechat_api_version
+    filesMatching('fabric.mod.json') {
+        expand 'version': version,
+                'minecraft_dependency': minecraft_dependency,
+                'minecraft_version': minecraft_version,
+                'loader_version': loader_version,
+                'fabric_version': fabric_version,
+                'voicechat_api_version': voicechat_api_version
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
+    it.options.encoding = 'UTF-8'
     it.options.release = 17
 }
 
@@ -101,7 +89,7 @@ java {
 }
 
 jar {
-    from("LICENSE") {
+    from('LICENSE') {
         rename { "${it}_${archivesBaseName}" }
     }
 }
@@ -114,8 +102,8 @@ curseforge {
         changelog = file('changelog.md')
         releaseType = release_type
         addGameVersion curseforge_minecraft_version
-        addGameVersion "Fabric"
-        addGameVersion "Java 17"
+        addGameVersion 'Fabric'
+        addGameVersion 'Java 17'
         mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
             displayName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
             relations {
@@ -146,32 +134,24 @@ modrinth {
     versionName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
     uploadFile = remapJar
     versionType = release_type.toUpperCase()
-    changelog = file("changelog.md").text
+    changelog = file('changelog.md').text
     gameVersions = [minecraft_version]
     loaders = ['fabric']
-    syncBodyFrom = file("readme.md").text
+    syncBodyFrom = file('readme.md').text
     dependencies {
-        required.project "P7dR8mSH" // Fabric API
-        required.project "9eGKb6K1" // Simple Voice Chat
+        required.project 'P7dR8mSH' // Fabric API
+        required.project '9eGKb6K1' // Simple Voice Chat
     }
 }
 tasks.modrinth.dependsOn(build)
 
-forgeUpdate {
-    def messages = []
-    file('changelog.md').eachLine { String line ->
-        if (line.trim().startsWith('-')) {
-            messages.add(line.replaceFirst('-', '').trim())
-        }
-    }
-
+modUpdate {
     serverURL = 'https://update.maxhenkel.de/'
-    apiKey = file('forge_update_api_key.txt').exists() ? file('forge_update_api_key.txt').text : ''
     modID = mod_id
     gameVersion = minecraft_version
-    modLoader = "fabric"
+    modLoader = 'fabric'
     modVersion = mod_version
-    updateMessages = messages
+    changelogFile = file('changelog.md')
     releaseType = release_type
     tags = recommended == 'true' ? ['recommended'] : []
 }
