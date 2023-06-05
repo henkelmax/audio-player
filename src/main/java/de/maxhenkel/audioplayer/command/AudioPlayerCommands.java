@@ -47,32 +47,32 @@ public class AudioPlayerCommands {
                 .requires((commandSource) -> commandSource.hasPermission(Math.min(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get(), AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get())));
 
         literalBuilder.executes(context -> {
-            context.getSource().sendSuccess(
-                    Component.literal("Upload audio via Filebin ")
-                            .append(Component.literal("here").withStyle(style -> {
-                                return style
-                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer upload"))
-                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
-                            }).withStyle(ChatFormatting.GREEN))
-                            .append(".")
+            context.getSource().sendSuccess(() ->
+                            Component.literal("Upload audio via Filebin ")
+                                    .append(Component.literal("here").withStyle(style -> {
+                                        return style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer upload"))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                                    }).withStyle(ChatFormatting.GREEN))
+                                    .append(".")
                     , false);
-            context.getSource().sendSuccess(
-                    Component.literal("Upload audio with access to the servers file system ")
-                            .append(Component.literal("here").withStyle(style -> {
-                                return style
-                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer serverfile"))
-                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
-                            }).withStyle(ChatFormatting.GREEN))
-                            .append(".")
+            context.getSource().sendSuccess(() ->
+                            Component.literal("Upload audio with access to the servers file system ")
+                                    .append(Component.literal("here").withStyle(style -> {
+                                        return style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer serverfile"))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                                    }).withStyle(ChatFormatting.GREEN))
+                                    .append(".")
                     , false);
-            context.getSource().sendSuccess(
-                    Component.literal("Upload audio from a URL ")
-                            .append(Component.literal("here").withStyle(style -> {
-                                return style
-                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer url"))
-                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
-                            }).withStyle(ChatFormatting.GREEN))
-                            .append(".")
+            context.getSource().sendSuccess(() ->
+                            Component.literal("Upload audio from a URL ")
+                                    .append(Component.literal("here").withStyle(style -> {
+                                        return style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer url"))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                                    }).withStyle(ChatFormatting.GREEN))
+                                    .append(".")
                     , false);
             return 1;
         });
@@ -91,9 +91,9 @@ public class AudioPlayerCommands {
 
                             new Thread(() -> {
                                 try {
-                                    context.getSource().sendSuccess(Component.literal("Downloading sound, please wait..."), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
                                     Filebin.downloadSound(context.getSource().getServer(), sound);
-                                    context.getSource().sendSuccess(sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
+                                    context.getSource().sendSuccess(() -> sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
                                 } catch (Exception e) {
                                     AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.getMessage());
                                     context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
@@ -107,18 +107,18 @@ public class AudioPlayerCommands {
         literalBuilder.then(Commands.literal("url")
                 .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get()))
                 .executes(context -> {
-                    context.getSource().sendSuccess(
-                            Component.literal("If you have a direct link to a ")
-                                    .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
-                                    .append(" or ")
-                                    .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
-                                    .append(" file, enter the following command: ")
-                                    .append(Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
-                                        return style
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer url "))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
-                                    }))
-                                    .append(".")
+                    context.getSource().sendSuccess(() ->
+                                    Component.literal("If you have a direct link to a ")
+                                            .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
+                                            .append(" or ")
+                                            .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
+                                            .append(" file, enter the following command: ")
+                                            .append(Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
+                                                return style
+                                                        .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer url "))
+                                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
+                                            }))
+                                            .append(".")
                             , false);
                     return 1;
                 })
@@ -128,9 +128,9 @@ public class AudioPlayerCommands {
                             UUID sound = UUID.randomUUID();
                             new Thread(() -> {
                                 try {
-                                    context.getSource().sendSuccess(Component.literal("Downloading sound, please wait..."), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
                                     AudioManager.saveSound(context.getSource().getServer(), sound, url);
-                                    context.getSource().sendSuccess(sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
+                                    context.getSource().sendSuccess(() -> sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
                                 } catch (UnknownHostException e) {
                                     AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.toString());
                                     context.getSource().sendFailure(Component.literal("Failed to download sound: Unknown host"));
@@ -150,20 +150,20 @@ public class AudioPlayerCommands {
         literalBuilder.then(Commands.literal("serverfile")
                 .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.uploadPermissionLevel.get()))
                 .executes(context -> {
-                    context.getSource().sendSuccess(
-                            Component.literal("Upload a ")
-                                    .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
-                                    .append(" or ")
-                                    .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
-                                    .append(" file to ")
-                                    .append(Component.literal(AudioManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
-                                    .append(" on the server and run the command ")
-                                    .append(Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
-                                        return style
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer serverfile "))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
-                                    }))
-                                    .append(".")
+                    context.getSource().sendSuccess(() ->
+                                    Component.literal("Upload a ")
+                                            .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
+                                            .append(" or ")
+                                            .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
+                                            .append(" file to ")
+                                            .append(Component.literal(AudioManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
+                                            .append(" on the server and run the command ")
+                                            .append(Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
+                                                return style
+                                                        .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer serverfile "))
+                                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
+                                            }))
+                                            .append(".")
                             , false);
                     return 1;
                 })
@@ -193,8 +193,8 @@ public class AudioPlayerCommands {
                                 Path file = AudioManager.getUploadFolder().resolve(fileName);
                                 try {
                                     AudioManager.saveSound(context.getSource().getServer(), uuid, file);
-                                    context.getSource().sendSuccess(sendUUIDMessage(uuid, Component.literal("Successfully copied sound.")), false);
-                                    context.getSource().sendSuccess(Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
+                                    context.getSource().sendSuccess(() -> sendUUIDMessage(uuid, Component.literal("Successfully copied sound.")), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
                                 } catch (NoSuchFileException e) {
                                     context.getSource().sendFailure(Component.literal("Could not find file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."));
                                 } catch (Exception e) {
@@ -247,7 +247,7 @@ public class AudioPlayerCommands {
                     tag.remove(ItemStack.TAG_DISPLAY);
                     tag.remove("HideFlags");
 
-                    context.getSource().sendSuccess(Component.literal("Successfully cleared item"), false);
+                    context.getSource().sendSuccess(() -> Component.literal("Successfully cleared item"), false);
                     return 1;
                 })
         );
@@ -278,7 +278,7 @@ public class AudioPlayerCommands {
                         return 1;
                     }
 
-                    context.getSource().sendSuccess(sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
+                    context.getSource().sendSuccess(() -> sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
                     return 1;
                 })
         );
@@ -345,7 +345,7 @@ public class AudioPlayerCommands {
                     )
                     .append(".");
 
-            context.getSource().sendSuccess(msg, false);
+            context.getSource().sendSuccess(() -> msg, false);
 
             return 1;
         };
@@ -420,7 +420,7 @@ public class AudioPlayerCommands {
             }
         }
         itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
-        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
+        context.getSource().sendSuccess(() -> Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
     private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
@@ -442,7 +442,7 @@ public class AudioPlayerCommands {
 
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
 
-        context.getSource().sendSuccess(Component.literal("Successfully updated ").append(stack.getHoverName()), false);
+        context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
 
 }
