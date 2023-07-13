@@ -31,7 +31,9 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - Configurable upload limit
 - Configurable command permissions
 - Configurable music disc range
+- Per-item custom music disc range
 - Configurable goat horn range
+- Per-item custom goat horn range
 - Configurable goat horn cooldown
 
 ## Commands
@@ -54,12 +56,12 @@ Run `/audioplayer filebin` and follow the instructions.
 **Putting custom audio on a music disc**
 
 Run `/audioplayer musicdisc <ID>` and hold a music disc in your main hand.
-Additionally, you can add a custom name for the music disc `/audioplayer musicdisc <ID> "<CUSTOM-TEXT>"`.
+Additionally, you can add a custom name and range for the music disc `/audioplayer musicdisc <ID> "<CUSTOM-TEXT>" <RANGE>`.
 
 **Putting custom audio on a goat horn**
 
 Run `/audioplayer goathorn <ID>` and hold a goat horn in your main hand.
-Additionally, you can add a custom name for the goat horn `/audioplayer goathorn <ID> "<CUSTOM-TEXT>"`.
+Additionally, you can add a custom name and range for the goat horn `/audioplayer goathorn <ID> "<CUSTOM-TEXT> <RANGE>"`.
 
 **Getting the audio from an existing item**
 
