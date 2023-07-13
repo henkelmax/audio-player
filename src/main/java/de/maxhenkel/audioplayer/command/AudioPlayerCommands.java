@@ -2,9 +2,12 @@ package de.maxhenkel.audioplayer.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.Filebin;
@@ -32,7 +35,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.net.UnknownHostException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -352,70 +354,96 @@ public class AudioPlayerCommands {
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
-        return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
-                .then(Commands.argument("sound", UuidArgument.uuid())
-                        .executes((context) -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            UUID sound = UuidArgument.getUuid(context, "sound");
-                            ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-                            if (validator.test(itemInHand)) {
-                                renameItem(context, itemInHand, sound, null);
-                            } else {
-                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
-                            }
-                            return 1;
-                        })
-                        .then(Commands.argument("custom_name", StringArgumentType.string())
-                                .executes((context) -> {
-                                    ServerPlayer player = context.getSource().getPlayerOrException();
-                                    UUID sound = UuidArgument.getUuid(context, "sound");
-                                    ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-                                    String customName = StringArgumentType.getString(context, "custom_name");
-                                    if (validator.test(itemInHand)) {
-                                        renameItem(context, itemInHand, sound, customName);
-                                    } else {
-                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
-                                    }
-                                    return 1;
-                                })));
+        RequiredArgumentBuilder<CommandSourceStack, UUID> commandWithSound = Commands.argument("sound", UuidArgument.uuid());
+
+        commandWithSound.executes((context) -> {
+            apply(context, validator, itemTypeName, null, null);
+            return 1;
+        });
+
+        RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE));
+        commandWithRange.executes(context -> {
+            apply(context, validator, itemTypeName, null, FloatArgumentType.getFloat(context, "range"));
+            return 1;
+        });
+        commandWithSound.then(commandWithRange);
+
+        RequiredArgumentBuilder<CommandSourceStack, String> commandWithCustomName = Commands.argument("custom_name", StringArgumentType.string());
+        commandWithCustomName.executes(context -> {
+            apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), null);
+            return 1;
+        });
+        commandWithCustomName.then(Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE)).executes(context -> {
+            apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), FloatArgumentType.getFloat(context, "range"));
+            return 1;
+        }));
+        commandWithSound.then(commandWithCustomName);
+
+        return builder
+                .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
+                .then(commandWithSound);
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> itemValidator, Predicate<ItemStack> containerValidator, String itemTypeName) {
-        return builder.requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
-                .then(Commands.argument("sound", UuidArgument.uuid())
-                        .executes((context) -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            UUID sound = UuidArgument.getUuid(context, "sound");
-                            ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-                            if (containerValidator.test(itemInHand)) {
-                                processShulker(context, itemInHand, itemValidator, itemTypeName, sound, null);
-                            } else {
-                                context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
-                            }
-                            return 1;
-                        })
-                        .then(Commands.argument("custom_name", StringArgumentType.string())
-                                .executes((context) -> {
-                                    ServerPlayer player = context.getSource().getPlayerOrException();
-                                    UUID sound = UuidArgument.getUuid(context, "sound");
-                                    ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-                                    String customName = StringArgumentType.getString(context, "custom_name");
-                                    if (containerValidator.test(itemInHand)) {
-                                        processShulker(context, itemInHand, itemValidator, itemTypeName, sound, customName);
-                                    } else {
-                                        context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
-                                    }
-                                    return 1;
-                                })));
+        RequiredArgumentBuilder<CommandSourceStack, UUID> commandWithSound = Commands.argument("sound", UuidArgument.uuid());
+
+        commandWithSound.executes((context) -> {
+            applyBulk(context, itemValidator, containerValidator, itemTypeName, null, null);
+            return 1;
+        });
+
+        RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE));
+        commandWithRange.executes(context -> {
+            applyBulk(context, itemValidator, containerValidator, itemTypeName, null, FloatArgumentType.getFloat(context, "range"));
+            return 1;
+        });
+        commandWithSound.then(commandWithRange);
+
+        RequiredArgumentBuilder<CommandSourceStack, String> commandWithCustomName = Commands.argument("custom_name", StringArgumentType.string());
+        commandWithCustomName.executes(context -> {
+            applyBulk(context, itemValidator, containerValidator, itemTypeName, StringArgumentType.getString(context, "custom_name"), null);
+            return 1;
+        });
+        commandWithCustomName.then(Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE)).executes(context -> {
+            applyBulk(context, itemValidator, containerValidator, itemTypeName, StringArgumentType.getString(context, "custom_name"), FloatArgumentType.getFloat(context, "range"));
+            return 1;
+        }));
+        commandWithSound.then(commandWithCustomName);
+
+        return builder
+                .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.applyToItemPermissionLevel.get()))
+                .then(commandWithSound);
     }
 
-    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, Predicate<ItemStack> itemValidator, String itemTypeName, UUID soundID, @Nullable String name) {
+    private static void apply(CommandContext<CommandSourceStack> context, Predicate<ItemStack> validator, String itemTypeName, @Nullable String customName, @Nullable Float range) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        UUID sound = UuidArgument.getUuid(context, "sound");
+        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (validator.test(itemInHand)) {
+            renameItem(context, itemInHand, sound, customName, range);
+        } else {
+            context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+        }
+    }
+
+    private static void applyBulk(CommandContext<CommandSourceStack> context, Predicate<ItemStack> itemValidator, Predicate<ItemStack> containerValidator, String itemTypeName, @Nullable String customName, @Nullable Float range) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        UUID sound = UuidArgument.getUuid(context, "sound");
+        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (containerValidator.test(itemInHand)) {
+            processShulker(context, itemInHand, itemValidator, itemTypeName, sound, customName, range);
+        } else {
+            context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+        }
+    }
+
+    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, Predicate<ItemStack> itemValidator, String itemTypeName, UUID soundID, @Nullable String name, @Nullable Float range) {
         ListTag shulkerContents = itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
             if (itemValidator.test(itemStack)) {
-                renameItem(context, itemStack, soundID, name);
+                renameItem(context, itemStack, soundID, name, range);
                 currentItem.put("tag", itemStack.getOrCreateTag());
             }
         }
@@ -423,9 +451,12 @@ public class AudioPlayerCommands {
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
-    private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name) {
+    private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name, @Nullable Float range) {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putUUID("CustomSound", soundID);
+        if (range != null) {
+            tag.putFloat("CustomSoundRange", range);
+        }
 
         if (tag.contains("instrument", Tag.TAG_STRING)) {
             tag.putString("instrument", "");
