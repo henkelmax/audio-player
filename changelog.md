@@ -1,1 +1,1 @@
-- Added bulk music disc assignment (Thanks jacobukk)
+- Added custom range per item
