@@ -5,6 +5,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -135,8 +136,18 @@ public class AudioManager {
         return tag.getUUID("CustomSound");
     }
 
+    public static float getCustomSoundRange(ItemStack itemStack, float defaultRange) {
+        CompoundTag tag = itemStack.getTag();
+        if (tag == null || !tag.contains("CustomSoundRange", Tag.TAG_FLOAT)) {
+            return defaultRange;
+        }
+
+        return tag.getFloat("CustomSoundRange");
+    }
+
     public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
         UUID customSound = AudioManager.getCustomSound(musicDisc);
+        float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue());
 
         if (customSound == null) {
             return false;
@@ -153,7 +164,7 @@ public class AudioManager {
                 new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
                 customSound,
                 (player instanceof ServerPlayer p) ? p : null,
-                AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue(),
+                range,
                 Plugin.MUSIC_DISC_CATEGORY,
                 AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
         );
@@ -167,6 +178,7 @@ public class AudioManager {
 
     public static boolean playGoatHorn(ServerLevel level, ItemStack goatHorn, ServerPlayer player) {
         UUID customSound = AudioManager.getCustomSound(goatHorn);
+        float range = AudioManager.getCustomSoundRange(goatHorn, AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue());
 
         if (customSound == null) {
             return false;
@@ -183,7 +195,7 @@ public class AudioManager {
                 player.position(),
                 customSound,
                 player,
-                AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue(),
+                range,
                 Plugin.GOAT_HORN_CATEGORY,
                 AudioPlayer.SERVER_CONFIG.maxGoatHornDuration.get()
         );
