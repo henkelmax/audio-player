@@ -57,7 +57,6 @@ dependencies {
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
-    modRuntimeOnly fileTree(dir: 'libs', include: '*.jar')
     modRuntimeOnly "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
@@ -107,7 +106,6 @@ curseforge {
         mainArtifact(file("${buildDir}/libs/${archivesBaseName}-${version}.jar")) {
             displayName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
             relations {
-                requiredDependency 'fabric-api'
                 requiredDependency 'simple-voice-chat'
             }
         }
@@ -139,7 +137,6 @@ modrinth {
     loaders = ['fabric']
     syncBodyFrom = file('readme.md').text
     dependencies {
-        required.project 'P7dR8mSH' // Fabric API
         required.project '9eGKb6K1' // Simple Voice Chat
     }
 }
