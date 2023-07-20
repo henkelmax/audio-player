@@ -1,1 +1,1 @@
-- Added custom range per item
+- Added maximum range config option
