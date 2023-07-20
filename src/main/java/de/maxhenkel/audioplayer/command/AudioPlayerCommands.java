@@ -241,6 +241,7 @@ public class AudioPlayerCommands {
                     }
 
                     tag.remove("CustomSound");
+                    tag.remove("CustomSoundRange");
 
                     if (itemInHand.getItem() instanceof InstrumentItem) {
                         tag.putString("instrument", "minecraft:ponder_goat_horn");
