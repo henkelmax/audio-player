@@ -320,7 +320,7 @@ public class AudioPlayerCommands {
                 null,
                 Integer.MAX_VALUE
         );
-        context.getSource().sendSuccess(() -> Component.literal("Successfully played %s".formatted(sound)), false);
+        context.getSource().sendSuccess(Component.literal("Successfully played %s".formatted(sound)), false);
         return 1;
     }
 
