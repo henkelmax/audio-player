@@ -148,6 +148,7 @@ public class AudioManager {
     public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
         UUID customSound = AudioManager.getCustomSound(musicDisc);
         float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue());
+        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get().floatValue());
 
         if (customSound == null) {
             return false;
@@ -179,6 +180,7 @@ public class AudioManager {
     public static boolean playGoatHorn(ServerLevel level, ItemStack goatHorn, ServerPlayer player) {
         UUID customSound = AudioManager.getCustomSound(goatHorn);
         float range = AudioManager.getCustomSoundRange(goatHorn, AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue());
+        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get().floatValue());
 
         if (customSound == null) {
             return false;
