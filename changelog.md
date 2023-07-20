@@ -1,1 +1,1 @@
-- Added maximum range config option
+- Fixed clear command not clearing all data
