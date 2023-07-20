@@ -9,6 +9,7 @@ public class ServerConfig {
     public final ConfigEntry<Integer> maxUploadSize;
     public final ConfigEntry<Integer> uploadPermissionLevel;
     public final ConfigEntry<Integer> applyToItemPermissionLevel;
+    public final ConfigEntry<Integer> playCommandPermissionLevel;
     public final ConfigEntry<Integer> goatHornCooldown;
     public final ConfigEntry<Double> musicDiscRange;
     public final ConfigEntry<Double> goatHornRange;
@@ -46,6 +47,13 @@ public class ServerConfig {
                 0,
                 Integer.MAX_VALUE,
                 "The permission level required to apply custom audio to an item"
+        );
+        playCommandPermissionLevel = builder.integerEntry(
+                "play_command_permission_level",
+                2,
+                0,
+                Integer.MAX_VALUE,
+                "The permission level required to play audio with the play command"
         );
         goatHornCooldown = builder.integerEntry(
                 "goat_horn_cooldown",
