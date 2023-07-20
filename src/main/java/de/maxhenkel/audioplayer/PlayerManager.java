@@ -35,13 +35,15 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, String category, int maxLengthSeconds) {
+    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
         UUID channelID = UUID.randomUUID();
         LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z));
         if (channel == null) {
             return null;
         }
-        channel.setCategory(category);
+        if (category != null) {
+            channel.setCategory(category);
+        }
         channel.setDistance(distance);
         api.getPlayersInRange(api.fromServerLevel(level), channel.getLocation(), distance + 1F, serverPlayer -> {
             VoicechatConnection connection = api.getConnectionOf(serverPlayer);

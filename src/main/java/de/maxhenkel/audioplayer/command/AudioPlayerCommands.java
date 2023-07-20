@@ -8,14 +8,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.maxhenkel.audioplayer.AudioManager;
-import de.maxhenkel.audioplayer.AudioPlayer;
-import de.maxhenkel.audioplayer.Filebin;
+import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.UuidArgument;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -29,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -286,7 +287,41 @@ public class AudioPlayerCommands {
                 })
         );
 
+        literalBuilder.then(Commands.literal("play")
+                .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.playCommandPermissionLevel.get()))
+                .then(Commands.argument("sound", UuidArgument.uuid())
+                        .then(Commands.argument("location", Vec3Argument.vec3())
+                                .then(Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE))
+                                        .executes(context -> {
+                                            return play(
+                                                    context,
+                                                    UuidArgument.getUuid(context, "sound"),
+                                                    Vec3Argument.getVec3(context, "location"),
+                                                    FloatArgumentType.getFloat(context, "range")
+                                            );
+                                        })))));
+
         dispatcher.register(literalBuilder);
+    }
+
+    private static int play(CommandContext<CommandSourceStack> context, UUID sound, Vec3 location, float range) {
+        @Nullable ServerPlayer player = context.getSource().getPlayer();
+        VoicechatServerApi api = Plugin.voicechatServerApi;
+        if (api == null) {
+            return 0;
+        }
+        PlayerManager.instance().playLocational(
+                api,
+                context.getSource().getLevel(),
+                location,
+                sound,
+                player,
+                range,
+                null,
+                Integer.MAX_VALUE
+        );
+        context.getSource().sendSuccess(() -> Component.literal("Successfully played %s".formatted(sound)), false);
+        return 1;
     }
 
     public static MutableComponent sendUUIDMessage(UUID soundID, MutableComponent component) {
