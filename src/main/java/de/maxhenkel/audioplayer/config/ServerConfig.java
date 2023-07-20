@@ -12,6 +12,8 @@ public class ServerConfig {
     public final ConfigEntry<Integer> goatHornCooldown;
     public final ConfigEntry<Double> musicDiscRange;
     public final ConfigEntry<Double> goatHornRange;
+    public final ConfigEntry<Double> maxGoatHornRange;
+    public final ConfigEntry<Double> maxMusicDiscRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
     public final ConfigEntry<Integer> maxMusicDiscDuration;
@@ -65,6 +67,20 @@ public class ServerConfig {
                 1D,
                 Integer.MAX_VALUE,
                 "The range of goat horns with custom audio in blocks"
+        );
+        maxMusicDiscRange = builder.doubleEntry(
+                "max_music_disc_range",
+                256D,
+                1D,
+                Integer.MAX_VALUE,
+                "The maximum allowed range of a music disc with custom audio in blocks"
+        );
+        maxGoatHornRange = builder.doubleEntry(
+                "max_goat_horn_range",
+                512D,
+                1D,
+                Integer.MAX_VALUE,
+                "The maximum allowed range of a goat horn with custom audio in blocks"
         );
         allowWavUpload = builder.booleanEntry(
                 "allow_wav_upload",

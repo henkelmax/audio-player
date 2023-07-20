@@ -209,10 +209,10 @@ public class AudioPlayerCommands {
                         }))
         );
 
-        literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc"));
-        literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn"));
-        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
-        literalBuilder.then(bulkApplyCommand(Commands.literal("goathorn_bulk"), itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box"));
+        literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", maxMusicDiscRange()));
+        literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn", maxGoatHornRange()));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box", maxMusicDiscRange()));
+        literalBuilder.then(bulkApplyCommand(Commands.literal("goathorn_bulk"), itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box", maxGoatHornRange()));
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -353,7 +353,7 @@ public class AudioPlayerCommands {
         };
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName) {
+    private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName, FloatArgumentType argumentType) {
         RequiredArgumentBuilder<CommandSourceStack, UUID> commandWithSound = Commands.argument("sound", UuidArgument.uuid());
 
         commandWithSound.executes((context) -> {
@@ -361,7 +361,7 @@ public class AudioPlayerCommands {
             return 1;
         });
 
-        RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE));
+        RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", argumentType);
         commandWithRange.executes(context -> {
             apply(context, validator, itemTypeName, null, FloatArgumentType.getFloat(context, "range"));
             return 1;
@@ -373,7 +373,7 @@ public class AudioPlayerCommands {
             apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), null);
             return 1;
         });
-        commandWithCustomName.then(Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE)).executes(context -> {
+        commandWithCustomName.then(Commands.argument("range", argumentType).executes(context -> {
             apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), FloatArgumentType.getFloat(context, "range"));
             return 1;
         }));
@@ -384,7 +384,7 @@ public class AudioPlayerCommands {
                 .then(commandWithSound);
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> itemValidator, Predicate<ItemStack> containerValidator, String itemTypeName) {
+    private static LiteralArgumentBuilder<CommandSourceStack> bulkApplyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> itemValidator, Predicate<ItemStack> containerValidator, String itemTypeName, FloatArgumentType argumentType) {
         RequiredArgumentBuilder<CommandSourceStack, UUID> commandWithSound = Commands.argument("sound", UuidArgument.uuid());
 
         commandWithSound.executes((context) -> {
@@ -392,7 +392,7 @@ public class AudioPlayerCommands {
             return 1;
         });
 
-        RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE));
+        RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", argumentType);
         commandWithRange.executes(context -> {
             applyBulk(context, itemValidator, containerValidator, itemTypeName, null, FloatArgumentType.getFloat(context, "range"));
             return 1;
@@ -404,7 +404,7 @@ public class AudioPlayerCommands {
             applyBulk(context, itemValidator, containerValidator, itemTypeName, StringArgumentType.getString(context, "custom_name"), null);
             return 1;
         });
-        commandWithCustomName.then(Commands.argument("range", FloatArgumentType.floatArg(0F, Float.MAX_VALUE)).executes(context -> {
+        commandWithCustomName.then(Commands.argument("range", argumentType).executes(context -> {
             applyBulk(context, itemValidator, containerValidator, itemTypeName, StringArgumentType.getString(context, "custom_name"), FloatArgumentType.getFloat(context, "range"));
             return 1;
         }));
@@ -474,6 +474,14 @@ public class AudioPlayerCommands {
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
 
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
+    }
+
+    private static FloatArgumentType maxMusicDiscRange() {
+        return FloatArgumentType.floatArg(1F, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get().floatValue());
+    }
+
+    private static FloatArgumentType maxGoatHornRange() {
+        return FloatArgumentType.floatArg(1F, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get().floatValue());
     }
 
 }
