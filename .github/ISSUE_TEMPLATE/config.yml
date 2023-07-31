@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Simple Voice Chat Wiki
+    about: Useful information about configuring and setting up the voice chat mod
+    url: https://modrepo.de/minecraft/voicechat/wiki
+  - name: Simple Voice Chat Discord
+    about: Get support on the Simple Voice Chat Discord Server
+    url: https://discord.gg/4dH2zwTmyX
