@@ -300,9 +300,33 @@ public class AudioPlayerCommands {
                                                     FloatArgumentType.getFloat(context, "range")
                                             );
                                         })))));
+        
+       literalBuilder.then(Commands.literal("stop")
+                        .requires((commandSource) -> commandSource.hasPermission(AudioPlayer.SERVER_CONFIG.playCommandPermissionLevel.get()))
+                        .then(Commands.argument("sound", UuidArgument.uuid())
+                                .executes(context -> stop(context, UuidArgument.getUuid(context, "sound")))
+    )
+);
 
         dispatcher.register(literalBuilder);
     }
+
+        private static int stop(CommandContext<CommandSourceStack> context, UUID sound) {
+                UUID channelID = PlayerManager.instance().findChannelID(sound);
+            
+                if (channelID != null) {
+                    PlayerManager.instance().stop(channelID);
+                                context.getSource()
+                                                .sendSuccess(() -> Component.literal(
+                                                                "Successfully stopped %s.".formatted(sound)),
+                                                                false);
+                                return 1;
+                        } else {
+                                context.getSource().sendFailure(Component
+                                                .literal("Failed to stop, Could not find %s".formatted(sound)));
+                        }
+                        return 0;
+            }
 
     private static int play(CommandContext<CommandSourceStack> context, UUID sound, Vec3 location, float range) {
         @Nullable ServerPlayer player = context.getSource().getPlayer();
