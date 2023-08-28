@@ -37,7 +37,7 @@ public class AudioPlayer implements ModInitializer {
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register(AudioPlayerCommands::register);
 
-        SERVER_CONFIG = ConfigBuilder.build(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties"), ServerConfig::new);
+        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties")).build();
 
         try {
             Files.createDirectories(AudioManager.getUploadFolder());

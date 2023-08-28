@@ -559,11 +559,11 @@ public class AudioPlayerCommands {
     }
 
     private static FloatArgumentType maxMusicDiscRange() {
-        return FloatArgumentType.floatArg(1F, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get().floatValue());
+        return FloatArgumentType.floatArg(1F, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get());
     }
 
     private static FloatArgumentType maxGoatHornRange() {
-        return FloatArgumentType.floatArg(1F, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get().floatValue());
+        return FloatArgumentType.floatArg(1F, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get());
     }
 
 }

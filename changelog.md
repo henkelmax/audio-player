@@ -1,1 +1,2 @@
 - Added announcer disc feature
+- Updated config builder
