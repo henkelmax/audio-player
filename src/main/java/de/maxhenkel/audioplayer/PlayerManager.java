@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerManager {
 
-    private final Map<UUID, Stoppable> players;
+    private final Map<UUID, PlayerReference> players;
     private final ExecutorService executor;
 
     public PlayerManager() {
@@ -58,7 +58,7 @@ public class PlayerManager {
         AtomicBoolean stopped = new AtomicBoolean();
         AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player = new AtomicReference<>();
 
-        players.put(channelID, () -> {
+        players.put(channelID, new PlayerReference(() -> {
             synchronized (stopped) {
                 stopped.set(true);
                 de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = player.get();
@@ -66,7 +66,7 @@ public class PlayerManager {
                     audioPlayer.stopPlaying();
                 }
             }
-        });
+        }, player));
 
         executor.execute(() -> {
             de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = playChannel(api, channel, level, sound, p, maxLengthSeconds);
@@ -164,11 +164,23 @@ public class PlayerManager {
     }
 
     public void stop(UUID channelID) {
-        Stoppable player = players.get(channelID);
+        PlayerReference player = players.get(channelID);
         if (player != null) {
-            player.stop();
+            player.onStop.stop();
         }
         players.remove(channelID);
+    }
+
+    public boolean isPlaying(UUID channelID) {
+        PlayerReference player = players.get(channelID);
+        if (player == null) {
+            return false;
+        }
+        de.maxhenkel.voicechat.api.audiochannel.AudioPlayer p = player.player.get();
+        if (p == null) {
+            return true;
+        }
+        return p.isPlaying();
     }
 
     private static PlayerManager instance;
@@ -182,6 +194,10 @@ public class PlayerManager {
 
     private interface Stoppable {
         void stop();
+    }
+
+    private record PlayerReference(Stoppable onStop,
+                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player) {
     }
 
 }
