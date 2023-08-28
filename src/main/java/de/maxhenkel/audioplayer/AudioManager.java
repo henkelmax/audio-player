@@ -108,7 +108,7 @@ public class AudioManager {
         }
     }
 
-    private static byte[] download(URL url, int limit) throws IOException {
+    private static byte[] download(URL url, long limit) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         BufferedInputStream bis = new BufferedInputStream(url.openStream());
 
@@ -156,8 +156,8 @@ public class AudioManager {
 
     public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
         UUID customSound = AudioManager.getCustomSound(musicDisc);
-        float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue());
-        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get().floatValue());
+        float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get());
+        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get());
         boolean isStaticDisc = isStatic(musicDisc);
 
         if (customSound == null) {
@@ -204,8 +204,8 @@ public class AudioManager {
 
     public static boolean playGoatHorn(ServerLevel level, ItemStack goatHorn, ServerPlayer player) {
         UUID customSound = AudioManager.getCustomSound(goatHorn);
-        float range = AudioManager.getCustomSoundRange(goatHorn, AudioPlayer.SERVER_CONFIG.goatHornRange.get().floatValue());
-        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get().floatValue());
+        float range = AudioManager.getCustomSoundRange(goatHorn, AudioPlayer.SERVER_CONFIG.goatHornRange.get());
+        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get());
 
         if (customSound == null) {
             return false;

@@ -56,7 +56,7 @@ public class Filebin {
             if (contentType.equals("audio/wav") || contentType.equals("audio/mpeg")) {
                 long size = file.get("bytes").getAsLong();
 
-                if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get().longValue()) {
+                if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
                     throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
                 }
 
