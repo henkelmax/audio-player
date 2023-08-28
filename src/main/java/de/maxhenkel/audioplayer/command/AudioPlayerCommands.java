@@ -247,7 +247,7 @@ public class AudioPlayerCommands {
 
                                 tag.putBoolean("IsStaticCustomSound", enabled);
 
-                                context.getSource().sendSuccess(() -> Component.literal("Set announcer " + (enabled ? "enabled" : "disabled")), false);
+                                context.getSource().sendSuccess(Component.literal("Set announcer " + (enabled ? "enabled" : "disabled")), false);
 
                                 return 1;
                             }))));
