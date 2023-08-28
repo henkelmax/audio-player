@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -210,10 +211,47 @@ public class AudioPlayerCommands {
                         }))
         );
 
-        literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", maxMusicDiscRange()));
-        literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn", maxGoatHornRange()));
+        literalBuilder.then(applyCommand(Commands.literal("musicdisc"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", maxMusicDiscRange(), false));
+        literalBuilder.then(applyCommand(Commands.literal("goathorn"), itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn", maxGoatHornRange(), false));
         literalBuilder.then(bulkApplyCommand(Commands.literal("musicdisc_bulk"), itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box", maxMusicDiscRange()));
         literalBuilder.then(bulkApplyCommand(Commands.literal("goathorn_bulk"), itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Shulker Box", maxGoatHornRange()));
+
+        if (AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get()) {
+            literalBuilder.then(applyCommand(Commands.literal("musicdisc_announcer"), itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", maxMusicDiscRange(), true));
+
+            literalBuilder.then(Commands.literal("set_announcer")
+                    .then(Commands.argument("enabled", BoolArgumentType.bool())
+                            .executes((context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+                                boolean enabled = BoolArgumentType.getBool(context, "enabled");
+
+                                if (!(itemInHand.getItem() instanceof RecordItem)) {
+                                    context.getSource().sendFailure(Component.literal("Invalid item"));
+                                    return 1;
+                                }
+                                if (!itemInHand.hasTag()) {
+                                    context.getSource().sendFailure(Component.literal("Item does not contain NBT data"));
+                                    return 1;
+                                }
+                                CompoundTag tag = itemInHand.getTag();
+
+                                if (tag == null) {
+                                    return 1;
+                                }
+
+                                if (!tag.contains("CustomSound")) {
+                                    context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+                                    return 1;
+                                }
+
+                                tag.putBoolean("IsStaticCustomSound", enabled);
+
+                                context.getSource().sendSuccess(() -> Component.literal("Set announcer " + (enabled ? "enabled" : "disabled")), false);
+
+                                return 1;
+                            }))));
+        }
 
         literalBuilder.then(Commands.literal("clear")
                 .executes((context) -> {
@@ -243,6 +281,7 @@ public class AudioPlayerCommands {
 
                     tag.remove("CustomSound");
                     tag.remove("CustomSoundRange");
+                    tag.remove("IsStaticCustomSound");
 
                     if (itemInHand.getItem() instanceof InstrumentItem) {
                         tag.putString("instrument", "minecraft:ponder_goat_horn");
@@ -389,28 +428,28 @@ public class AudioPlayerCommands {
         };
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName, FloatArgumentType argumentType) {
+    private static LiteralArgumentBuilder<CommandSourceStack> applyCommand(LiteralArgumentBuilder<CommandSourceStack> builder, Predicate<ItemStack> validator, String itemTypeName, FloatArgumentType argumentType, boolean isStatic) {
         RequiredArgumentBuilder<CommandSourceStack, UUID> commandWithSound = Commands.argument("sound", UuidArgument.uuid());
 
         commandWithSound.executes((context) -> {
-            apply(context, validator, itemTypeName, null, null);
+            apply(context, validator, itemTypeName, null, null, isStatic);
             return 1;
         });
 
         RequiredArgumentBuilder<CommandSourceStack, Float> commandWithRange = Commands.argument("range", argumentType);
         commandWithRange.executes(context -> {
-            apply(context, validator, itemTypeName, null, FloatArgumentType.getFloat(context, "range"));
+            apply(context, validator, itemTypeName, null, FloatArgumentType.getFloat(context, "range"), isStatic);
             return 1;
         });
         commandWithSound.then(commandWithRange);
 
         RequiredArgumentBuilder<CommandSourceStack, String> commandWithCustomName = Commands.argument("custom_name", StringArgumentType.string());
         commandWithCustomName.executes(context -> {
-            apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), null);
+            apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), null, isStatic);
             return 1;
         });
         commandWithCustomName.then(Commands.argument("range", argumentType).executes(context -> {
-            apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), FloatArgumentType.getFloat(context, "range"));
+            apply(context, validator, itemTypeName, StringArgumentType.getString(context, "custom_name"), FloatArgumentType.getFloat(context, "range"), isStatic);
             return 1;
         }));
         commandWithSound.then(commandWithCustomName);
@@ -451,12 +490,13 @@ public class AudioPlayerCommands {
                 .then(commandWithSound);
     }
 
-    private static void apply(CommandContext<CommandSourceStack> context, Predicate<ItemStack> validator, String itemTypeName, @Nullable String customName, @Nullable Float range) throws CommandSyntaxException {
+
+    private static void apply(CommandContext<CommandSourceStack> context, Predicate<ItemStack> validator, String itemTypeName, @Nullable String customName, @Nullable Float range, boolean isStatic) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         UUID sound = UuidArgument.getUuid(context, "sound");
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (validator.test(itemInHand)) {
-            renameItem(context, itemInHand, sound, customName, range);
+            renameItem(context, itemInHand, sound, customName, range, isStatic);
         } else {
             context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
         }
@@ -479,7 +519,7 @@ public class AudioPlayerCommands {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
             if (itemValidator.test(itemStack)) {
-                renameItem(context, itemStack, soundID, name, range);
+                renameItem(context, itemStack, soundID, name, range, false);
                 currentItem.put("tag", itemStack.getOrCreateTag());
             }
         }
@@ -487,11 +527,17 @@ public class AudioPlayerCommands {
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
-    private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name, @Nullable Float range) {
+    private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name, @Nullable Float range, boolean isStatic) {
         CompoundTag tag = stack.getOrCreateTag();
+
         tag.putUUID("CustomSound", soundID);
+
         if (range != null) {
             tag.putFloat("CustomSoundRange", range);
+        }
+
+        if (isStatic) {
+            tag.putBoolean("IsStaticCustomSound", true);
         }
 
         if (tag.contains("instrument", Tag.TAG_STRING)) {

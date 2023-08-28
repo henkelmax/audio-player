@@ -145,10 +145,20 @@ public class AudioManager {
         return tag.getFloat("CustomSoundRange");
     }
 
+    public static boolean isStatic(ItemStack itemStack) {
+        CompoundTag tag = itemStack.getTag();
+        if (tag != null) {
+            return tag.getBoolean("IsStaticCustomSound");
+        }
+
+        return false;
+    }
+
     public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
         UUID customSound = AudioManager.getCustomSound(musicDisc);
         float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get().floatValue());
         range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get().floatValue());
+        boolean isStaticDisc = isStatic(musicDisc);
 
         if (customSound == null) {
             return false;
@@ -159,16 +169,31 @@ public class AudioManager {
             return false;
         }
 
-        @Nullable UUID channelID = PlayerManager.instance().playLocational(
-                api,
-                level,
-                new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
-                customSound,
-                (player instanceof ServerPlayer p) ? p : null,
-                range,
-                Plugin.MUSIC_DISC_CATEGORY,
-                AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
-        );
+        @Nullable UUID channelID;
+        if (isStaticDisc && AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get()) {
+            channelID = PlayerManager.instance().playStatic(
+                    api,
+                    level,
+                    new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
+                    customSound,
+                    (player instanceof ServerPlayer p) ? p : null,
+                    range,
+                    Plugin.MUSIC_DISC_CATEGORY,
+                    AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
+            );
+        } else {
+            channelID = PlayerManager.instance().playLocational(
+                    api,
+                    level,
+                    new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
+                    customSound,
+                    (player instanceof ServerPlayer p) ? p : null,
+                    range,
+                    Plugin.MUSIC_DISC_CATEGORY,
+                    AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
+            );
+        }
+
 
         if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
             jukebox.setChannelID(channelID);
