@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class AudioPlayer implements ModInitializer {
 
@@ -19,12 +21,20 @@ public class AudioPlayer implements ModInitializer {
     public static ServerConfig SERVER_CONFIG;
 
     public static AudioCache AUDIO_CACHE;
+    public static ScheduledExecutorService SCHEDULED_EXECUTOR = Executors.newScheduledThreadPool(1, r -> {
+        Thread thread = new Thread(r, "AudioPlayerExecutor");
+        thread.setDaemon(true);
+        thread.setUncaughtExceptionHandler((t, e) -> {
+            AudioPlayer.LOGGER.error("Uncaught exception in thread {}", t.getName(), e);
+        });
+        return thread;
+    });
 
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register(AudioPlayerCommands::register);
 
-        SERVER_CONFIG = ConfigBuilder.build(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties"), ServerConfig::new);
+        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties")).build();
 
         try {
             Files.createDirectories(AudioManager.getUploadFolder());

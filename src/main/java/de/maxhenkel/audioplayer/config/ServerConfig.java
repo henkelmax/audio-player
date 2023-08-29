@@ -1,25 +1,26 @@
 package de.maxhenkel.audioplayer.config;
 
 import de.maxhenkel.configbuilder.ConfigBuilder;
-import de.maxhenkel.configbuilder.ConfigEntry;
+import de.maxhenkel.configbuilder.entry.ConfigEntry;
 
 public class ServerConfig {
 
     public final ConfigEntry<String> filebinUrl;
-    public final ConfigEntry<Integer> maxUploadSize;
+    public final ConfigEntry<Long> maxUploadSize;
     public final ConfigEntry<Integer> uploadPermissionLevel;
     public final ConfigEntry<Integer> applyToItemPermissionLevel;
     public final ConfigEntry<Integer> playCommandPermissionLevel;
     public final ConfigEntry<Integer> goatHornCooldown;
-    public final ConfigEntry<Double> musicDiscRange;
-    public final ConfigEntry<Double> goatHornRange;
-    public final ConfigEntry<Double> maxGoatHornRange;
-    public final ConfigEntry<Double> maxMusicDiscRange;
+    public final ConfigEntry<Float> musicDiscRange;
+    public final ConfigEntry<Float> goatHornRange;
+    public final ConfigEntry<Float> maxGoatHornRange;
+    public final ConfigEntry<Float> maxMusicDiscRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
     public final ConfigEntry<Integer> maxMusicDiscDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
+    public final ConfigEntry<Boolean> announcerDiscsEnabled;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry(
@@ -27,11 +28,11 @@ public class ServerConfig {
                 "https://filebin.net/",
                 "The URL of the Filebin service that the mod should use"
         );
-        maxUploadSize = builder.integerEntry(
+        maxUploadSize = builder.longEntry(
                 "max_upload_size",
-                1000 * 1000 * 20,
-                1,
-                Integer.MAX_VALUE,
+                1000L * 1000L * 20L,
+                1L,
+                (long) Integer.MAX_VALUE,
                 "The maximum allowed size of an uploaded file in bytes"
         );
         uploadPermissionLevel = builder.integerEntry(
@@ -59,35 +60,35 @@ public class ServerConfig {
                 "goat_horn_cooldown",
                 140,
                 1,
-                Short.MAX_VALUE,
+                (int) Short.MAX_VALUE,
                 "The cooldown of goat horns with custom audio in ticks"
         );
-        musicDiscRange = builder.doubleEntry(
+        musicDiscRange = builder.floatEntry(
                 "music_disc_range",
-                65D,
-                1D,
-                Integer.MAX_VALUE,
+                65F,
+                1F,
+                (float) Integer.MAX_VALUE,
                 "The range of music discs with custom audio in blocks"
         );
-        goatHornRange = builder.doubleEntry(
+        goatHornRange = builder.floatEntry(
                 "goat_horn_range",
-                256D,
-                1D,
-                Integer.MAX_VALUE,
+                256F,
+                1F,
+                (float) Integer.MAX_VALUE,
                 "The range of goat horns with custom audio in blocks"
         );
-        maxMusicDiscRange = builder.doubleEntry(
+        maxMusicDiscRange = builder.floatEntry(
                 "max_music_disc_range",
-                256D,
-                1D,
-                Integer.MAX_VALUE,
+                256F,
+                1F,
+                (float) Integer.MAX_VALUE,
                 "The maximum allowed range of a music disc with custom audio in blocks"
         );
-        maxGoatHornRange = builder.doubleEntry(
+        maxGoatHornRange = builder.floatEntry(
                 "max_goat_horn_range",
-                512D,
-                1D,
-                Integer.MAX_VALUE,
+                512F,
+                1F,
+                (float) Integer.MAX_VALUE,
                 "The maximum allowed range of a goat horn with custom audio in blocks"
         );
         allowWavUpload = builder.booleanEntry(
@@ -126,6 +127,13 @@ public class ServerConfig {
                 "The maximum amount of audio files that are cached in memory",
                 "Setting this to 0 will disable the cache",
                 "A higher value will result in less disk reads, but more RAM usage"
+        );
+        announcerDiscsEnabled = builder.booleanEntry(
+                "enable_announcer_discs",
+                false,
+                "Announcer discs are discs that have no 3D audio or falloff (volume does not decrease with distance)",
+                "The /audioplayer set_announcer [enabled] command can be used when this is set to true",
+                "If this is disabled announcer discs are completely disabled and will play as normal discs if used"
         );
     }
 

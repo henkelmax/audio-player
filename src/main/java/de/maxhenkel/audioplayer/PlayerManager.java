@@ -89,6 +89,55 @@ public class PlayerManager {
     }
 
     @Nullable
+    public UUID playStatic(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+        UUID channelID = UUID.randomUUID();
+
+        api.getPlayersInRange(api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z), distance + 1F, serverPlayer -> {
+            VoicechatConnection connection = api.getConnectionOf(serverPlayer);
+            if (connection != null) {
+                return connection.isDisabled();
+            }
+            return true;
+        }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(player -> {
+            player.displayClientMessage(Component.literal("You need to enable voice chat to hear custom audio"), true);
+        });
+
+        StaticAudioPlayer staticAudioPlayer = StaticAudioPlayer.create(api, level, sound, p, maxLengthSeconds, category, pos, channelID, distance);
+
+        AtomicBoolean stopped = new AtomicBoolean();
+        AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player = new AtomicReference<>();
+
+        players.put(channelID, new PlayerReference(() -> {
+            synchronized (stopped) {
+                stopped.set(true);
+                de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = player.get();
+                if (audioPlayer != null) {
+                    audioPlayer.stopPlaying();
+                }
+            }
+        }, player));
+
+        executor.execute(() -> {
+            if (staticAudioPlayer == null) {
+                players.remove(channelID);
+                return;
+            }
+            staticAudioPlayer.setOnStopped(() -> {
+                players.remove(channelID);
+            });
+            synchronized (stopped) {
+                if (!stopped.get()) {
+                    player.set(staticAudioPlayer);
+                } else {
+                    staticAudioPlayer.stopPlaying();
+                }
+            }
+        });
+        return channelID;
+    }
+
+
+    @Nullable
     private de.maxhenkel.voicechat.api.audiochannel.AudioPlayer playChannel(VoicechatServerApi api, AudioChannel channel, ServerLevel level, UUID sound, ServerPlayer p, int maxLengthSeconds) {
         try {
             short[] audio = AudioManager.getSound(level.getServer(), sound);

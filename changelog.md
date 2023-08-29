@@ -1,2 +1,2 @@
-- Fixed clear command not clearing all data
-- Added play command
+- Added announcer disc feature
+- Updated config builder
