@@ -122,8 +122,8 @@ public class StaticAudioPlayer implements de.maxhenkel.voicechat.api.audiochanne
             List<ServerPlayer> players = api.getPlayersInRange(api.fromServerLevel(this.level), api.createPosition(pos.x, pos.y, pos.z), distance + 1F, serverPlayer -> {
                 VoicechatConnection connection = api.getConnectionOf(serverPlayer);
                 if (connection != null) {
-                    //TODO: either document in the api that this helper is square distance, or provide a spherical version (or both?)
-                    Vec3 playerPos = ((ServerPlayer) serverPlayer.getPlayer()).getPosition(0.0f);
+                    // TODO Either document in the api that this helper is square distance, or provide a spherical version (or both?)
+                    Vec3 playerPos = ((ServerPlayer) serverPlayer.getPlayer()).getPosition(0.0F);
                     return !connection.isDisabled() && pos.distanceTo(playerPos) <= distance;
                 }
                 return false;
