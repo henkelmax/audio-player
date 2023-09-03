@@ -18,7 +18,6 @@ loom {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
@@ -28,6 +27,7 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    mavenLocal() //TODO Remove
 }
 
 runClient.doFirst {
@@ -47,6 +47,8 @@ dependencies {
     apiModules.forEach {
         include(modImplementation(fabricApi.module(it, fabric_version)))
     }
+
+    include(modImplementation("de.maxhenkel.admiral:admiral-fabric:${admiral_version}+${minecraft_version}"))
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
