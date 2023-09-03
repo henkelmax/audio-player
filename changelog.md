@@ -1,1 +1,1 @@
-- Fixed announcer disc range
+- Switched to Admiral for command handling
