@@ -24,6 +24,7 @@ public class UploadCommands {
 
     public static final Pattern SOUND_FILE_PATTERN = Pattern.compile("^[a-z0-9_ -]+.((wav)|(mp3))$", Pattern.CASE_INSENSITIVE);
 
+    @RequiresPermission("audioplayer.upload")
     @Command
     public void audioPlayer(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
