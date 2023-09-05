@@ -2,7 +2,9 @@ package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.admiral.MinecraftAdmiral;
 import de.maxhenkel.audioplayer.command.ApplyCommands;
+import de.maxhenkel.audioplayer.command.PlayCommands;
 import de.maxhenkel.audioplayer.command.UploadCommands;
+import de.maxhenkel.audioplayer.command.UtilityCommands;
 import de.maxhenkel.audioplayer.config.ServerConfig;
 import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.api.ModInitializer;
@@ -38,7 +40,12 @@ public class AudioPlayer implements ModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            MinecraftAdmiral.builder(dispatcher, registryAccess).addCommandClasses(UploadCommands.class, ApplyCommands.class).build();
+            MinecraftAdmiral.builder(dispatcher, registryAccess).addCommandClasses(
+                    UploadCommands.class,
+                    ApplyCommands.class,
+                    UtilityCommands.class,
+                    PlayCommands.class
+            ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
 
         SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties")).build();

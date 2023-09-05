@@ -7,9 +7,6 @@ public class ServerConfig {
 
     public final ConfigEntry<String> filebinUrl;
     public final ConfigEntry<Long> maxUploadSize;
-    public final ConfigEntry<Integer> uploadPermissionLevel;
-    public final ConfigEntry<Integer> applyToItemPermissionLevel;
-    public final ConfigEntry<Integer> playCommandPermissionLevel;
     public final ConfigEntry<Boolean> jukeboxHopperInteraction;
     public final ConfigEntry<Boolean> jukeboxDispenserInteraction;
     public final ConfigEntry<Integer> goatHornCooldown;
@@ -36,27 +33,6 @@ public class ServerConfig {
                 1L,
                 (long) Integer.MAX_VALUE,
                 "The maximum allowed size of an uploaded file in bytes"
-        );
-        uploadPermissionLevel = builder.integerEntry(
-                "upload_permission_level",
-                0,
-                0,
-                Integer.MAX_VALUE,
-                "The permission level required to upload a file"
-        );
-        applyToItemPermissionLevel = builder.integerEntry(
-                "apply_to_item_permission_level",
-                0,
-                0,
-                Integer.MAX_VALUE,
-                "The permission level required to apply custom audio to an item"
-        );
-        playCommandPermissionLevel = builder.integerEntry(
-                "play_command_permission_level",
-                2,
-                0,
-                Integer.MAX_VALUE,
-                "The permission level required to play audio with the play command"
         );
         jukeboxHopperInteraction = builder.booleanEntry(
                 "jukebox_hopper_interaction",
