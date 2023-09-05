@@ -49,6 +49,7 @@ dependencies {
     }
 
     include(modImplementation("de.maxhenkel.admiral:admiral-fabric:${admiral_version}+${minecraft_version}"))
+    modImplementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
