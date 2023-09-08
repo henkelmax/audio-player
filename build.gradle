@@ -27,7 +27,6 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-    mavenLocal() //TODO Remove
 }
 
 runClient.doFirst {
