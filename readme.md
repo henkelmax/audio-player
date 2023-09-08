@@ -84,5 +84,6 @@ Run `/audioplayer id` and hold a music disc or a goat horn with custom audio in 
 
 - [MP3SPI](https://github.com/umjammer/mp3spi)
 - [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat)
+- [Admiral](https://github.com/henkelmax/admiral)
 
 *Note that the files you upload to Filebin are publicly available if the upload link is disclosed!*

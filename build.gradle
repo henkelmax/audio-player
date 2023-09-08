@@ -48,7 +48,7 @@ dependencies {
         include(modImplementation(fabricApi.module(it, fabric_version)))
     }
 
-    include(modImplementation("de.maxhenkel.admiral:admiral-fabric:${admiral_version}+${minecraft_version}"))
+    include(modImplementation("maven.modrinth:admiral:${admiral_version}+fabric"))
     modImplementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
