@@ -38,7 +38,7 @@ public class PlayCommands {
                 null,
                 Integer.MAX_VALUE
         );
-        context.getSource().sendSuccess(() -> Component.literal("Successfully played %s".formatted(sound)), false);
+        context.getSource().sendSuccess(Component.literal("Successfully played %s".formatted(sound)), false);
     }
 
 }
