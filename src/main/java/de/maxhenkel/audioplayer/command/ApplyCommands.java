@@ -86,7 +86,7 @@ public class ApplyCommands {
 
         tag.putBoolean("IsStaticCustomSound", enabled.orElse(true));
 
-        context.getSource().sendSuccess(() -> Component.literal("Set announcer " + (enabled.orElse(true) ? "enabled" : "disabled")), false);
+        context.getSource().sendSuccess(Component.literal("Set announcer " + (enabled.orElse(true) ? "enabled" : "disabled")), false);
     }
 
     private static void apply(CommandContext<CommandSourceStack> context, UUID sound, Predicate<ItemStack> validator, String itemTypeName, @Nullable String customName, ConfigEntry<Float> maxRange, @Nullable Float range, boolean isStatic) throws CommandSyntaxException {
@@ -124,7 +124,7 @@ public class ApplyCommands {
             }
         }
         itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
-        context.getSource().sendSuccess(() -> Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
+        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
     private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name, @Nullable Float range, boolean isStatic) {
@@ -155,7 +155,7 @@ public class ApplyCommands {
 
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
 
-        context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
+        context.getSource().sendSuccess(Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
 
     private static void checkRange(CommandContext<CommandSourceStack> context, ConfigEntry<Float> maxRange, @Nullable Float range) throws CommandSyntaxException {

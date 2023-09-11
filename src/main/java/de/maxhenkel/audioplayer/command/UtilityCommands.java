@@ -54,7 +54,7 @@ public class UtilityCommands {
         tag.remove(ItemStack.TAG_DISPLAY);
         tag.remove("HideFlags");
 
-        context.getSource().sendSuccess(() -> Component.literal("Successfully cleared item"), false);
+        context.getSource().sendSuccess(Component.literal("Successfully cleared item"), false);
     }
 
     @Command("id")
@@ -83,7 +83,7 @@ public class UtilityCommands {
             return;
         }
 
-        context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(UploadCommands.sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
     }
 
 }
