@@ -114,7 +114,7 @@ public class ApplyCommands {
     }
 
     private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, Predicate<ItemStack> itemValidator, String itemTypeName, UUID soundID, @Nullable String name, ConfigEntry<Float> maxRange, @Nullable Float range) {
-        ListTag shulkerContents = itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
+        ListTag shulkerContents = itemInHand.getOrCreateTagElement("BlockEntityTag").getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
@@ -123,7 +123,7 @@ public class ApplyCommands {
                 currentItem.put("tag", itemStack.getOrCreateTag());
             }
         }
-        itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
+        itemInHand.getOrCreateTagElement("BlockEntityTag").put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
         context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
     }
 
