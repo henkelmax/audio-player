@@ -1,1 +1,1 @@
-- Switched to Admiral for command handling
+- Updated to 1.20.2
