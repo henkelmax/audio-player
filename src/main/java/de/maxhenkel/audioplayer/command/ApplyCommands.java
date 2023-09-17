@@ -35,7 +35,7 @@ public class ApplyCommands {
         apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, false);
     }
 
-    @RequiresPermission("audioplayer.apply")
+    @RequiresPermission("audioplayer.apply_announcer")
     @Command("musicdisc_announcer")
     public void musicDiscAnnouncer(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, true);
@@ -59,7 +59,7 @@ public class ApplyCommands {
         applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, range);
     }
 
-    @RequiresPermission("audioplayer.apply")
+    @RequiresPermission("audioplayer.apply_announcer")
     @Command("set_announcer")
     public void setAnnouncer(CommandContext<CommandSourceStack> context, @Name("enabled") Optional<Boolean> enabled) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();

@@ -1,1 +1,1 @@
-- Switched to Admiral for command handling
+- Fixed announcer command being available when disabled
