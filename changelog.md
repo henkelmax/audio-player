@@ -1,2 +1,1 @@
-- Fixed announcer command being available when disabled
-- Updated to 1.20.2
+- Fixed command permission check failing on non-players
