@@ -1,1 +1,1 @@
-- Fixed announcer command being available when disabled
+- Fixed command permission check failing on non-players
