@@ -1,1 +1,1 @@
-- Fixed command permission check failing on non-players
+- Fixed command permission check on dedicated servers
