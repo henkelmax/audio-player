@@ -29,13 +29,16 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
     @Override
     public boolean hasPermission(CommandSourceStack stack, String permission) {
         for (Permission p : PERMISSIONS) {
-            if (!stack.isPlayer()) {
-                if (p.getType().equals(PermissionType.OPS)) {
-                    return stack.hasPermission(stack.getServer().getOperatorUserPermissionLevel());
-                }
+            if (!p.permission.equals(permission)) {
+                continue;
             }
-            if (p.permission.equals(permission)) {
+            if (stack.isPlayer()) {
                 return p.hasPermission(stack.getPlayer());
+            }
+            if (p.getType().equals(PermissionType.OPS)) {
+                return stack.hasPermission(stack.getServer().getFunctionCompilationLevel());
+            } else {
+                return p.hasPermission(null);
             }
         }
         return false;
