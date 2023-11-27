@@ -66,7 +66,7 @@ public class PlayerManager {
                     audioPlayer.stopPlaying();
                 }
             }
-        }, player));
+        }, player, sound));
 
         executor.execute(() -> {
             de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = playChannel(api, channel, level, sound, p, maxLengthSeconds);
@@ -115,7 +115,7 @@ public class PlayerManager {
                     audioPlayer.stopPlaying();
                 }
             }
-        }, player));
+        }, player, sound));
 
         executor.execute(() -> {
             if (staticAudioPlayer == null) {
@@ -197,7 +197,16 @@ public class PlayerManager {
     }
 
     private record PlayerReference(Stoppable onStop,
-                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player) {
+                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player, UUID sound) {
+    }
+    @Nullable
+    public UUID findChannelID(UUID sound) {
+        for (Map.Entry<UUID, PlayerReference> entry : players.entrySet()) {
+            if (entry.getValue().sound.equals(sound)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
 }
