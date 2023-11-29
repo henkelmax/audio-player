@@ -1,1 +1,1 @@
-- Fixed command permission check on dedicated servers
+- Added mod icon
