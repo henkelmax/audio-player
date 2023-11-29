@@ -1,7 +1,5 @@
 <!-- modrinth_exclude.start -->
 
-![](http://cf.way2muchnoise.eu/full_549719_downloads.svg) ![](http://cf.way2muchnoise.eu/versions/549719.svg)
-
 # AudioPlayer
 
 ## Links
