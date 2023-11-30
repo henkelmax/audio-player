@@ -1,1 +1,1 @@
-- Added mod icon
+- Added stop command
