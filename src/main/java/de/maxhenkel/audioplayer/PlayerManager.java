@@ -36,6 +36,11 @@ public class PlayerManager {
 
     @Nullable
     public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+        return playLocational(api, level, pos, sound, p, distance, category, maxLengthSeconds, false);
+    }
+
+    @Nullable
+    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
         UUID channelID = UUID.randomUUID();
         LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z));
         if (channel == null) {
@@ -66,7 +71,7 @@ public class PlayerManager {
                     audioPlayer.stopPlaying();
                 }
             }
-        }, player, sound));
+        }, player, sound, byCommand));
 
         executor.execute(() -> {
             de.maxhenkel.voicechat.api.audiochannel.AudioPlayer audioPlayer = playChannel(api, channel, level, sound, p, maxLengthSeconds);
@@ -90,6 +95,11 @@ public class PlayerManager {
 
     @Nullable
     public UUID playStatic(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+        return playStatic(api, level, pos, sound, p, distance, category, maxLengthSeconds, false);
+    }
+
+    @Nullable
+    public UUID playStatic(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
         UUID channelID = UUID.randomUUID();
 
         api.getPlayersInRange(api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z), distance + 1F, serverPlayer -> {
@@ -115,7 +125,7 @@ public class PlayerManager {
                     audioPlayer.stopPlaying();
                 }
             }
-        }, player, sound));
+        }, player, sound, byCommand));
 
         executor.execute(() -> {
             if (staticAudioPlayer == null) {
@@ -195,14 +205,15 @@ public class PlayerManager {
     private interface Stoppable {
         void stop();
     }
-
+    
     private record PlayerReference(Stoppable onStop,
-                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player, UUID sound) {
+                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player, UUID sound, boolean byCommand) {
     }
+
     @Nullable
-    public UUID findChannelID(UUID sound) {
+    public UUID findChannelID(UUID sound, boolean onlyByCommand) {
         for (Map.Entry<UUID, PlayerReference> entry : players.entrySet()) {
-            if (entry.getValue().sound.equals(sound)) {
+            if (entry.getValue().sound.equals(sound) && (entry.getValue().byCommand || !onlyByCommand)) {
                 return entry.getKey();
             }
         }
