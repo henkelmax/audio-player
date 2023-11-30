@@ -52,7 +52,7 @@ public class PlayCommands {
                 context.getSource().sendSuccess(() -> Component.literal("Successfully stopped %s.".formatted(sound)), false);
                 return 1;
         } else {
-            context.getSource().sendFailure(Component.literal("Failed to stop, could not find %s".formatted(sound)));
+            context.getSource().sendFailure(Component.literal("Failed to stop, could not find sound with ID %s".formatted(sound)));
         }
         return 0;
     }
