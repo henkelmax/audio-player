@@ -11,7 +11,7 @@
     "website": "https://modrepo.de"
   },
   "license": "All Rights Reserved",
-  "icon": "assets/audioplayer/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
