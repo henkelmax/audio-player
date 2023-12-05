@@ -4,7 +4,6 @@ import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.PlayerManager;
 import de.maxhenkel.audioplayer.interfaces.IJukebox;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
@@ -16,7 +15,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,8 +30,7 @@ import java.util.UUID;
 public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Clearable, IJukebox {
 
     @Shadow
-    @Final
-    private NonNullList<ItemStack> items;
+    private ItemStack item;
 
     @Nullable
     private UUID channelID;
@@ -54,20 +51,17 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
         setChanged();
     }
 
-    @Inject(method = "setItem", at = @At(value = "RETURN"))
-    public void setItem(int i, ItemStack itemStack, CallbackInfo ci) {
-        if (i != 0) {
-            return;
-        }
+    @Inject(method = "setTheItem", at = @At(value = "RETURN"))
+    public void setItem(ItemStack itemStack, CallbackInfo ci) {
         if (itemStack.isEmpty() && channelID != null) {
             PlayerManager.instance().stop(channelID);
             channelID = null;
         }
     }
 
-    @Inject(method = "removeItem", at = @At(value = "RETURN"))
-    public void removeItem(int i, int j, CallbackInfoReturnable<ItemStack> ci) {
-        if (items.get(i).isEmpty() && channelID != null) {
+    @Inject(method = "splitTheItem", at = @At(value = "RETURN"))
+    public void removeItem(int i, CallbackInfoReturnable<ItemStack> cir) {
+        if (item.isEmpty() && channelID != null) {
             PlayerManager.instance().stop(channelID);
             channelID = null;
         }
@@ -75,7 +69,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Redirect(method = "startPlaying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;levelEvent(Lnet/minecraft/world/entity/player/Player;ILnet/minecraft/core/BlockPos;I)V"))
     public void startPlaying(Level instance, Player player, int i1, BlockPos blockPos, int i2) {
-        if (!AudioManager.playCustomMusicDisc((ServerLevel) level, getBlockPos(), items.get(0), null)) {
+        if (!AudioManager.playCustomMusicDisc((ServerLevel) level, getBlockPos(), item, null)) {
             instance.levelEvent(player, i1, blockPos, i2);
         }
     }
@@ -90,7 +84,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Inject(method = "load", at = @At(value = "RETURN"))
     public void load(CompoundTag compound, CallbackInfo ci) {
-        if (compound.hasUUID("ChannelID") && !items.get(0).isEmpty()) {
+        if (compound.hasUUID("ChannelID") && !item.isEmpty()) {
             channelID = compound.getUUID("ChannelID");
         } else {
             channelID = null;
@@ -99,7 +93,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Inject(method = "saveAdditional", at = @At(value = "RETURN"))
     public void save(CompoundTag compound, CallbackInfo ci) {
-        if (channelID != null && !items.get(0).isEmpty()) {
+        if (channelID != null && !item.isEmpty()) {
             compound.putUUID("ChannelID", channelID);
         }
     }

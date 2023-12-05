@@ -1,1 +1,1 @@
-- Added stop command
+- Updated to 1.20.3
