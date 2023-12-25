@@ -1,1 +1,1 @@
-- Added stop command
+- Updated dependencies

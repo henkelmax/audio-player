@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "audioplayer",
-  "version": "${version}",
+  "version": "${mod_version}",
   "name": "AudioPlayer",
   "description": "Audio Player",
   "authors": [
@@ -25,13 +25,12 @@
     "audioplayer.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": "${fabric_loader_dependency}",
     "minecraft": ["1.20", "1.20.1"],
-    "java": ">=17",
     "voicechat": ">=${minecraft_version}-${voicechat_api_version}"
   },
   "breaks": {
-    "fabric": "<${fabric_version}"
+    "fabric-api": "${fabric_api_dependency_breaks}"
   },
   "accessWidener": "audioplayer.accesswidener"
 }
