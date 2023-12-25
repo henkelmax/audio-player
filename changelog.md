@@ -1,1 +1,1 @@
-- Updated to 1.20.4
+- Updated dependencies
