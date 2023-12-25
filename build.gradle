@@ -1,64 +1,20 @@
 plugins {
-    id 'fabric-loom' version '1.3-SNAPSHOT'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'com.modrinth.minotaur' version '2.+'
-    id 'mod-update' version '2.0.0'
+    id 'com.github.johnrengelman.shadow' version "${shadow_version}"
+    id 'fabric-loom' version "${fabric_loom_version}"
+    id 'mod-update' version "${mod_update_version}"
+    id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
+    id 'com.modrinth.minotaur' version "${minotaur_version}"
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
-loom {
-    accessWidenerPath = file('src/main/resources/audioplayer.accesswidener')
-}
+apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/mod.gradle"
 
 repositories {
-    mavenCentral()
-    maven { url = 'https://maven.fabricmc.net/' }
-    maven { url = 'https://maven.maxhenkel.de/repository/public' }
-    maven {
-        url = 'https://api.modrinth.com/maven'
-        content {
-            includeGroup "maven.modrinth"
-        }
-    }
-}
 
-runClient.doFirst {
-    args = ['--username', "henkelmax${new Random().nextInt(1000)}"]
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
-
-    Set<String> apiModules = [
-            'fabric-api-base',
-            'fabric-command-api-v2'
-    ]
-
-    apiModules.forEach {
-        include(modImplementation(fabricApi.module(it, fabric_version)))
-    }
-
     include(modImplementation("maven.modrinth:admiral:${admiral_version}+fabric"))
     modImplementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
-
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
-    implementation "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
-    shadow "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
-
-    implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
-
-    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
-    modRuntimeOnly "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
         exclude group: 'junit', module: 'junit'
@@ -66,103 +22,35 @@ dependencies {
     shadow("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
         exclude group: 'junit', module: 'junit'
     }
+
+    implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
+    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
+
+    Set<String> voicechatModules = [
+            'fabric-api-base',
+            'fabric-command-api-v2',
+            'fabric-lifecycle-events-v1',
+            'fabric-networking-api-v1',
+            'fabric-resource-loader-v0',
+            'fabric-key-binding-api-v1'
+    ]
+    voicechatModules.forEach {
+        modRuntimeOnly(fabricApi.module(it, fabric_api_version))
+    }
 }
 
 processResources {
     filesMatching('fabric.mod.json') {
-        expand 'version': version,
+        expand 'mod_version': mod_version,
                 'minecraft_dependency': minecraft_dependency,
                 'minecraft_version': minecraft_version,
-                'loader_version': loader_version,
-                'fabric_version': fabric_version,
+                'fabric_loader_dependency': fabric_loader_dependency,
+                'fabric_api_dependency_breaks': fabric_api_dependency_breaks,
                 'voicechat_api_version': voicechat_api_version
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = 'UTF-8'
-    it.options.release = 17
-}
-
-java {
-    withSourcesJar()
-}
-
-jar {
-    from('LICENSE') {
-        rename { "${it}_${archivesBaseName}" }
-    }
-}
-
-curseforge {
-    apiKey = file('curseforge_api_key.txt').exists() ? file('curseforge_api_key.txt').text : ''
-    project {
-        id = curse_id
-        changelogType = 'markdown'
-        changelog = file('changelog.md')
-        releaseType = release_type
-        addGameVersion curseforge_minecraft_version
-        addGameVersion 'Fabric'
-        addGameVersion 'Java 17'
-        mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
-            displayName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
-            relations {
-                requiredDependency 'simple-voice-chat'
-            }
-        }
-        afterEvaluate {
-            uploadTask.dependsOn(remapJar)
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-    }
-}
-
-tasks.modrinth.configure({
-    group = 'upload'
-})
-tasks.modrinthSyncBody.configure({
-    group = 'upload'
-})
-
-modrinth {
-    token = file("${rootDir}/modrinth_token.txt").exists() ? file("${rootDir}/modrinth_token.txt").text : ''
-    projectId = modrinth_id
-    versionNumber = "fabric-${mod_version}"
-    versionName = "[FABRIC][${minecraft_version}] ${mod_name} ${mod_version}"
-    uploadFile = remapJar
-    versionType = release_type.toUpperCase()
-    changelog = file('changelog.md').text
-    gameVersions = [minecraft_version]
-    loaders = ['fabric']
-    syncBodyFrom = file('readme.md').text
-    dependencies {
-        required.project '9eGKb6K1' // Simple Voice Chat
-    }
-}
-tasks.modrinth.dependsOn(build)
-
-modUpdate {
-    serverURL = 'https://update.maxhenkel.de/'
-    modID = mod_id
-    gameVersion = minecraft_version
-    modLoader = 'fabric'
-    modVersion = mod_version
-    changelogFile = file('changelog.md')
-    releaseType = release_type
-    tags = recommended == 'true' ? ['recommended'] : []
-}
-
 shadowJar {
-    configurations = [project.configurations.shadow]
-    archiveClassifier = 'shadow-dev'
-    relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.${mod_id}.configbuilder"
-    relocate 'javazoom', "de.maxhenkel.${mod_id}.javazoom"
-    relocate 'org.tritonus', "de.maxhenkel.${mod_id}.tritonus"
-}
-
-remapJar {
-    dependsOn shadowJar
-    inputFile = shadowJar.archiveFile.get()
+    relocate 'javazoom', "de.maxhenkel.audioplayer.javazoom"
+    relocate 'org.tritonus', "de.maxhenkel.audioplayer.tritonus"
 }
