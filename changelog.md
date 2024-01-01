@@ -1,1 +1,1 @@
-- Updated dependencies
+- Fixed audio player commands not being executable in functions
