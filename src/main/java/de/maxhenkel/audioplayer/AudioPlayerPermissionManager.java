@@ -36,7 +36,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
                 return p.hasPermission(stack.getPlayer());
             }
             if (p.getType().equals(PermissionType.OPS)) {
-                return stack.hasPermission(stack.getServer().getFunctionCompilationLevel());
+                return stack.hasPermission(2);
             } else {
                 return p.hasPermission(null);
             }
