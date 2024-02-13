@@ -1,1 +1,1 @@
-- Fixed audio player commands not being executable in functions
+- Fixed goat horns playing original sound when created with commands
