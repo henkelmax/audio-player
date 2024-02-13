@@ -140,7 +140,7 @@ public class ApplyCommands {
             tag.putBoolean("IsStaticCustomSound", true);
         }
 
-        if (tag.contains("instrument", Tag.TAG_STRING)) {
+        if (stack.getItem() instanceof InstrumentItem) {
             tag.putString("instrument", "");
         }
 
