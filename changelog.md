@@ -1,1 +1,1 @@
-- Fixed goat horns playing original sound when created with commands
+- Fixed optional command values
