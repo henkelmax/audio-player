@@ -35,10 +35,22 @@ public class ApplyCommands {
         apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, false);
     }
 
+    @RequiresPermission("audioplayer.apply")
+    @Command("musicdisc")
+    public void musicDisc(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null, false);
+    }
+
     @RequiresPermission("audioplayer.apply_announcer")
     @Command("musicdisc_announcer")
     public void musicDiscAnnouncer(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, true);
+    }
+
+    @RequiresPermission("audioplayer.apply_announcer")
+    @Command("musicdisc_announcer")
+    public void musicDiscAnnouncer(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null, true);
     }
 
     @RequiresPermission("audioplayer.apply")
@@ -48,15 +60,33 @@ public class ApplyCommands {
     }
 
     @RequiresPermission("audioplayer.apply")
+    @Command("goathorn")
+    public void goatHorn(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, null, false);
+    }
+
+    @RequiresPermission("audioplayer.apply")
     @Command("musicdisc_bulk")
     public void musicDiscBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range);
     }
 
     @RequiresPermission("audioplayer.apply")
+    @Command("musicdisc_bulk")
+    public void musicDiscBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null);
+    }
+
+    @RequiresPermission("audioplayer.apply")
     @Command("goathorn_bulk")
     public void goatHornBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, range);
+    }
+
+    @RequiresPermission("audioplayer.apply")
+    @Command("goathorn_bulk")
+    public void goatHornBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, null);
     }
 
     @RequiresPermission("audioplayer.apply_announcer")
