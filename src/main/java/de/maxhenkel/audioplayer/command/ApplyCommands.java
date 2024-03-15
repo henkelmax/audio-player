@@ -19,6 +19,7 @@ import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,18 @@ public class ApplyCommands {
     @Command("musicdisc")
     public void musicDisc(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null, false);
+    }
+
+    @RequiresPermission("audioplayer.apply")
+    @Command("noteblock")
+    public void noteblock(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, sound, itemStack -> itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock, "Jukebox", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, false);
+    }
+
+    @RequiresPermission("audioplayer.apply")
+    @Command("noteblock")
+    public void noteblock(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, sound, itemStack -> itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock, "Jukebox", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null, false);
     }
 
     @RequiresPermission("audioplayer.apply_announcer")
@@ -164,14 +177,35 @@ public class ApplyCommands {
 
         if (range != null) {
             tag.putFloat("CustomSoundRange", range);
+        } else {
+            tag.remove("CustomSoundRange");
         }
 
         if (isStatic) {
             tag.putBoolean("IsStaticCustomSound", true);
+        } else {
+            tag.remove("IsStaticCustomSound");
         }
 
         if (stack.getItem() instanceof InstrumentItem) {
             tag.putString("instrument", "");
+        } else {
+            tag.remove("instrument");
+        }
+
+        if (stack.getItem() instanceof BlockItem) {
+            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            blockEntityTag.putUUID("CustomSound", soundID);
+            if (range != null) {
+                blockEntityTag.putFloat("CustomSoundRange", range);
+            } else {
+                blockEntityTag.remove("CustomSoundRange");
+            }
+            if (isStatic) {
+                blockEntityTag.putBoolean("IsStaticCustomSound", true);
+            } else {
+                blockEntityTag.remove("IsStaticCustomSound");
+            }
         }
 
         ListTag lore = new ListTag();

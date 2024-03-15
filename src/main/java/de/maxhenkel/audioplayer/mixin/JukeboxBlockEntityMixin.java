@@ -2,7 +2,7 @@ package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.PlayerManager;
-import de.maxhenkel.audioplayer.interfaces.IJukebox;
+import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -27,11 +28,12 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 @Mixin(JukeboxBlockEntity.class)
-public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Clearable, IJukebox {
+public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Clearable, ChannelHolder {
 
     @Shadow
     private ItemStack item;
 
+    @Unique
     @Nullable
     private UUID channelID;
 
@@ -41,12 +43,12 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Nullable
     @Override
-    public UUID getChannelID() {
+    public UUID soundplayer$getChannelID() {
         return channelID;
     }
 
     @Override
-    public void setChannelID(@Nullable UUID channelID) {
+    public void soundplayer$setChannelID(@Nullable UUID channelID) {
         this.channelID = channelID;
         setChanged();
     }

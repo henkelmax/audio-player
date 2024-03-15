@@ -16,6 +16,7 @@ import java.util.Enumeration;
 public class Plugin implements VoicechatPlugin {
 
     public static String MUSIC_DISC_CATEGORY = "music_discs";
+    public static String NOTE_BLOCK_CATEGORY = "note_blocks";
     public static String GOAT_HORN_CATEGORY = "goat_horns";
 
     public static VoicechatApi voicechatApi;
@@ -23,6 +24,8 @@ public class Plugin implements VoicechatPlugin {
     public static VoicechatServerApi voicechatServerApi;
     @Nullable
     public static VolumeCategory musicDiscs;
+    @Nullable
+    public static VolumeCategory noteBlocks;
     @Nullable
     public static VolumeCategory goatHorns;
 
@@ -49,6 +52,12 @@ public class Plugin implements VoicechatPlugin {
                 .setDescription("The volume of all custom music discs")
                 .setIcon(getIcon("category_music_discs.png"))
                 .build();
+        noteBlocks = voicechatServerApi.volumeCategoryBuilder()
+                .setId(NOTE_BLOCK_CATEGORY)
+                .setName("Note blocks")
+                .setDescription("The volume of all note blocks with custom heads")
+                .setIcon(getIcon("category_note_blocks.png"))
+                .build();
         goatHorns = voicechatServerApi.volumeCategoryBuilder()
                 .setId(GOAT_HORN_CATEGORY)
                 .setName("Goat horns")
@@ -57,6 +66,7 @@ public class Plugin implements VoicechatPlugin {
                 .build();
 
         voicechatServerApi.registerVolumeCategory(musicDiscs);
+        voicechatServerApi.registerVolumeCategory(noteBlocks);
         voicechatServerApi.registerVolumeCategory(goatHorns);
     }
 
