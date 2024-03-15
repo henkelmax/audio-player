@@ -103,8 +103,6 @@ public class ApplyCommands {
             apply(context, itemStack, playerType, sound, customName);
             currentItem.put("tag", itemStack.getOrCreateTag());
         }
-        //TODO check
-        //itemInHand.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated contents"), false);
     }
 
