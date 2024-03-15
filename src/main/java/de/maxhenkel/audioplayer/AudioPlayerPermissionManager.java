@@ -16,7 +16,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
 
     private static final Permission UPLOAD_PERMISSION = new Permission("audioplayer.upload", PermissionType.EVERYONE);
     private static final Permission APPLY_PERMISSION = new Permission("audioplayer.apply", PermissionType.EVERYONE);
-    private static final Permission APPLY_ANNOUNCER_PERMISSION = new AnnouncerPermission("audioplayer.apply_announcer", PermissionType.EVERYONE);
+    private static final Permission APPLY_ANNOUNCER_PERMISSION = new AnnouncerPermission("audioplayer.set_static", PermissionType.EVERYONE);
     private static final Permission PLAY_COMMAND_PERMISSION = new Permission("audioplayer.play_command", PermissionType.OPS);
 
     private static final List<Permission> PERMISSIONS = List.of(
@@ -101,7 +101,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
 
         @Override
         public boolean hasPermission(@Nullable ServerPlayer player) {
-            return AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get() && super.hasPermission(player);
+            return AudioPlayer.SERVER_CONFIG.allowStaticAudio.get() && super.hasPermission(player);
         }
     }
 
