@@ -9,12 +9,15 @@ public class ServerConfig {
     public final ConfigEntry<Long> maxUploadSize;
     public final ConfigEntry<Integer> goatHornCooldown;
     public final ConfigEntry<Float> musicDiscRange;
+    public final ConfigEntry<Float> noteBlockRange;
     public final ConfigEntry<Float> goatHornRange;
     public final ConfigEntry<Float> maxGoatHornRange;
+    public final ConfigEntry<Float> maxNoteBlockRange;
     public final ConfigEntry<Float> maxMusicDiscRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
     public final ConfigEntry<Integer> maxMusicDiscDuration;
+    public final ConfigEntry<Integer> maxNoteBlockDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
     public final ConfigEntry<Boolean> announcerDiscsEnabled;
@@ -46,6 +49,13 @@ public class ServerConfig {
                 (float) Integer.MAX_VALUE,
                 "The range of music discs with custom audio in blocks"
         );
+        noteBlockRange = builder.floatEntry(
+                "note_block_range",
+                16F,
+                1F,
+                (float) Integer.MAX_VALUE,
+                "The range of note blocks with custom audio in blocks"
+        );
         goatHornRange = builder.floatEntry(
                 "goat_horn_range",
                 256F,
@@ -59,6 +69,13 @@ public class ServerConfig {
                 1F,
                 (float) Integer.MAX_VALUE,
                 "The maximum allowed range of a music disc with custom audio in blocks"
+        );
+        maxNoteBlockRange = builder.floatEntry(
+                "max_note_block_range",
+                256F,
+                1F,
+                (float) Integer.MAX_VALUE,
+                "The maximum allowed range of a note block with custom audio in blocks"
         );
         maxGoatHornRange = builder.floatEntry(
                 "max_goat_horn_range",
@@ -87,6 +104,13 @@ public class ServerConfig {
                 1,
                 Integer.MAX_VALUE,
                 "The maximum allowed duration of a custom music disc in seconds"
+        );
+        maxNoteBlockDuration = builder.integerEntry(
+                "max_note_block_duration",
+                60 * 5,
+                1,
+                Integer.MAX_VALUE,
+                "The maximum allowed duration of a custom note block in seconds"
         );
         maxGoatHornDuration = builder.integerEntry(
                 "max_goat_horn_duration",
