@@ -4,6 +4,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
+import de.maxhenkel.audioplayer.CustomSound;
+import de.maxhenkel.audioplayer.PlayerType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,20 +34,15 @@ public class UtilityCommands {
             return;
         }
 
-        CompoundTag tag = itemInHand.getTag();
-
-        if (tag == null) {
-            return;
-        }
-
-        if (!tag.contains("CustomSound")) {
+        if (!CustomSound.clearItem(itemInHand)) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
 
-        tag.remove("CustomSound");
-        tag.remove("CustomSoundRange");
-        tag.remove("IsStaticCustomSound");
+        CompoundTag tag = itemInHand.getTag();
+        if (tag == null) {
+            return;
+        }
 
         if (itemInHand.getItem() instanceof InstrumentItem) {
             tag.putString("instrument", "minecraft:ponder_goat_horn");
@@ -62,28 +59,20 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (!(itemInHand.getItem() instanceof RecordItem) && !(itemInHand.getItem() instanceof InstrumentItem)) {
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
+
+        if (playerType == null) {
             context.getSource().sendFailure(Component.literal("Invalid item"));
             return;
         }
 
-        if (!itemInHand.hasTag()) {
+        CustomSound customSound = CustomSound.of(itemInHand);
+        if (customSound == null) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
 
-        CompoundTag tag = itemInHand.getTag();
-
-        if (tag == null) {
-            return;
-        }
-
-        if (!tag.contains("CustomSound")) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
-            return;
-        }
-
-        context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(customSound.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
     }
 
 }

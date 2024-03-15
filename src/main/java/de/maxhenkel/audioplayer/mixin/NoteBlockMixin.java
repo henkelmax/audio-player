@@ -1,7 +1,9 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
+import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
+import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import de.maxhenkel.audioplayer.interfaces.CustomSoundHolder;
 import net.minecraft.core.BlockPos;
@@ -38,8 +40,8 @@ public class NoteBlockMixin extends Block {
         if (!(blockEntity instanceof ChannelHolder channelHolder)) {
             return;
         }
-        UUID id = soundHolder.soundplayer$getSoundID();
-        if (id == null) {
+        CustomSound customSound = soundHolder.soundplayer$getCustomSound();
+        if (customSound == null) {
             return;
         }
         UUID channelId = channelHolder.soundplayer$getChannelID();
@@ -48,9 +50,10 @@ public class NoteBlockMixin extends Block {
             channelHolder.soundplayer$setChannelID(null);
         }
 
-        boolean success = AudioManager.playCustomNoteBlock(serverLevel, blockPos, soundHolder, null);
+        UUID channel = AudioManager.play(serverLevel, blockPos, PlayerType.NOTE_BLOCK, customSound, null);
 
-        if (success) {
+        if (channel != null) {
+            channelHolder.soundplayer$setChannelID(channel);
             cir.setReturnValue(true);
         }
     }
