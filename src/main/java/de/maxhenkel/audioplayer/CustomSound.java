@@ -1,9 +1,11 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -28,11 +30,11 @@ public class CustomSound {
 
     @Nullable
     public static CustomSound of(ItemStack item) {
-        CompoundTag tag = item.getTag();
-        if (tag == null) {
+        CustomData customData = item.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) {
             return null;
         }
-        return of(tag);
+        return of(customData.copyTag());
     }
 
     @Nullable
@@ -99,11 +101,15 @@ public class CustomSound {
     }
 
     public void saveToItem(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        CompoundTag tag = customData.copyTag();
         saveToNbt(tag);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         if (stack.getItem() instanceof BlockItem) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            CustomData blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
+            CompoundTag blockEntityTag = blockEntityData.copyTag();
             saveToNbt(blockEntityTag);
+            stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
         }
     }
 
@@ -112,10 +118,11 @@ public class CustomSound {
     }
 
     public static boolean clearItem(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) {
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) {
             return false;
         }
+        CompoundTag tag = customData.copyTag();
         if (!tag.contains(CUSTOM_SOUND)) {
             return false;
         }
@@ -123,10 +130,15 @@ public class CustomSound {
         tag.remove(CUSTOM_SOUND_RANGE);
         tag.remove(CUSTOM_SOUND_STATIC);
         if (stack.getItem() instanceof BlockItem) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            CustomData blockEntityData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            if (blockEntityData == null) {
+                return true;
+            }
+            CompoundTag blockEntityTag = blockEntityData.copyTag();
             blockEntityTag.remove(CUSTOM_SOUND);
             blockEntityTag.remove(CUSTOM_SOUND_RANGE);
             blockEntityTag.remove(CUSTOM_SOUND_STATIC);
+            stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
         }
         return true;
     }

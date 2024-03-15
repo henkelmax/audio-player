@@ -7,13 +7,15 @@ import de.maxhenkel.admiral.annotations.RequiresPermission;
 import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerType;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.InstrumentItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.item.*;
+
+import java.util.Optional;
 
 @Command("audioplayer")
 public class UtilityCommands {
@@ -24,13 +26,9 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
+        //TODO Get by type
         if (!(itemInHand.getItem() instanceof RecordItem) && !(itemInHand.getItem() instanceof InstrumentItem)) {
             context.getSource().sendFailure(Component.literal("Invalid item"));
-            return;
-        }
-
-        if (!itemInHand.hasTag()) {
-            context.getSource().sendFailure(Component.literal("Item does not contain NBT data"));
             return;
         }
 
@@ -39,17 +37,14 @@ public class UtilityCommands {
             return;
         }
 
-        CompoundTag tag = itemInHand.getTag();
-        if (tag == null) {
-            return;
+        if (itemInHand.has(DataComponents.INSTRUMENT)) {
+            Optional<Holder.Reference<Instrument>> holder = BuiltInRegistries.INSTRUMENT.getHolder(Instruments.PONDER_GOAT_HORN);
+            holder.ifPresent(instrumentReference -> itemInHand.set(DataComponents.INSTRUMENT, instrumentReference));
         }
 
-        if (itemInHand.getItem() instanceof InstrumentItem) {
-            tag.putString("instrument", "minecraft:ponder_goat_horn");
+        if (itemInHand.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)) {
+            itemInHand.remove(DataComponents.HIDE_ADDITIONAL_TOOLTIP);
         }
-
-        tag.remove(ItemStack.TAG_DISPLAY);
-        tag.remove("HideFlags");
 
         context.getSource().sendSuccess(() -> Component.literal("Successfully cleared item"), false);
     }
