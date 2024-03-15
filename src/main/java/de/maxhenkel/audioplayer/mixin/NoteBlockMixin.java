@@ -28,7 +28,7 @@ public class NoteBlockMixin extends Block {
         super(properties);
     }
 
-    @Inject(method = "triggerEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playSeededSound(Lnet/minecraft/world/entity/player/Player;DDDLnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FFJ)V"), cancellable = true)
+    @Inject(method = "triggerEvent", at = @At(value = "HEAD"), cancellable = true)
     public void triggerEvent(BlockState blockState, Level level, BlockPos blockPos, int i, int j, CallbackInfoReturnable<Boolean> cir) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
