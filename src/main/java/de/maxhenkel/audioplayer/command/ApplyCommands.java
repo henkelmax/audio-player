@@ -30,12 +30,16 @@ public class ApplyCommands {
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
+    @Command("musicdisc")
+    @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         apply(context, new CustomSound(sound, range, false), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
+    @Command("musicdisc")
+    @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         apply(context, new CustomSound(sound, null, false), customName);
     }
@@ -57,9 +61,9 @@ public class ApplyCommands {
         apply(context, itemInHand, type, sound, customName);
     }
 
-    @RequiresPermission("audioplayer.apply_announcer")
-    @Command("set_announcer")
-    public void setAnnouncer(CommandContext<CommandSourceStack> context, @Name("enabled") Optional<Boolean> enabled) throws CommandSyntaxException {
+    @RequiresPermission("audioplayer.set_static")
+    @Command("setstatic")
+    public void setStatic(CommandContext<CommandSourceStack> context, @Name("enabled") Optional<Boolean> enabled) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
@@ -78,7 +82,7 @@ public class ApplyCommands {
         CustomSound newSound = customSound.asStatic(enabled.orElse(true));
         newSound.saveToItem(itemInHand);
 
-        context.getSource().sendSuccess(() -> Component.literal("Set announcer " + (enabled.orElse(true) ? "enabled" : "disabled")), false);
+        context.getSource().sendSuccess(() -> Component.literal((enabled.orElse(true) ? "Enabled" : "Disabled") + " static audio"), false);
     }
 
     private static void applyShulker(CommandContext<CommandSourceStack> context, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
