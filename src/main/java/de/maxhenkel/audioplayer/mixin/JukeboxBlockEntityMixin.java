@@ -1,7 +1,9 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
+import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
+import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -38,7 +40,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Unique
     @Nullable
-    private UUID channelID;
+    private UUID channelId;
 
     public JukeboxBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -47,12 +49,12 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
     @Nullable
     @Override
     public UUID soundplayer$getChannelID() {
-        return channelID;
+        return channelId;
     }
 
     @Override
     public void soundplayer$setChannelID(@Nullable UUID channelID) {
-        this.channelID = channelID;
+        this.channelId = channelID;
         setChanged();
     }
 
@@ -61,48 +63,56 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
         if (i != 0) {
             return;
         }
-        if (itemStack.isEmpty() && channelID != null) {
-            PlayerManager.instance().stop(channelID);
-            channelID = null;
+        if (itemStack.isEmpty() && channelId != null) {
+            PlayerManager.instance().stop(channelId);
+            channelId = null;
         }
     }
 
     @Inject(method = "removeItem", at = @At(value = "RETURN"))
     public void removeItem(int i, int j, CallbackInfoReturnable<ItemStack> ci) {
-        if (items.get(i).isEmpty() && channelID != null) {
-            PlayerManager.instance().stop(channelID);
-            channelID = null;
+        if (items.get(i).isEmpty() && channelId != null) {
+            PlayerManager.instance().stop(channelId);
+            channelId = null;
         }
     }
 
     @Redirect(method = "startPlaying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;levelEvent(Lnet/minecraft/world/entity/player/Player;ILnet/minecraft/core/BlockPos;I)V"))
     public void startPlaying(Level instance, Player player, int i1, BlockPos blockPos, int i2) {
-        if (!AudioManager.playCustomMusicDisc((ServerLevel) level, getBlockPos(), items.get(0), null)) {
-            instance.levelEvent(player, i1, blockPos, i2);
+        CustomSound customSound = CustomSound.of(items.get(0));
+        if (customSound != null) {
+            UUID channel = AudioManager.play((ServerLevel) level, getBlockPos(), PlayerType.MUSIC_DISC, customSound, player);
+            if (channel != null) {
+                channelId = channel;
+                return;
+            }
         }
+
+        instance.levelEvent(player, i1, blockPos, i2);
+
     }
 
     @Inject(method = "shouldRecordStopPlaying", at = @At(value = "RETURN"), cancellable = true)
     public void shouldRecordStopPlaying(RecordItem recordItem, CallbackInfoReturnable<Boolean> ci) {
-        if (channelID == null) {
+        if (channelId == null) {
             return;
         }
-        ci.setReturnValue(!PlayerManager.instance().isPlaying(channelID));
+        ci.setReturnValue(!PlayerManager.instance().isPlaying(channelId));
     }
 
     @Inject(method = "load", at = @At(value = "RETURN"))
     public void load(CompoundTag compound, CallbackInfo ci) {
         if (compound.hasUUID("ChannelID") && !items.get(0).isEmpty()) {
-            channelID = compound.getUUID("ChannelID");
+            channelId = compound.getUUID("ChannelID");
         } else {
-            channelID = null;
+            channelId = null;
         }
     }
 
     @Inject(method = "saveAdditional", at = @At(value = "RETURN"))
     public void save(CompoundTag compound, CallbackInfo ci) {
-        if (channelID != null && !items.get(0).isEmpty()) {
-            compound.putUUID("ChannelID", channelID);
+        if (channelId != null && !items.get(0).isEmpty()) {
+            compound.putUUID("ChannelID", channelId);
         }
     }
 }
