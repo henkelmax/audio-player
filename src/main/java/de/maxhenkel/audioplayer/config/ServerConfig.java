@@ -19,7 +19,7 @@ public class ServerConfig {
     public final ConfigEntry<Integer> maxMusicDiscDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
-    public final ConfigEntry<Boolean> announcerDiscsEnabled;
+    public final ConfigEntry<Boolean> allowStaticAudio;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry(
@@ -116,12 +116,12 @@ public class ServerConfig {
                 "Setting this to 0 will disable the cache",
                 "A higher value will result in less disk reads, but more RAM usage"
         );
-        announcerDiscsEnabled = builder.booleanEntry(
-                "enable_announcer_discs",
-                false,
-                "Announcer discs are discs that have no 3D audio or falloff (volume does not decrease with distance)",
-                "The /audioplayer set_announcer [enabled] command can be used when this is set to true",
-                "If this is disabled announcer discs are completely disabled and will play as normal discs if used"
+        allowStaticAudio = builder.booleanEntry(
+                "allow_static_audio",
+                true,
+                "Static audio does not have directionality or falloff (volume does not decrease with distance)",
+                "The /audioplayer setstatic [enabled] command can be used when this is set to true",
+                "If this config option is disabled, static audio is completely disabled and will play as if the option wouldn't be set"
         );
     }
 

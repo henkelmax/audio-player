@@ -149,7 +149,7 @@ public class AudioManager {
                     type.getCategory(),
                     type.getMaxDuration().get()
             );
-        } else if (sound.isStaticSound() && AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get()) { //TODO Move option
+        } else if (sound.isStaticSound() && AudioPlayer.SERVER_CONFIG.allowStaticAudio.get()) { //TODO Move option
             channelID = PlayerManager.instance().playStatic(
                     api,
                     level,
