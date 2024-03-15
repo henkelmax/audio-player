@@ -1,6 +1,8 @@
 package de.maxhenkel.audioplayer;
 
-import de.maxhenkel.audioplayer.interfaces.IJukebox;
+import de.maxhenkel.audioplayer.interfaces.CustomSoundHolder;
+import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
+import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
@@ -23,6 +25,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AudioManager {
@@ -127,85 +130,106 @@ public class AudioManager {
     }
 
     @Nullable
-    public static UUID getCustomSound(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getTag();
+    public static UUID getCustomSound(CompoundTag tag) {
         if (tag == null || !tag.hasUUID("CustomSound")) {
             return null;
         }
-
         return tag.getUUID("CustomSound");
     }
 
-    public static float getCustomSoundRange(ItemStack itemStack, float defaultRange) {
-        CompoundTag tag = itemStack.getTag();
-        if (tag == null || !tag.contains("CustomSoundRange", Tag.TAG_FLOAT)) {
-            return defaultRange;
-        }
+    @Nullable
+    public static UUID getCustomSound(ItemStack itemStack) {
+        return getCustomSound(itemStack.getTag());
+    }
 
-        return tag.getFloat("CustomSoundRange");
+    public static Optional<Float> getCustomSoundRange(CompoundTag tag) {
+        if (tag == null || !tag.contains("CustomSoundRange", Tag.TAG_FLOAT)) {
+            return Optional.empty();
+        }
+        return Optional.of(tag.getFloat("CustomSoundRange"));
+    }
+
+    public static Optional<Float> getCustomSoundRange(ItemStack itemStack) {
+        return getCustomSoundRange(itemStack.getTag());
+    }
+
+    public static boolean isStatic(CompoundTag tag) {
+        if (tag == null || !tag.contains("IsStaticCustomSound", Tag.TAG_BYTE)) {
+            return false;
+        }
+        return tag.getBoolean("IsStaticCustomSound");
     }
 
     public static boolean isStatic(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getTag();
-        if (tag != null) {
-            return tag.getBoolean("IsStaticCustomSound");
-        }
-
-        return false;
+        return isStatic(itemStack.getTag());
     }
 
-    public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
-        UUID customSound = AudioManager.getCustomSound(musicDisc);
-        float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get());
-        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get());
-        boolean isStaticDisc = isStatic(musicDisc);
-
-        if (customSound == null) {
-            return false;
-        }
+    @Nullable
+    public static UUID play(ServerLevel level, BlockPos pos, UUID soundId, String category, ConfigEntry<Float> defaultValue, ConfigEntry<Float> maxValue, ConfigEntry<Integer> maxDuration, Optional<Float> customRange, boolean isStatic, @Nullable Player player) {
+        float range = customRange.map(r -> Math.min(r, maxValue.get())).orElseGet(defaultValue::get);
 
         VoicechatServerApi api = Plugin.voicechatServerApi;
         if (api == null) {
-            return false;
+            return null;
         }
 
         @Nullable UUID channelID;
-        if (isStaticDisc && AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get()) {
+        if (isStatic && AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get()) {
             channelID = PlayerManager.instance().playStatic(
                     api,
                     level,
                     new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
-                    customSound,
+                    soundId,
                     (player instanceof ServerPlayer p) ? p : null,
                     range,
-                    Plugin.MUSIC_DISC_CATEGORY,
-                    AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
+                    category,
+                    maxDuration.get()
             );
         } else {
             channelID = PlayerManager.instance().playLocational(
                     api,
                     level,
                     new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
-                    customSound,
+                    soundId,
                     (player instanceof ServerPlayer p) ? p : null,
                     range,
-                    Plugin.MUSIC_DISC_CATEGORY,
-                    AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
+                    category,
+                    maxDuration.get()
             );
         }
 
+        return channelID;
+    }
 
-        if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
-            jukebox.setChannelID(channelID);
+    public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
+        UUID customSound = AudioManager.getCustomSound(musicDisc);
+        if (customSound == null) {
+            return false;
         }
+        UUID channelID = play(level, pos, customSound, Plugin.MUSIC_DISC_CATEGORY, AudioPlayer.SERVER_CONFIG.musicDiscRange, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration, AudioManager.getCustomSoundRange(musicDisc), isStatic(musicDisc), player);
 
+        if (level.getBlockEntity(pos) instanceof ChannelHolder channelHolder) {
+            channelHolder.soundplayer$setChannelID(channelID);
+        }
+        return true;
+    }
+
+    public static boolean playCustomNoteBlock(ServerLevel level, BlockPos pos, CustomSoundHolder customSoundHolder, @Nullable Player player) {
+        UUID customSound = customSoundHolder.soundplayer$getSoundID();
+        if (customSound == null) {
+            return false;
+        }
+        UUID channelID = play(level, pos, customSound, Plugin.MUSIC_DISC_CATEGORY, AudioPlayer.SERVER_CONFIG.noteBlockRange, AudioPlayer.SERVER_CONFIG.maxNoteBlockRange, AudioPlayer.SERVER_CONFIG.maxNoteBlockDuration, customSoundHolder.soundplayer$getRange(), customSoundHolder.soundplayer$isStatic(), player);
+
+        if (level.getBlockEntity(pos.above()) instanceof ChannelHolder channelHolder) {
+            channelHolder.soundplayer$setChannelID(channelID);
+        }
         return true;
     }
 
     public static boolean playGoatHorn(ServerLevel level, ItemStack goatHorn, ServerPlayer player) {
         UUID customSound = AudioManager.getCustomSound(goatHorn);
-        float range = AudioManager.getCustomSoundRange(goatHorn, AudioPlayer.SERVER_CONFIG.goatHornRange.get());
-        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get());
+        float range = AudioManager.getCustomSoundRange(goatHorn).map(r -> Math.min(r, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get())).orElseGet(() -> AudioPlayer.SERVER_CONFIG.goatHornRange.get());
 
         if (customSound == null) {
             return false;
