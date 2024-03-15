@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.mixin;
 
+import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import de.maxhenkel.audioplayer.interfaces.CustomSoundHolder;
@@ -16,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(SkullBlockEntity.class)
@@ -28,14 +28,7 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
 
     @Unique
     @Nullable
-    private UUID soundID;
-
-    @Unique
-    @Nullable
-    private Float range;
-
-    @Unique
-    private boolean isStatic;
+    private CustomSound customSound;
 
     public SkullBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -53,37 +46,10 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
         setChanged();
     }
 
+    @Nullable
     @Override
-    public UUID soundplayer$getSoundID() {
-        return soundID;
-    }
-
-    @Override
-    public void soundplayer$setSoundID(UUID soundID) {
-        this.soundID = soundID;
-        setChanged();
-    }
-
-    @Override
-    public Optional<Float> soundplayer$getRange() {
-        return Optional.ofNullable(range);
-    }
-
-    @Override
-    public void soundplayer$setRange(Optional<Float> range) {
-        this.range = range.orElse(null);
-        setChanged();
-    }
-
-    @Override
-    public boolean soundplayer$isStatic() {
-        return isStatic;
-    }
-
-    @Override
-    public void soundplayer$setStatic(boolean staticSound) {
-        this.isStatic = staticSound;
-        setChanged();
+    public CustomSound soundplayer$getCustomSound() {
+        return customSound;
     }
 
     @Inject(method = "saveAdditional", at = @At("RETURN"))
@@ -91,14 +57,8 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
         if (channelID != null) {
             tag.putUUID("ChannelID", channelID);
         }
-        if (soundID != null) {
-            tag.putUUID("CustomSound", soundID);
-        }
-        if (range != null) {
-            tag.putFloat("CustomSoundRange", range);
-        }
-        if (isStatic) {
-            tag.putBoolean("IsStaticCustomSound", true);
+        if (customSound != null) {
+            customSound.saveToNbt(tag);
         }
     }
 
@@ -109,21 +69,7 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
         } else {
             channelID = null;
         }
-        if (tag.contains("CustomSound")) {
-            soundID = tag.getUUID("CustomSound");
-        } else {
-            soundID = null;
-        }
-        if (tag.contains("CustomSoundRange")) {
-            range = tag.getFloat("CustomSoundRange");
-        } else {
-            range = null;
-        }
-        if (tag.contains("IsStaticCustomSound")) {
-            isStatic = tag.getBoolean("IsStaticCustomSound");
-        } else {
-            isStatic = false;
-        }
+        customSound = CustomSound.of(tag);
     }
 
     @Override
