@@ -3,7 +3,8 @@ package de.maxhenkel.audioplayer.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.CustomSound;
+import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,76 +18,43 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 @Command("audioplayer")
 public class ApplyCommands {
 
     @RequiresPermission("audioplayer.apply")
-    @Command("musicdisc")
-    public void musicDisc(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, false);
+    @Command("apply")
+    public void apply(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, new CustomSound(sound, range, false), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
-    @Command("musicdisc")
-    public void musicDisc(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null, false);
+    @Command("apply")
+    public void apply(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        apply(context, new CustomSound(sound, null, false), customName);
     }
 
-    @RequiresPermission("audioplayer.apply_announcer")
-    @Command("musicdisc_announcer")
-    public void musicDiscAnnouncer(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range, true);
-    }
+    private static void apply(CommandContext<CommandSourceStack> context, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-    @RequiresPermission("audioplayer.apply_announcer")
-    @Command("musicdisc_announcer")
-    public void musicDiscAnnouncer(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null, true);
-    }
+        if (isShulkerBox(itemInHand)) {
+            applyShulker(context, sound, customName);
+            return;
+        }
 
-    @RequiresPermission("audioplayer.apply")
-    @Command("goathorn")
-    public void goatHorn(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, range, false);
-    }
-
-    @RequiresPermission("audioplayer.apply")
-    @Command("goathorn")
-    public void goatHorn(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, null, false);
-    }
-
-    @RequiresPermission("audioplayer.apply")
-    @Command("musicdisc_bulk")
-    public void musicDiscBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, range);
-    }
-
-    @RequiresPermission("audioplayer.apply")
-    @Command("musicdisc_bulk")
-    public void musicDiscBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof RecordItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Music Disc", customName, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange, null);
-    }
-
-    @RequiresPermission("audioplayer.apply")
-    @Command("goathorn_bulk")
-    public void goatHornBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, range);
-    }
-
-    @RequiresPermission("audioplayer.apply")
-    @Command("goathorn_bulk")
-    public void goatHornBulk(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        applyBulk(context, sound, itemStack -> itemStack.getItem() instanceof InstrumentItem, itemStack -> itemStack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock, "Goat Horn", customName, AudioPlayer.SERVER_CONFIG.maxGoatHornRange, null);
+        PlayerType type = PlayerType.fromItemStack(itemInHand);
+        if (type == null) {
+            sendInvalidHandItemMessage(context, itemInHand);
+            return;
+        }
+        apply(context, itemInHand, type, sound, customName);
     }
 
     @RequiresPermission("audioplayer.apply_announcer")
@@ -95,84 +63,58 @@ public class ApplyCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (!(itemInHand.getItem() instanceof RecordItem)) {
-            context.getSource().sendFailure(Component.literal("Invalid item"));
-            return;
-        }
-        if (!itemInHand.hasTag()) {
-            context.getSource().sendFailure(Component.literal("Item does not contain NBT data"));
-            return;
-        }
-        CompoundTag tag = itemInHand.getTag();
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
 
-        if (tag == null) {
+        if (playerType == null) {
+            sendInvalidHandItemMessage(context, itemInHand);
+            return;
+        }
+        CustomSound customSound = CustomSound.of(itemInHand);
+        if (customSound == null) {
+            context.getSource().sendFailure(Component.literal("This item does not have custom audio"));
             return;
         }
 
-        if (!tag.contains("CustomSound")) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
-            return;
-        }
-
-        tag.putBoolean("IsStaticCustomSound", enabled.orElse(true));
+        CustomSound newSound = customSound.asStatic(enabled.orElse(true));
+        newSound.saveToItem(itemInHand);
 
         context.getSource().sendSuccess(Component.literal("Set announcer " + (enabled.orElse(true) ? "enabled" : "disabled")), false);
     }
 
-    private static void apply(CommandContext<CommandSourceStack> context, UUID sound, Predicate<ItemStack> validator, String itemTypeName, @Nullable String customName, ConfigEntry<Float> maxRange, @Nullable Float range, boolean isStatic) throws CommandSyntaxException {
-        checkRange(context, maxRange, range);
-
+    private static void applyShulker(CommandContext<CommandSourceStack> context, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (validator.test(itemInHand)) {
-            renameItem(context, itemInHand, sound, customName, range, isStatic);
-        } else {
-            context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
+        if (isShulkerBox(itemInHand)) {
+            processShulker(context, itemInHand, sound, customName);
+            return;
         }
+        context.getSource().sendFailure(Component.literal("You don't have a shulker box in your main hand"));
     }
 
-    private static void applyBulk(CommandContext<CommandSourceStack> context, UUID sound, Predicate<ItemStack> itemValidator, Predicate<ItemStack> containerValidator, String itemTypeName, @Nullable String customName, ConfigEntry<Float> maxRange, @Nullable Float range) throws CommandSyntaxException {
-        checkRange(context, maxRange, range);
-
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (containerValidator.test(itemInHand)) {
-            processShulker(context, itemInHand, itemValidator, itemTypeName, sound, customName, maxRange, range);
-        } else {
-            context.getSource().sendFailure(Component.literal("You don't have a %s in your main hand".formatted(itemTypeName)));
-        }
-    }
-
-    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack itemInHand, Predicate<ItemStack> itemValidator, String itemTypeName, UUID soundID, @Nullable String name, ConfigEntry<Float> maxRange, @Nullable Float range) {
-        ListTag shulkerContents = itemInHand.getOrCreateTagElement("BlockEntityTag").getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
+    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack shulkerItem, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
+        ListTag shulkerContents = shulkerItem.getOrCreateTagElement("BlockEntityTag").getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
         for (int i = 0; i < shulkerContents.size(); i++) {
             CompoundTag currentItem = shulkerContents.getCompound(i);
             ItemStack itemStack = ItemStack.of(currentItem);
-            if (itemValidator.test(itemStack)) {
-                renameItem(context, itemStack, soundID, name, range, false);
-                currentItem.put("tag", itemStack.getOrCreateTag());
+            PlayerType playerType = PlayerType.fromItemStack(itemStack);
+            if (playerType == null) {
+                continue;
             }
+            apply(context, itemStack, playerType, sound, customName);
+            currentItem.put("tag", itemStack.getOrCreateTag());
         }
-        itemInHand.getOrCreateTagElement("BlockEntityTag").put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
-        context.getSource().sendSuccess(Component.literal("Successfully updated %s contents".formatted(itemTypeName)), false);
+        //TODO check
+        //itemInHand.getOrCreateTagElement("BlockEntityTag").put(ShulkerBoxBlockEntity.ITEMS_TAG, shulkerContents);
+        context.getSource().sendSuccess(Component.literal("Successfully updated contents"), false);
     }
 
-    private static void renameItem(CommandContext<CommandSourceStack> context, ItemStack stack, UUID soundID, @Nullable String name, @Nullable Float range, boolean isStatic) {
+    private static void apply(CommandContext<CommandSourceStack> context, ItemStack stack, PlayerType type, CustomSound customSound, @Nullable String customName) throws CommandSyntaxException {
+        checkRange(type.getMaxRange(), customSound.getRange().orElse(null));
+        if (!type.isValid(stack)) {
+            return;
+        }
+        customSound.saveToItem(stack);
         CompoundTag tag = stack.getOrCreateTag();
-
-        tag.putUUID("CustomSound", soundID);
-
-        if (range != null) {
-            tag.putFloat("CustomSoundRange", range);
-        } else {
-            tag.remove("CustomSoundRange");
-        }
-
-        if (isStatic) {
-            tag.putBoolean("IsStaticCustomSound", true);
-        } else {
-            tag.remove("IsStaticCustomSound");
-        }
 
         if (stack.getItem() instanceof InstrumentItem) {
             tag.putString("instrument", "");
@@ -182,22 +124,12 @@ public class ApplyCommands {
 
         if (stack.getItem() instanceof BlockItem) {
             CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
-            blockEntityTag.putUUID("CustomSound", soundID);
-            if (range != null) {
-                blockEntityTag.putFloat("CustomSoundRange", range);
-            } else {
-                blockEntityTag.remove("CustomSoundRange");
-            }
-            if (isStatic) {
-                blockEntityTag.putBoolean("IsStaticCustomSound", true);
-            } else {
-                blockEntityTag.remove("IsStaticCustomSound");
-            }
+            customSound.saveToNbt(blockEntityTag);
         }
 
         ListTag lore = new ListTag();
-        if (name != null) {
-            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(Component.literal(name).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
+        if (customName != null) {
+            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(Component.literal(customName).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
         }
 
         CompoundTag display = new CompoundTag();
@@ -209,13 +141,25 @@ public class ApplyCommands {
         context.getSource().sendSuccess(Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
 
-    private static void checkRange(CommandContext<CommandSourceStack> context, ConfigEntry<Float> maxRange, @Nullable Float range) throws CommandSyntaxException {
+    private static void checkRange(ConfigEntry<Float> maxRange, @Nullable Float range) throws CommandSyntaxException {
         if (range == null) {
             return;
         }
         if (range > maxRange.get()) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.floatTooHigh().create(range, maxRange.get());
         }
+    }
+
+    public static boolean isShulkerBox(ItemStack stack) {
+        return stack.getItem() instanceof BlockItem blockitem && blockitem.getBlock() instanceof ShulkerBoxBlock;
+    }
+
+    private static void sendInvalidHandItemMessage(CommandContext<CommandSourceStack> context, ItemStack invalidItem) {
+        if (invalidItem.isEmpty()) {
+            context.getSource().sendFailure(Component.literal("You don't have an item in your main hand"));
+            return;
+        }
+        context.getSource().sendFailure(Component.literal("The item in your main hand can not have custom audio"));
     }
 
 }

@@ -1,6 +1,9 @@
 package de.maxhenkel.audioplayer.mixin;
 
+import de.maxhenkel.audioplayer.AudioManager;
+import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
+import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +31,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Unique
     @Nullable
-    private UUID channelID;
+    private UUID channelId;
 
     public JukeboxBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -37,12 +40,12 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
     @Nullable
     @Override
     public UUID soundplayer$getChannelID() {
-        return channelID;
+        return channelId;
     }
 
     @Override
     public void soundplayer$setChannelID(@Nullable UUID channelID) {
-        this.channelID = channelID;
+        this.channelId = channelID;
         setChanged();
     }
 
@@ -57,16 +60,16 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
     @Inject(method = "load", at = @At(value = "RETURN"))
     private void load(CompoundTag compound, CallbackInfo ci) {
         if (compound.hasUUID("ChannelID") && !record.isEmpty()) {
-            channelID = compound.getUUID("ChannelID");
+            channelId = compound.getUUID("ChannelID");
         } else {
-            channelID = null;
+            channelId = null;
         }
     }
 
     @Inject(method = "saveAdditional", at = @At(value = "RETURN"))
     private void save(CompoundTag compound, CallbackInfo ci) {
-        if (channelID != null && !record.isEmpty()) {
-            compound.putUUID("ChannelID", channelID);
+        if (channelId != null && !record.isEmpty()) {
+            compound.putUUID("ChannelID", channelId);
         }
     }
 }
