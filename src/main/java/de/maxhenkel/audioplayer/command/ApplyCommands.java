@@ -164,14 +164,35 @@ public class ApplyCommands {
 
         if (range != null) {
             tag.putFloat("CustomSoundRange", range);
+        } else {
+            tag.remove("CustomSoundRange");
         }
 
         if (isStatic) {
             tag.putBoolean("IsStaticCustomSound", true);
+        } else {
+            tag.remove("IsStaticCustomSound");
         }
 
         if (stack.getItem() instanceof InstrumentItem) {
             tag.putString("instrument", "");
+        } else {
+            tag.remove("instrument");
+        }
+
+        if (stack.getItem() instanceof BlockItem) {
+            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            blockEntityTag.putUUID("CustomSound", soundID);
+            if (range != null) {
+                blockEntityTag.putFloat("CustomSoundRange", range);
+            } else {
+                blockEntityTag.remove("CustomSoundRange");
+            }
+            if (isStatic) {
+                blockEntityTag.putBoolean("IsStaticCustomSound", true);
+            } else {
+                blockEntityTag.remove("IsStaticCustomSound");
+            }
         }
 
         ListTag lore = new ListTag();
