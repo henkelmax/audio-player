@@ -102,6 +102,11 @@ public class UtilityCommands {
         }
 
         CustomSound customSound = CustomSound.of(itemInHand);
+        if (customSound == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+            return;
+        }
+
         String soundId = customSound.getSoundId().toString();
 
         MinecraftServer server = player.getCommandSenderWorld().getServer();
