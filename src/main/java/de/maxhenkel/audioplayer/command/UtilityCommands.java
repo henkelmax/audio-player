@@ -46,6 +46,10 @@ public class UtilityCommands {
             itemInHand.remove(DataComponents.HIDE_ADDITIONAL_TOOLTIP);
         }
 
+        if (itemInHand.has(DataComponents.LORE)) {
+            itemInHand.remove(DataComponents.LORE);
+        }
+
         context.getSource().sendSuccess(() -> Component.literal("Successfully cleared item"), false);
     }
 
