@@ -1,1 +1,2 @@
-- Fixed optional command values
+- Reworked apply command
+- Added custom player head audio on note blocks

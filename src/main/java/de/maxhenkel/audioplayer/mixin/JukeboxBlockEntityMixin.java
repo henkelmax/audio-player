@@ -1,8 +1,10 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
+import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
-import de.maxhenkel.audioplayer.interfaces.IJukebox;
+import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -27,13 +30,14 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 @Mixin(JukeboxBlockEntity.class)
-public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Clearable, IJukebox {
+public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Clearable, ChannelHolder {
 
     @Shadow
     private ItemStack item;
 
+    @Unique
     @Nullable
-    private UUID channelID;
+    private UUID channelId;
 
     public JukeboxBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -41,60 +45,68 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Nullable
     @Override
-    public UUID getChannelID() {
-        return channelID;
+    public UUID soundplayer$getChannelID() {
+        return channelId;
     }
 
     @Override
-    public void setChannelID(@Nullable UUID channelID) {
-        this.channelID = channelID;
+    public void soundplayer$setChannelID(@Nullable UUID channelID) {
+        this.channelId = channelID;
         setChanged();
     }
 
     @Inject(method = "setTheItem", at = @At(value = "RETURN"))
     public void setItem(ItemStack itemStack, CallbackInfo ci) {
-        if (itemStack.isEmpty() && channelID != null) {
-            PlayerManager.instance().stop(channelID);
-            channelID = null;
+        if (itemStack.isEmpty() && channelId != null) {
+            PlayerManager.instance().stop(channelId);
+            channelId = null;
         }
     }
 
     @Inject(method = "splitTheItem", at = @At(value = "RETURN"))
     public void removeItem(int i, CallbackInfoReturnable<ItemStack> cir) {
-        if (item.isEmpty() && channelID != null) {
-            PlayerManager.instance().stop(channelID);
-            channelID = null;
+        if (item.isEmpty() && channelId != null) {
+            PlayerManager.instance().stop(channelId);
+            channelId = null;
         }
     }
 
     @Redirect(method = "startPlaying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;levelEvent(Lnet/minecraft/world/entity/player/Player;ILnet/minecraft/core/BlockPos;I)V"))
     public void startPlaying(Level instance, Player player, int i1, BlockPos blockPos, int i2) {
-        if (!AudioManager.playCustomMusicDisc((ServerLevel) level, getBlockPos(), item, null)) {
-            instance.levelEvent(player, i1, blockPos, i2);
+        CustomSound customSound = CustomSound.of(item);
+        if (customSound != null) {
+            UUID channel = AudioManager.play((ServerLevel) level, getBlockPos(), PlayerType.MUSIC_DISC, customSound, player);
+            if (channel != null) {
+                channelId = channel;
+                return;
+            }
         }
+
+        instance.levelEvent(player, i1, blockPos, i2);
+
     }
 
     @Inject(method = "shouldRecordStopPlaying", at = @At(value = "RETURN"), cancellable = true)
     public void shouldRecordStopPlaying(RecordItem recordItem, CallbackInfoReturnable<Boolean> ci) {
-        if (channelID == null) {
+        if (channelId == null) {
             return;
         }
-        ci.setReturnValue(!PlayerManager.instance().isPlaying(channelID));
+        ci.setReturnValue(!PlayerManager.instance().isPlaying(channelId));
     }
 
     @Inject(method = "load", at = @At(value = "RETURN"))
     public void load(CompoundTag compound, CallbackInfo ci) {
         if (compound.hasUUID("ChannelID") && !item.isEmpty()) {
-            channelID = compound.getUUID("ChannelID");
+            channelId = compound.getUUID("ChannelID");
         } else {
-            channelID = null;
+            channelId = null;
         }
     }
 
     @Inject(method = "saveAdditional", at = @At(value = "RETURN"))
     public void save(CompoundTag compound, CallbackInfo ci) {
-        if (channelID != null && !item.isEmpty()) {
-            compound.putUUID("ChannelID", channelID);
+        if (channelId != null && !item.isEmpty()) {
+            compound.putUUID("ChannelID", channelId);
         }
     }
 }

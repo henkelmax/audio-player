@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
+import de.maxhenkel.audioplayer.CustomSound;
+import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.FilenameMappings;
 import net.minecraft.ChatFormatting;
@@ -25,7 +27,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 
 @Command("audioplayer")
 public class UtilityCommands {
@@ -36,17 +37,26 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        Optional<CompoundTag> optionalTag = getId(context, player, itemInHand);
-
-        if (optionalTag.isEmpty()) {
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
+        if (playerType == null) {
+            context.getSource().sendFailure(Component.literal("Invalid item"));
             return;
         }
 
-        CompoundTag tag = optionalTag.get();
+        if (!itemInHand.hasTag()) {
+            context.getSource().sendFailure(Component.literal("Item does not contain NBT data"));
+            return;
+        }
 
-        tag.remove("CustomSound");
-        tag.remove("CustomSoundRange");
-        tag.remove("IsStaticCustomSound");
+        if (!CustomSound.clearItem(itemInHand)) {
+            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+            return;
+        }
+
+        CompoundTag tag = itemInHand.getTag();
+        if (tag == null) {
+            return;
+        }
 
         if (itemInHand.getItem() instanceof InstrumentItem) {
             tag.putString("instrument", "minecraft:ponder_goat_horn");
@@ -63,9 +73,16 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        Optional<CompoundTag> optionalTag = getId(context, player, itemInHand);
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
 
-        if (optionalTag.isEmpty()) {
+        if (playerType == null) {
+            context.getSource().sendFailure(Component.literal("Invalid item"));
+            return;
+        }
+
+        CustomSound customSound = CustomSound.of(itemInHand);
+        if (customSound == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
 
@@ -78,14 +95,15 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        Optional<CompoundTag> optionalTag = getId(context, player, itemInHand);
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
 
-        if (optionalTag.isEmpty()) {
+        if (playerType == null) {
+            context.getSource().sendFailure(Component.literal("Invalid item"));
             return;
         }
 
-        CompoundTag tag = optionalTag.get();
-        String soundId = tag.getUUID("CustomSound").toString();
+        CustomSound customSound = CustomSound.of(itemInHand);
+        String soundId = customSound.getSoundId().toString();
 
         MinecraftServer server = player.getCommandSenderWorld().getServer();
 
@@ -129,30 +147,5 @@ public class UtilityCommands {
             "Failed to retrieved sound filename.\n"+
             "If you updated from an older version of the mod, existing sounds won't be able to retrieve the original filenames."
         ));
-    }
-
-    private static Optional<CompoundTag> getId(CommandContext<CommandSourceStack> context, ServerPlayer player, ItemStack itemInHand) throws CommandSyntaxException {
-        if (!(itemInHand.getItem() instanceof RecordItem) && !(itemInHand.getItem() instanceof InstrumentItem)) {
-            context.getSource().sendFailure(Component.literal("Invalid item"));
-            return Optional.empty();
-        }
-
-        if (!itemInHand.hasTag()) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
-            return Optional.empty();
-        }
-
-        CompoundTag tag = itemInHand.getTag();
-
-        if (tag == null) {
-            return Optional.empty();
-        }
-
-        if (!tag.contains("CustomSound")) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
-            return Optional.empty();
-        }
-
-        return Optional.of(tag);
     }
 }

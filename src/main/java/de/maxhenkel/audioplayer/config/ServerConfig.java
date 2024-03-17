@@ -9,15 +9,18 @@ public class ServerConfig {
     public final ConfigEntry<Long> maxUploadSize;
     public final ConfigEntry<Integer> goatHornCooldown;
     public final ConfigEntry<Float> musicDiscRange;
+    public final ConfigEntry<Float> noteBlockRange;
     public final ConfigEntry<Float> goatHornRange;
     public final ConfigEntry<Float> maxGoatHornRange;
+    public final ConfigEntry<Float> maxNoteBlockRange;
     public final ConfigEntry<Float> maxMusicDiscRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
     public final ConfigEntry<Integer> maxMusicDiscDuration;
+    public final ConfigEntry<Integer> maxNoteBlockDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
-    public final ConfigEntry<Boolean> announcerDiscsEnabled;
+    public final ConfigEntry<Boolean> allowStaticAudio;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry(
@@ -46,6 +49,13 @@ public class ServerConfig {
                 (float) Integer.MAX_VALUE,
                 "The range of music discs with custom audio in blocks"
         );
+        noteBlockRange = builder.floatEntry(
+                "note_block_range",
+                16F,
+                1F,
+                (float) Integer.MAX_VALUE,
+                "The range of note blocks with custom audio in blocks"
+        );
         goatHornRange = builder.floatEntry(
                 "goat_horn_range",
                 256F,
@@ -59,6 +69,13 @@ public class ServerConfig {
                 1F,
                 (float) Integer.MAX_VALUE,
                 "The maximum allowed range of a music disc with custom audio in blocks"
+        );
+        maxNoteBlockRange = builder.floatEntry(
+                "max_note_block_range",
+                256F,
+                1F,
+                (float) Integer.MAX_VALUE,
+                "The maximum allowed range of a note block with custom audio in blocks"
         );
         maxGoatHornRange = builder.floatEntry(
                 "max_goat_horn_range",
@@ -88,6 +105,13 @@ public class ServerConfig {
                 Integer.MAX_VALUE,
                 "The maximum allowed duration of a custom music disc in seconds"
         );
+        maxNoteBlockDuration = builder.integerEntry(
+                "max_note_block_duration",
+                60 * 5,
+                1,
+                Integer.MAX_VALUE,
+                "The maximum allowed duration of a note block with custom audio in seconds"
+        );
         maxGoatHornDuration = builder.integerEntry(
                 "max_goat_horn_duration",
                 20,
@@ -104,12 +128,12 @@ public class ServerConfig {
                 "Setting this to 0 will disable the cache",
                 "A higher value will result in less disk reads, but more RAM usage"
         );
-        announcerDiscsEnabled = builder.booleanEntry(
-                "enable_announcer_discs",
-                false,
-                "Announcer discs are discs that have no 3D audio or falloff (volume does not decrease with distance)",
-                "The /audioplayer set_announcer [enabled] command can be used when this is set to true",
-                "If this is disabled announcer discs are completely disabled and will play as normal discs if used"
+        allowStaticAudio = builder.booleanEntry(
+                "allow_static_audio",
+                true,
+                "Static audio does not have directionality or falloff (volume does not decrease with distance)",
+                "The /audioplayer setstatic [enabled] command can be used when this is set to true",
+                "If this config option is disabled, static audio is completely disabled and will play as if the option wouldn't be set"
         );
     }
 

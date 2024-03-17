@@ -5,7 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "JukeboxBlockEntityMixin",
-    "InstrumentItemMixin"
+    "InstrumentItemMixin",
+    "NoteBlockMixin",
+    "SkullBlockEntityMixin",
+    "BlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

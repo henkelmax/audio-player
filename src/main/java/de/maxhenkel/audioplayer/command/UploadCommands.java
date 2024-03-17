@@ -217,19 +217,11 @@ public class UploadCommands {
                         .withStyle(ChatFormatting.GREEN)
                 )
                 .append(" ")
-                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on music disc"))
+                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on item"))
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer musicdisc %s".formatted(soundID.toString())))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a music disc")));
-                        })
-                        .withStyle(ChatFormatting.GREEN)
-                ).append(" ")
-                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on goat horn"))
-                        .withStyle(style -> {
-                            return style
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer goathorn %s".formatted(soundID.toString())))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on a goat horn")));
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer apply %s".formatted(soundID.toString())))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on an item")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 );

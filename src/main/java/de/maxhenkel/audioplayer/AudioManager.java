@@ -1,16 +1,12 @@
 package de.maxhenkel.audioplayer;
 
-import de.maxhenkel.audioplayer.interfaces.IJukebox;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.io.IOUtils;
@@ -127,111 +123,61 @@ public class AudioManager {
     }
 
     @Nullable
-    public static UUID getCustomSound(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getTag();
-        if (tag == null || !tag.hasUUID("CustomSound")) {
-            return null;
-        }
-
-        return tag.getUUID("CustomSound");
-    }
-
-    public static float getCustomSoundRange(ItemStack itemStack, float defaultRange) {
-        CompoundTag tag = itemStack.getTag();
-        if (tag == null || !tag.contains("CustomSoundRange", Tag.TAG_FLOAT)) {
-            return defaultRange;
-        }
-
-        return tag.getFloat("CustomSoundRange");
-    }
-
-    public static boolean isStatic(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getTag();
-        if (tag != null) {
-            return tag.getBoolean("IsStaticCustomSound");
-        }
-
-        return false;
-    }
-
-    public static boolean playCustomMusicDisc(ServerLevel level, BlockPos pos, ItemStack musicDisc, @Nullable Player player) {
-        UUID customSound = AudioManager.getCustomSound(musicDisc);
-        float range = AudioManager.getCustomSoundRange(musicDisc, AudioPlayer.SERVER_CONFIG.musicDiscRange.get());
-        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxMusicDiscRange.get());
-        boolean isStaticDisc = isStatic(musicDisc);
-
-        if (customSound == null) {
-            return false;
-        }
+    public static UUID play(ServerLevel level, BlockPos pos, PlayerType type, CustomSound sound, @Nullable Player player) {
+        float range = sound.getRange(type);
 
         VoicechatServerApi api = Plugin.voicechatServerApi;
         if (api == null) {
-            return false;
+            return null;
         }
 
         @Nullable UUID channelID;
-        if (isStaticDisc && AudioPlayer.SERVER_CONFIG.announcerDiscsEnabled.get()) {
+        if (type.equals(PlayerType.GOAT_HORN)) {
+            Vec3 playerPos;
+            if (player == null) {
+                playerPos = new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+            } else {
+                playerPos = player.position();
+            }
+            channelID = PlayerManager.instance().playLocational(
+                    api,
+                    level,
+                    playerPos,
+                    sound.getSoundId(),
+                    (player instanceof ServerPlayer p) ? p : null,
+                    range,
+                    type.getCategory(),
+                    type.getMaxDuration().get()
+            );
+        } else if (sound.isStaticSound() && AudioPlayer.SERVER_CONFIG.allowStaticAudio.get()) { //TODO Move option
             channelID = PlayerManager.instance().playStatic(
                     api,
                     level,
                     new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
-                    customSound,
+                    sound.getSoundId(),
                     (player instanceof ServerPlayer p) ? p : null,
                     range,
-                    Plugin.MUSIC_DISC_CATEGORY,
-                    AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
+                    type.getCategory(),
+                    type.getMaxDuration().get()
             );
         } else {
             channelID = PlayerManager.instance().playLocational(
                     api,
                     level,
                     new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
-                    customSound,
+                    sound.getSoundId(),
                     (player instanceof ServerPlayer p) ? p : null,
                     range,
-                    Plugin.MUSIC_DISC_CATEGORY,
-                    AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration.get()
+                    type.getCategory(),
+                    type.getMaxDuration().get()
             );
         }
 
-
-        if (level.getBlockEntity(pos) instanceof IJukebox jukebox) {
-            jukebox.setChannelID(channelID);
-        }
-
-        return true;
-    }
-
-    public static boolean playGoatHorn(ServerLevel level, ItemStack goatHorn, ServerPlayer player) {
-        UUID customSound = AudioManager.getCustomSound(goatHorn);
-        float range = AudioManager.getCustomSoundRange(goatHorn, AudioPlayer.SERVER_CONFIG.goatHornRange.get());
-        range = Math.min(range, AudioPlayer.SERVER_CONFIG.maxGoatHornRange.get());
-
-        if (customSound == null) {
-            return false;
-        }
-
-        VoicechatServerApi api = Plugin.voicechatServerApi;
-        if (api == null) {
-            return false;
-        }
-
-        PlayerManager.instance().playLocational(
-                api,
-                level,
-                player.position(),
-                customSound,
-                player,
-                range,
-                Plugin.GOAT_HORN_CATEGORY,
-                AudioPlayer.SERVER_CONFIG.maxGoatHornDuration.get()
-        );
-        return true;
+        return channelID;
     }
 
     public static float getLengthSeconds(short[] audio) {
         return (float) audio.length / AudioConverter.FORMAT.getSampleRate();
     }
-
 
 }
