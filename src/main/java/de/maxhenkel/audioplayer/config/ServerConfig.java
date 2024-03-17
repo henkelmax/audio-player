@@ -110,7 +110,7 @@ public class ServerConfig {
                 60 * 5,
                 1,
                 Integer.MAX_VALUE,
-                "The maximum allowed duration of a custom note block in seconds"
+                "The maximum allowed duration of a note block with custom audio in seconds"
         );
         maxGoatHornDuration = builder.integerEntry(
                 "max_goat_horn_duration",
