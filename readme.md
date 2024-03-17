@@ -11,7 +11,7 @@
 
 <!-- modrinth_exclude.end -->
 
-This server side Fabric mod enables uploading custom audio for music discs and goat horns.
+This server side Fabric mod enables uploading custom audio for music discs, goat horns and note blocks with heads.
 
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
 
@@ -54,8 +54,10 @@ Run `/audioplayer filebin` and follow the instructions.
 
 **Putting custom audio on a music disc or goat horn**
 
-Run `/audioplayer apply <ID>` and hold a **music disc** or **goat horn** in your main hand.
+Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
 Additionally, you can add a custom name and range to the item `/audioplayer apply <ID> "<CUSTOM-TEXT>" <RANGE>`.
+
+It's also possible to bulk apply audio to more than one item at a time by holding a shulker box in your hand.
 
 **Getting the audio from an existing item**
 
