@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 
 @Command("audioplayer")
 public class UtilityCommands {
@@ -24,7 +23,8 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (!(itemInHand.getItem() instanceof RecordItem) && !(itemInHand.getItem() instanceof InstrumentItem)) {
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
+        if (playerType == null) {
             context.getSource().sendFailure(Component.literal("Invalid item"));
             return;
         }
