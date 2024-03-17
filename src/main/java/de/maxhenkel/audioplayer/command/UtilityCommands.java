@@ -86,8 +86,7 @@ public class UtilityCommands {
             return;
         }
 
-        CompoundTag tag = optionalTag.get();
-        context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(tag.getUUID("CustomSound"), Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(customSound.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
     }
 
     @Command("filename")
