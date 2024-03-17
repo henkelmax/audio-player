@@ -125,7 +125,7 @@ public class ApplyCommands {
         }
 
         if (stack.getItem() instanceof BlockItem) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            CompoundTag blockEntityTag = stack.getOrCreateTagElement("BlockEntityTag");
             customSound.saveToNbt(blockEntityTag);
         }
 

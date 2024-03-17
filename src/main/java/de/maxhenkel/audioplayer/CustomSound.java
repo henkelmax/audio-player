@@ -102,7 +102,7 @@ public class CustomSound {
         CompoundTag tag = stack.getOrCreateTag();
         saveToNbt(tag);
         if (stack.getItem() instanceof BlockItem) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            CompoundTag blockEntityTag = stack.getOrCreateTagElement("BlockEntityTag");
             saveToNbt(blockEntityTag);
         }
     }
@@ -123,7 +123,7 @@ public class CustomSound {
         tag.remove(CUSTOM_SOUND_RANGE);
         tag.remove(CUSTOM_SOUND_STATIC);
         if (stack.getItem() instanceof BlockItem) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
+            CompoundTag blockEntityTag = stack.getOrCreateTagElement("BlockEntityTag");
             blockEntityTag.remove(CUSTOM_SOUND);
             blockEntityTag.remove(CUSTOM_SOUND_RANGE);
             blockEntityTag.remove(CUSTOM_SOUND_STATIC);

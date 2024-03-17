@@ -1,6 +1,9 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
+import de.maxhenkel.audioplayer.CustomSound;
+import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
@@ -17,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.UUID;
+
 @Mixin(RecordItem.class)
 public class RecordItemMixin {
 
@@ -26,8 +31,17 @@ public class RecordItemMixin {
             return;
         }
 
-        if (!AudioManager.playCustomMusicDisc((ServerLevel) level, blockPos, itemStack, useOnContext.getPlayer())) {
+        CustomSound customSound = CustomSound.of(itemStack);
+        if (customSound == null) {
             return;
+        }
+        UUID channel = AudioManager.play((ServerLevel) level, blockPos, PlayerType.MUSIC_DISC, customSound, useOnContext.getPlayer());
+        if (channel == null) {
+            return;
+        }
+
+        if (level.getBlockEntity(blockPos) instanceof ChannelHolder channelHolder) {
+            channelHolder.soundplayer$setChannelID(channel);
         }
 
         itemStack.shrink(1);

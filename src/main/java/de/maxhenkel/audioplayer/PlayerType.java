@@ -1,11 +1,9 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.level.block.SkullBlock;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -18,13 +16,6 @@ public enum PlayerType {
             AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration,
             Plugin.MUSIC_DISC_CATEGORY,
             itemStack -> itemStack.getItem() instanceof RecordItem
-    ),
-    NOTE_BLOCK(
-            AudioPlayer.SERVER_CONFIG.noteBlockRange,
-            AudioPlayer.SERVER_CONFIG.maxNoteBlockRange,
-            AudioPlayer.SERVER_CONFIG.maxNoteBlockDuration,
-            Plugin.NOTE_BLOCK_CATEGORY,
-            itemStack -> itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock
     ),
     GOAT_HORN(
             AudioPlayer.SERVER_CONFIG.goatHornRange,

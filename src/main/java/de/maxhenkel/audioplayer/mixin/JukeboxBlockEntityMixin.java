@@ -1,9 +1,6 @@
 package de.maxhenkel.audioplayer.mixin;
 
-import de.maxhenkel.audioplayer.AudioManager;
-import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
-import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -51,9 +48,9 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Inject(method = "setRecord", at = @At(value = "RETURN"))
     private void setRecord(ItemStack record, CallbackInfo ci) {
-        if (record.isEmpty() && channelID != null) {
-            PlayerManager.instance().stop(channelID);
-            channelID = null;
+        if (record.isEmpty() && channelId != null) {
+            PlayerManager.instance().stop(channelId);
+            channelId = null;
         }
     }
 
