@@ -6,12 +6,12 @@ public class AudioCache {
 
     private final int size;
     private final Map<UUID, short[]> audioCache;
-    private final Queue<UUID> orderedKeys;
+    private final Deque<UUID> accessQueue;
 
     public AudioCache(int size) {
         this.size = size;
         this.audioCache = new HashMap<>();
-        this.orderedKeys = new ArrayDeque<>();
+        this.accessQueue = new ArrayDeque<>();
     }
 
     public synchronized short[] get(UUID id, AudioSupplier supplier) throws Exception {
@@ -21,6 +21,8 @@ public class AudioCache {
             pushCache(id, uncachedData);
             return uncachedData;
         }
+        accessQueue.remove(id);
+        accessQueue.addFirst(id);
         return data;
     }
 
@@ -31,11 +33,11 @@ public class AudioCache {
         if (audioCache.containsKey(id)) {
             return;
         }
-        if (orderedKeys.size() >= size) {
-            UUID poll = orderedKeys.poll();
-            audioCache.remove(poll);
+        if (accessQueue.size() >= size) {
+            UUID leastRecentlyUsed = accessQueue.removeLast();
+            audioCache.remove(leastRecentlyUsed);
         }
-        orderedKeys.add(id);
+        accessQueue.addFirst(id);
         audioCache.put(id, data);
     }
 
