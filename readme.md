@@ -53,11 +53,15 @@ Run `/audioplayer filebin` and follow the instructions.
 **Putting custom audio on a music disc or goat horn**
 
 Run `/audioplayer apply <ID>` and hold a **music disc** or **goat horn** in your main hand.
-Additionally, you can add a custom name and range to the item `/audioplayer apply <ID> "<CUSTOM-TEXT>" <RANGE>`.
+Additionally, you can add a custom name and range to the item `/audioplayer apply <ID> <RANGE> "<CUSTOM-TEXT>"`.
 
 **Getting the audio from an existing item**
 
 Run `/audioplayer id` and hold a music disc or a goat horn with custom audio in your main hand.
+
+**Getting the original filename from an existing item**
+
+Run `/audioplayer filename` and hold a music disc or a goat horn with custom audio in your main hand.
 
 ---
 [![](https://user-images.githubusercontent.com/13237524/179395180-05f2ec3b-2ed3-412d-8639-72c7f13a8068.png)](https://youtu.be/j8GRcYnjUp8)
