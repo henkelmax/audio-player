@@ -1,9 +1,14 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.SkullBlock;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -14,6 +19,8 @@ public class CustomSound {
     public static final String CUSTOM_SOUND = "CustomSound";
     public static final String CUSTOM_SOUND_RANGE = "CustomSoundRange";
     public static final String CUSTOM_SOUND_STATIC = "IsStaticCustomSound";
+
+    public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
     protected UUID soundId;
     @Nullable
@@ -99,12 +106,30 @@ public class CustomSound {
     }
 
     public void saveToItem(ItemStack stack) {
+        saveToItem(stack, null);
+    }
+
+    public void saveToItem(ItemStack stack, @Nullable String loreString) {
         CompoundTag tag = stack.getOrCreateTag();
         saveToNbt(tag);
-        if (stack.getItem() instanceof BlockItem) {
+        ListTag lore = new ListTag();
+        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock) {
             CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
             saveToNbt(blockEntityTag);
+            if (loreString == null) {
+                lore.add(0, StringTag.valueOf(Component.Serializer.toJson(Component.literal(DEFAULT_HEAD_LORE).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
+            }
         }
+
+        if (loreString != null) {
+            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(Component.literal(loreString).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
+        }
+
+        CompoundTag display = new CompoundTag();
+        display.put(ItemStack.TAG_LORE, lore);
+        tag.put(ItemStack.TAG_DISPLAY, display);
+
+        tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
     }
 
     public CustomSound asStatic(boolean staticSound) {
