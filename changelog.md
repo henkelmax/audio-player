@@ -1,2 +1,3 @@
 - Reworked apply command
 - Added custom player head audio on note blocks
+- Changed caching type to LRU
