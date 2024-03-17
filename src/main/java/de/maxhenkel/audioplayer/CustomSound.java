@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.block.SkullBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -16,6 +18,7 @@ public class CustomSound {
     public static final String CUSTOM_SOUND = "CustomSound";
     public static final String CUSTOM_SOUND_RANGE = "CustomSoundRange";
     public static final String CUSTOM_SOUND_STATIC = "IsStaticCustomSound";
+    private static final String ID = "id";
 
     protected UUID soundId;
     @Nullable
@@ -105,10 +108,11 @@ public class CustomSound {
         CompoundTag tag = customData.copyTag();
         saveToNbt(tag);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-        if (stack.getItem() instanceof BlockItem) {
+        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock) {
             CustomData blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
             CompoundTag blockEntityTag = blockEntityData.copyTag();
             saveToNbt(blockEntityTag);
+            blockEntityTag.putString(ID, BlockEntityType.SKULL.builtInRegistryHolder().key().location().toString());
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
         }
     }
@@ -129,6 +133,7 @@ public class CustomSound {
         tag.remove(CUSTOM_SOUND);
         tag.remove(CUSTOM_SOUND_RANGE);
         tag.remove(CUSTOM_SOUND_STATIC);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         if (stack.getItem() instanceof BlockItem) {
             CustomData blockEntityData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
             if (blockEntityData == null) {
