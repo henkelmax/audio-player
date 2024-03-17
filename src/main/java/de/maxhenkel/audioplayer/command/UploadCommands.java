@@ -7,6 +7,7 @@ import de.maxhenkel.admiral.annotations.RequiresPermission;
 import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.Filebin;
+import de.maxhenkel.audioplayer.FilenameMappings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
@@ -144,6 +145,7 @@ public class UploadCommands {
                 context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
             }
         }).start();
+        FilenameMappings.append(context.getSource().getServer(), url.split("/")[url.split("/").length - 1], sound);
     }
 
     @RequiresPermission("audioplayer.upload")
@@ -201,6 +203,7 @@ public class UploadCommands {
                 context.getSource().sendFailure(Component.literal("Failed to copy sound: %s".formatted(e.getMessage())));
             }
         }).start();
+        FilenameMappings.append(context.getSource().getServer(), fileName, uuid);
     }
 
     public static MutableComponent sendUUIDMessage(UUID soundID, MutableComponent component) {

@@ -62,6 +62,7 @@ public class Filebin {
 
                 String filename = file.get("filename").getAsString();
                 AudioManager.saveSound(server, sound, url + "/" + filename);
+                FilenameMappings.append(server, filename, sound);
                 return;
             }
         }
