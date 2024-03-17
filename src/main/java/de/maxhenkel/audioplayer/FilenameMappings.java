@@ -58,6 +58,10 @@ public class FilenameMappings {
             }
 
             NbtIo.writeCompressed(root, mappingsFile.toPath());
+
+            if (mappings.isEmpty()) {
+                mappingsFile.delete();
+            }
         } catch (IOException e) {
             System.err.println("Permission Denied. Failed to read or write the file.");
         }
