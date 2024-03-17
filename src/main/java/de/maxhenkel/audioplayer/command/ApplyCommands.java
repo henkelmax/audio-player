@@ -6,11 +6,9 @@ import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -115,7 +113,7 @@ public class ApplyCommands {
         if (!type.isValid(stack)) {
             return;
         }
-        customSound.saveToItem(stack);
+        customSound.saveToItem(stack, customName);
         CompoundTag tag = stack.getOrCreateTag();
 
         if (stack.getItem() instanceof InstrumentItem) {
@@ -128,17 +126,6 @@ public class ApplyCommands {
             CompoundTag blockEntityTag = stack.getOrCreateTagElement("BlockEntityTag");
             customSound.saveToNbt(blockEntityTag);
         }
-
-        ListTag lore = new ListTag();
-        if (customName != null) {
-            lore.add(0, StringTag.valueOf(Component.Serializer.toJson(Component.literal(customName).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY))));
-        }
-
-        CompoundTag display = new CompoundTag();
-        display.put(ItemStack.TAG_LORE, lore);
-        tag.put(ItemStack.TAG_DISPLAY, display);
-
-        tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
 
         context.getSource().sendSuccess(Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
