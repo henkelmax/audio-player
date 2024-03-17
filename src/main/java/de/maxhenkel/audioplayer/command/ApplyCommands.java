@@ -6,23 +6,19 @@ import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -116,16 +112,9 @@ public class ApplyCommands {
         if (!type.isValid(stack)) {
             return;
         }
-        customSound.saveToItem(stack);
+        customSound.saveToItem(stack, customName);
 
         stack.remove(DataComponents.INSTRUMENT);
-
-        if (customName != null) {
-            ItemLore l = new ItemLore(Collections.singletonList(Component.literal(customName).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
-            stack.set(DataComponents.LORE, l);
-        }
-
-        stack.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
 
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
