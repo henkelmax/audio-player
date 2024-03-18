@@ -3,6 +3,7 @@
 # AudioPlayer
 
 ## Links
+
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/audioplayer)
 - [Modrinth](https://modrinth.com/mod/audioplayer)
 - [Simple Voice Chat Discord](https://discord.gg/4dH2zwTmyX)
@@ -13,7 +14,8 @@
 
 This server side Fabric mod enables uploading custom audio for music discs, goat horns and note blocks with heads.
 
-This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
+This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and
+server.
 
 ## Features
 
@@ -39,7 +41,8 @@ Run `/audioplayer` to get general information on how to upload files.
 
 **Uploading audio files via URL**
 
-Run `/audioplayer url "https://example.com/myaudio.mp3"` where `https://example.com/myaudio.mp3` is the link to your `.mp3` or `.wav` file.
+Run `/audioplayer url "https://example.com/myaudio.mp3"` where `https://example.com/myaudio.mp3` is the link to
+your `.mp3` or `.wav` file.
 
 **Uploading audio files directly to the server**
 
@@ -53,13 +56,22 @@ Run `/audioplayer filebin` and follow the instructions.
 **Putting custom audio on a music disc or goat horn**
 
 Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
-Additionally, you can add a custom name and range to the item `/audioplayer apply <ID> "<CUSTOM-TEXT>" <RANGE>`.
+Additionally, you can add a custom name and range to the item `/audioplayer apply <ID> <RANGE> "<CUSTOM-TEXT>"`.
 
 It's also possible to bulk apply audio to more than one item at a time by holding a shulker box in your hand.
 
+Starting with version `1.9.1`, you can also apply custom audio by its original file name:
+`/audioplayer apply "<FILE_NAME>"`.
+This command works wit and without the file extension (like `.mp3` or `.wav`).
+Note that the file name must be unique for this to work.
+
 **Getting the audio from an existing item**
 
-Run `/audioplayer id` and hold a music disc or a goat horn with custom audio in your main hand.
+Run `/audioplayer id` while holding a music disc, goat horn or head with custom audio in your main hand.
+
+**Getting the audio file name from an existing item**
+
+Run `/audioplayer name` while holding a music disc, goat horn or head with custom audio in your main hand.
 
 ---
 [![](https://user-images.githubusercontent.com/13237524/179395180-05f2ec3b-2ed3-412d-8639-72c7f13a8068.png)](https://youtu.be/j8GRcYnjUp8)
