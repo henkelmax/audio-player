@@ -1,3 +1,2 @@
-- Reworked apply command
-- Added custom player head audio on note blocks
-- Changed caching type to LRU
+- Added `/audioplayer name` command
+- Added `/audioplayer apply <file_name> ...` command

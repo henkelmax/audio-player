@@ -45,6 +45,8 @@ public class AudioPlayer implements ModInitializer {
             ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
 
+        FileNameManager.init();
+
         SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties")).build();
 
         try {

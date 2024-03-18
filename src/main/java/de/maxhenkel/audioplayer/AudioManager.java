@@ -30,7 +30,11 @@ public class AudioManager {
     }
 
     public static Path getSoundFile(MinecraftServer server, UUID id, String extension) {
-        return server.getWorldPath(AUDIO_DATA).resolve(id.toString() + "." + extension);
+        return getAudioDataFolder(server).resolve(id.toString() + "." + extension);
+    }
+
+    public static Path getAudioDataFolder(MinecraftServer server) {
+        return server.getWorldPath(AUDIO_DATA);
     }
 
     public static Path getExistingSoundFile(MinecraftServer server, UUID id) throws FileNotFoundException {
@@ -64,6 +68,8 @@ public class AudioManager {
         try (OutputStream outputStream = Files.newOutputStream(soundFile)) {
             IOUtils.write(data, outputStream);
         }
+
+        FileNameManager.instance().ifPresent(mgr -> mgr.addFileName(id, FileNameManager.getFileNameFromUrl(url)));
     }
 
     public static void saveSound(MinecraftServer server, UUID id, Path file) throws UnsupportedAudioFileException, IOException {
@@ -86,6 +92,7 @@ public class AudioManager {
         Files.createDirectories(soundFile.getParent());
 
         Files.move(file, soundFile);
+        FileNameManager.instance().ifPresent(mgr -> mgr.addFileName(id, FileNameManager.getFileNameFromPath(file)));
     }
 
     public static void checkExtensionAllowed(@Nullable AudioConverter.AudioType audioType) throws UnsupportedAudioFileException {
