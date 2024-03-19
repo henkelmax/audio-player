@@ -66,6 +66,11 @@ public class ApplyCommands {
 
     @Nullable
     private static UUID getId(CommandContext<CommandSourceStack> context, String fileName) {
+        try {
+            return UUID.fromString(fileName);
+        } catch (Exception ignored) {
+        }
+
         Optional<FileNameManager> optionalFileNameManager = FileNameManager.instance();
         if (optionalFileNameManager.isEmpty()) {
             context.getSource().sendFailure(Component.literal("An internal error occurred"));
