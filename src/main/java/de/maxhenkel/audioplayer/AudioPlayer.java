@@ -6,15 +6,19 @@ import de.maxhenkel.audioplayer.command.PlayCommands;
 import de.maxhenkel.audioplayer.command.UploadCommands;
 import de.maxhenkel.audioplayer.command.UtilityCommands;
 import de.maxhenkel.audioplayer.config.ServerConfig;
+import de.maxhenkel.audioplayer.config.WebServerConfig;
+import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -23,6 +27,7 @@ public class AudioPlayer implements ModInitializer {
     public static final String MODID = "audioplayer";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static ServerConfig SERVER_CONFIG;
+    public static WebServerConfig WEB_SERVER_CONFIG;
 
     public static AudioCache AUDIO_CACHE;
     public static ScheduledExecutorService SCHEDULED_EXECUTOR = Executors.newScheduledThreadPool(1, r -> {
@@ -46,8 +51,9 @@ public class AudioPlayer implements ModInitializer {
         });
 
         FileNameManager.init();
-
-        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("audioplayer-server.properties")).build();
+        Path configFolder = FabricLoader.getInstance().getConfigDir().resolve(MODID);
+        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(configFolder.resolve("audioplayer-server.properties")).build();
+        WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).path(configFolder.resolve("webserver.properties")).build();
 
         try {
             Files.createDirectories(AudioManager.getUploadFolder());
@@ -56,5 +62,8 @@ public class AudioPlayer implements ModInitializer {
         }
 
         AUDIO_CACHE = new AudioCache(SERVER_CONFIG.cacheSize.get());
+
+        ServerLifecycleEvents.SERVER_STARTED.register(WebServerEvents::onServerStarted);
+        ServerLifecycleEvents.SERVER_STOPPING.register(WebServerEvents::onServerStopped);
     }
 }

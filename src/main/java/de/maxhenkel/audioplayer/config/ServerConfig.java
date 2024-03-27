@@ -21,6 +21,7 @@ public class ServerConfig {
     public final ConfigEntry<Integer> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
     public final ConfigEntry<Boolean> allowStaticAudio;
+    public final ConfigEntry<Boolean> runWebServer;
 
     public ServerConfig(ConfigBuilder builder) {
         filebinUrl = builder.stringEntry(
@@ -134,6 +135,12 @@ public class ServerConfig {
                 "Static audio does not have directionality or falloff (volume does not decrease with distance)",
                 "The /audioplayer setstatic [enabled] command can be used when this is set to true",
                 "If this config option is disabled, static audio is completely disabled and will play as if the option wouldn't be set"
+        );
+        runWebServer = builder.booleanEntry(
+                "run_web_server",
+                false,
+                "If the mod should run a webserver for uploads",
+                "You can configure the webserver in the webserver.properties config"
         );
     }
 
