@@ -16,7 +16,7 @@ public class WebServerEvents {
             return;
         }
         try {
-            webServer = WebServer.create().start();
+            webServer = WebServer.create(server).start();
             AudioPlayer.LOGGER.info("Audio player upload web server started on port {}", webServer.getPort());
         } catch (Exception e) {
             AudioPlayer.LOGGER.error("Failed to start web server", e);
@@ -35,6 +35,15 @@ public class WebServerEvents {
             webServer.close();
             webServer = null;
         }
+    }
+
+    public static boolean isRunning() {
+        return webServer != null;
+    }
+
+    @Nullable
+    public static WebServer getWebServer() {
+        return webServer;
     }
 
 }
