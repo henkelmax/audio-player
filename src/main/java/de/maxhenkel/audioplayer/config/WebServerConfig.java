@@ -7,8 +7,6 @@ public class WebServerConfig {
 
     public final ConfigEntry<Integer> port;
     public final ConfigEntry<String> url;
-    //TODO Handle this in the webserver
-    public final ConfigEntry<String> basePath;
     public final ConfigEntry<Long> tokenTimeout;
     //TODO
     // - Add basic auth
@@ -29,12 +27,6 @@ public class WebServerConfig {
                 "Example: https://test.example.com",
                 "If this is left empty, the user will be prompted to copy the token manually",
                 "If its set, the link will be generated automatically and the user can just open a link"
-        );
-        basePath = builder.stringEntry(
-                "base_path",
-                "",
-                "The base path under which the webserver is reachable",
-                "Example: /audioplayer"
         );
         tokenTimeout = builder.longEntry(
                 "token_timeout",

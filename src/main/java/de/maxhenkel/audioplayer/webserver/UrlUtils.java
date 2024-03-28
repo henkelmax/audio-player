@@ -5,8 +5,6 @@ import de.maxhenkel.audioplayer.AudioPlayer;
 import javax.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 public class UrlUtils {
@@ -45,14 +43,6 @@ public class UrlUtils {
         if (url.getPort() != -1) {
             finalUrl.append(":");
             finalUrl.append(url.getPort());
-        }
-        String basePathString = AudioPlayer.WEB_SERVER_CONFIG.basePath.get();
-
-        List<String> basePath = Arrays.stream(basePathString.split("/")).filter(string -> !string.isEmpty()).toList();
-
-        for (String string : basePath) {
-            finalUrl.append("/");
-            finalUrl.append(string);
         }
 
         finalUrl.append("?token=");
