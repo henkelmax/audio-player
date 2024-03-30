@@ -8,9 +8,9 @@ public class WebServerConfig {
     public final ConfigEntry<Integer> port;
     public final ConfigEntry<String> url;
     public final ConfigEntry<Long> tokenTimeout;
-    //TODO
-    // - Add basic auth
-    // - Configurable timeout
+    public final ConfigEntry<String> authUsername;
+    public final ConfigEntry<String> authPassword;
+    //TODO Configurable timeout
 
     public WebServerConfig(ConfigBuilder builder) {
         port = builder.integerEntry(
@@ -32,6 +32,18 @@ public class WebServerConfig {
                 "token_timeout",
                 1000L * 60L * 5L,
                 "The timeout of the token in milliseconds"
+        );
+        authUsername = builder.stringEntry(
+                "auth_username",
+                "",
+                "The username for basic auth",
+                "If this is left empty, no auth will be used"
+        );
+        authPassword = builder.stringEntry(
+                "auth_password",
+                "",
+                "The password for basic auth",
+                "If this is left empty, no auth will be used"
         );
     }
 
