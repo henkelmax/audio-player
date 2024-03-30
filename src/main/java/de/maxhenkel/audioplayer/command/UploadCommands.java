@@ -171,14 +171,20 @@ public class UploadCommands {
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadUrl))
                                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
                                     }))
+                                    .append(" or copy ")
+                                    .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
+                                        return style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                                    }))
                                     .append(" to upload your audio.")
                     , false);
             return;
         }
 
         context.getSource().sendSuccess(() ->
-                        Component.literal("Visit the webserver and use this token: ")
-                                .append(Component.literal(token.toString()).withStyle(ChatFormatting.GREEN).withStyle(style -> {
+                        Component.literal("Visit the website and use ")
+                                .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
                                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
