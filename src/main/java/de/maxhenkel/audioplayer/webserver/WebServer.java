@@ -110,6 +110,13 @@ public class WebServer implements AutoCloseable {
     private class UploadHandler implements HttpRequestHandler {
         @Override
         public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "*");
+            response.setHeader("Access-Control-Allow-Headers", "*");
+            if (request.getRequestLine().getMethod().equalsIgnoreCase("OPTIONS")) {
+                response.setStatusCode(HttpStatus.SC_NO_CONTENT);
+                return;
+            }
             if (!request.getRequestLine().getMethod().equalsIgnoreCase("POST")) {
                 response.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 return;
