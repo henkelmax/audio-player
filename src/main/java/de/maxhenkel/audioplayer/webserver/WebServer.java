@@ -9,6 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import org.apache.http.*;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.http.protocol.HttpContext;
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.UUID;
 
 public class WebServer implements AutoCloseable {
@@ -45,8 +48,8 @@ public class WebServer implements AutoCloseable {
                 .build();
 
         UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
-        mapper.register("/upload", new UploadHandler());
-        mapper.register("*", new StaticContentHandler());
+        mapper.register("/upload", new BasicAuthHandler(new UploadHandler()));
+        mapper.register("*", new BasicAuthHandler(new StaticContentHandler()));
 
         staticFileCache = StaticFileCache.of("web");
 
@@ -80,6 +83,39 @@ public class WebServer implements AutoCloseable {
     public void close() {
         if (server != null) {
             server.stop();
+        }
+    }
+
+    static class BasicAuthHandler implements HttpRequestHandler {
+
+        private final HttpRequestHandler handler;
+
+        public BasicAuthHandler(HttpRequestHandler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
+            String username = AudioPlayer.WEB_SERVER_CONFIG.authUsername.get();
+            String password = AudioPlayer.WEB_SERVER_CONFIG.authPassword.get();
+            if (username.isBlank() || password.isBlank()) {
+                handler.handle(request, response, context);
+                return;
+            }
+            Header authHeader = request.getFirstHeader("Authorization");
+            if (authHeader != null && authHeader.getValue().startsWith("Basic ")) {
+                String encodedCredentials = authHeader.getValue().substring("Basic ".length()).trim();
+                String credentials = new String(Base64.getDecoder().decode(encodedCredentials));
+
+                if (credentials.equals(username + ":" + password)) {
+                    handler.handle(request, response, context);
+                    return;
+                }
+            }
+
+            response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
+            response.setHeader("WWW-Authenticate", "Basic realm=\"Restricted Area\"");
+            response.setEntity(new StringEntity("Unauthorized", ContentType.TEXT_PLAIN));
         }
     }
 
