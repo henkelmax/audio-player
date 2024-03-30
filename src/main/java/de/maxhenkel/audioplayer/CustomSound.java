@@ -110,11 +110,19 @@ public class CustomSound {
         }
     }
 
+    public void saveToItemIgnoreLore(ItemStack stack) {
+        saveToItem(stack, null, false);
+    }
+
     public void saveToItem(ItemStack stack) {
         saveToItem(stack, null);
     }
 
     public void saveToItem(ItemStack stack, @Nullable String loreString) {
+        saveToItem(stack, loreString, true);
+    }
+
+    public void saveToItem(ItemStack stack, @Nullable String loreString, boolean applyLore) {
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
         saveToNbt(tag);
@@ -136,10 +144,12 @@ public class CustomSound {
             l = new ItemLore(Collections.singletonList(Component.literal(loreString).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
         }
 
-        if (l != null) {
-            stack.set(DataComponents.LORE, l);
-        } else {
-            stack.remove(DataComponents.LORE);
+        if (applyLore) {
+            if (l != null) {
+                stack.set(DataComponents.LORE, l);
+            } else {
+                stack.remove(DataComponents.LORE);
+            }
         }
 
         stack.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
