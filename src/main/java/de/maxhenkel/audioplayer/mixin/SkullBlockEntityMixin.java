@@ -63,7 +63,7 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
         }
     }
 
-    @Inject(method = "load", at = @At("RETURN"))
+    @Inject(method = "loadAdditional", at = @At("RETURN"))
     private void load(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
         if (tag.contains("ChannelID")) {
             channelID = tag.getUUID("ChannelID");

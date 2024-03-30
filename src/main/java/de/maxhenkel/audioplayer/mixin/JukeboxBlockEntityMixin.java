@@ -95,7 +95,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
         ci.setReturnValue(!PlayerManager.instance().isPlaying(channelId));
     }
 
-    @Inject(method = "load", at = @At(value = "RETURN"))
+    @Inject(method = "loadAdditional", at = @At(value = "RETURN"))
     public void load(CompoundTag compound, HolderLookup.Provider provider, CallbackInfo ci) {
         if (compound.hasUUID("ChannelID") && !item.isEmpty()) {
             channelId = compound.getUUID("ChannelID");
