@@ -105,11 +105,19 @@ public class CustomSound {
         }
     }
 
+    public void saveToItemIgnoreLore(ItemStack stack) {
+        saveToItem(stack, null, false);
+    }
+
     public void saveToItem(ItemStack stack) {
         saveToItem(stack, null);
     }
 
     public void saveToItem(ItemStack stack, @Nullable String loreString) {
+        saveToItem(stack, loreString, true);
+    }
+
+    private void saveToItem(ItemStack stack, @Nullable String loreString, boolean applyLore) {
         CompoundTag tag = stack.getOrCreateTag();
         saveToNbt(tag);
         ListTag lore = new ListTag();
@@ -127,7 +135,9 @@ public class CustomSound {
 
         CompoundTag display = new CompoundTag();
         display.put(ItemStack.TAG_LORE, lore);
-        tag.put(ItemStack.TAG_DISPLAY, display);
+        if (applyLore) {
+            tag.put(ItemStack.TAG_DISPLAY, display);
+        }
 
         tag.putInt("HideFlags", ItemStack.TooltipPart.ADDITIONAL.getMask());
     }

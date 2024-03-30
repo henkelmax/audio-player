@@ -124,7 +124,7 @@ public class ApplyCommands {
         }
 
         CustomSound newSound = customSound.asStatic(enabled.orElse(true));
-        newSound.saveToItem(itemInHand);
+        newSound.saveToItemIgnoreLore(itemInHand);
 
         context.getSource().sendSuccess(Component.literal((enabled.orElse(true) ? "Enabled" : "Disabled") + " static audio"), false);
     }
