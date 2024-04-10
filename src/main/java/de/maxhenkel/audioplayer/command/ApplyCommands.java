@@ -149,7 +149,7 @@ public class ApplyCommands {
             }
             apply(context, itemStack, playerType, sound, customName);
         }
-        shulkerItem.set(DataComponents.CONTAINER, ItemContainerContents.copyOf(shulkerContents));
+        shulkerItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(shulkerContents));
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated contents"), false);
     }
 
