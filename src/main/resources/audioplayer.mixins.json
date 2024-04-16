@@ -8,7 +8,8 @@
     "InstrumentItemMixin",
     "NoteBlockMixin",
     "SkullBlockEntityMixin",
-    "BlockMixin"
+    "BlockMixin",
+    "AbstractSkullBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
