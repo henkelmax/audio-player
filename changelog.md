@@ -1,2 +1,1 @@
-- Added `/audioplayer name` command
-- Added `/audioplayer apply <file_name> ...` command
+- Added web server upload support
