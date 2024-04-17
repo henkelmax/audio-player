@@ -128,7 +128,9 @@ public class ServerConfig {
                 "run_web_server",
                 false,
                 "If the mod should run a webserver for uploads",
-                "You can configure the webserver in the webserver.properties config"
+                "You can configure the webserver in the webserver.properties config",
+                "The webserver.properties will only be generated if this option is set to true",
+                "NOTE: This option is experimental and subject to change"
         );
     }
 
