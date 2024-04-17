@@ -53,7 +53,11 @@ public class AudioPlayer implements ModInitializer {
         FileNameManager.init();
         Path configFolder = FabricLoader.getInstance().getConfigDir().resolve(MODID);
         SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(configFolder.resolve("audioplayer-server.properties")).build();
-        WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).path(configFolder.resolve("webserver.properties")).build();
+        if (SERVER_CONFIG.runWebServer.get()) {
+            WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).path(configFolder.resolve("webserver.properties")).build();
+        } else {
+            WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).build();
+        }
 
         try {
             Files.createDirectories(AudioManager.getUploadFolder());
