@@ -4,6 +4,7 @@ plugins {
     id 'mod-update' version "${mod_update_version}"
     id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
     id 'com.modrinth.minotaur' version "${minotaur_version}"
+    id 'com.github.node-gradle.node' version "${node_gradle_version}"
 }
 
 apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/mod.gradle"
@@ -48,9 +49,37 @@ processResources {
                 'fabric_api_dependency_breaks': fabric_api_dependency_breaks,
                 'voicechat_api_version': voicechat_api_version
     }
+    exclude '**/.gitkeep'
 }
 
 shadowJar {
     relocate 'javazoom', "de.maxhenkel.audioplayer.javazoom"
     relocate 'org.tritonus', "de.maxhenkel.audioplayer.tritonus"
 }
+
+node {
+    download = false
+    nodeProjectDir = file("${project.projectDir}/web")
+}
+
+tasks.register('buildWeb', NpmTask) {
+    group 'web'
+    args = ['run', 'build']
+}
+tasks.buildWeb.dependsOn(npmInstall)
+
+tasks.register('copyWeb', Copy) {
+    group 'web'
+    from 'web/dist'
+    into 'src/main/resources/web'
+}
+tasks.copyWeb.dependsOn(buildWeb)
+tasks.processResources.dependsOn(copyWeb)
+
+tasks.register('cleanWeb', Delete) {
+    group 'web'
+    delete fileTree(dir: 'src/main/resources/web', exclude: '**/.gitkeep')
+    delete 'web/dist'
+    followSymlinks = true
+}
+tasks.clean.dependsOn(cleanWeb)
