@@ -165,19 +165,13 @@ public class UploadCommands {
 
         if (uploadUrl != null) {
             context.getSource().sendSuccess(() ->
-                            Component.literal("Visit ")
-                                    .append(Component.literal("this website").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
+                            Component.literal("Click ")
+                                    .append(Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
                                         return style
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadUrl))
                                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
                                     }))
-                                    .append(" or copy ")
-                                    .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
-                                        return style
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
-                                    }))
-                                    .append(" to upload your audio.")
+                                    .append(" to upload your sound.")
                     , false);
             return;
         }
