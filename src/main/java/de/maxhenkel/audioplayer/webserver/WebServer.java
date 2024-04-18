@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 
 public class WebServer implements AutoCloseable {
@@ -119,6 +120,27 @@ public class WebServer implements AutoCloseable {
         }
     }
 
+    private static final Map<String, String> MIME_TYPES = Map.of(
+            "html", "text/html",
+            "css", "text/css",
+            "js", "application/javascript",
+            "ico", "image/x-icon"
+    );
+
+    @Nullable
+    private static String getMimeType(String path) {
+        int lastSlashIndex = path.lastIndexOf('/');
+        if (lastSlashIndex >= 0) {
+            path = path.substring(lastSlashIndex + 1);
+        }
+        int lastDotIndex = path.lastIndexOf('.');
+        if (lastDotIndex < 0) {
+            return null;
+        }
+        String extension = path.substring(lastDotIndex + 1);
+        return MIME_TYPES.get(extension);
+    }
+
     private class StaticContentHandler implements HttpRequestHandler {
         @Override
         public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
@@ -137,6 +159,10 @@ public class WebServer implements AutoCloseable {
             if (data == null) {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);
                 return;
+            }
+            String mimeType = getMimeType(requestedResource);
+            if (mimeType != null) {
+                response.setHeader("Content-Type", "%s; charset=UTF-8".formatted(mimeType));
             }
             response.setStatusCode(HttpStatus.SC_OK);
             response.setEntity(new ByteArrayEntity(data));
