@@ -164,7 +164,7 @@
         finishButtonText.value = 'Try again!';
       } else if (response.status === 200) {
         finishHeadline.value = 'Sound Successfully uploaded!';
-        finishSubText.value = 'Your file was successfully uploaded. You can now go back into Minecraft and use it! If you want to upload another file, please request a new token in Minecraft first.';
+        finishSubText.value = 'Your file was uploaded successfully. You can now go back into Minecraft and use it!';
         finishButtonText.value = 'Upload another File!';
       } else {
         finishHeadline.value = 'Unexpected critical error';
