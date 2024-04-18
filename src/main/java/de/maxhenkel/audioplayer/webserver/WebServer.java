@@ -229,7 +229,7 @@ public class WebServer implements AutoCloseable {
         new Thread(() -> {
             try {
                 AudioManager.saveSound(minecraftServer, token, null, audioData); //TODO File name
-                player.sendSystemMessage(UploadCommands.sendUUIDMessage(token, Component.literal("Successfully uploaded sound."))); //TODO Rename sound to audio
+                player.sendSystemMessage(UploadCommands.sendUUIDMessage(token, Component.literal("Successfully uploaded sound.")));
             } catch (Exception e) {
                 AudioPlayer.LOGGER.warn("{} failed to upload a sound: {}", player.getName().getString(), e.getMessage());
                 player.sendSystemMessage(Component.literal("Failed to upload sound: %s".formatted(e.getMessage())));
