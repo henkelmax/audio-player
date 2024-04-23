@@ -8,15 +8,14 @@ import de.maxhenkel.audioplayer.FileNameManager;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
@@ -140,17 +139,17 @@ public class ApplyCommands {
     }
 
     private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack shulkerItem, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
-        ListTag shulkerContents = shulkerItem.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG).getList(ShulkerBoxBlockEntity.ITEMS_TAG, Tag.TAG_COMPOUND);
-        for (int i = 0; i < shulkerContents.size(); i++) {
-            CompoundTag currentItem = shulkerContents.getCompound(i);
-            ItemStack itemStack = ItemStack.of(currentItem);
+        ItemContainerContents contents = shulkerItem.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+        NonNullList<ItemStack> shulkerContents = NonNullList.withSize(ShulkerBoxBlockEntity.CONTAINER_SIZE, ItemStack.EMPTY);
+        contents.copyInto(shulkerContents);
+        for (ItemStack itemStack : shulkerContents) {
             PlayerType playerType = PlayerType.fromItemStack(itemStack);
             if (playerType == null) {
                 continue;
             }
             apply(context, itemStack, playerType, sound, customName);
-            currentItem.put("tag", itemStack.getOrCreateTag());
         }
+        shulkerItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(shulkerContents));
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated contents"), false);
     }
 
@@ -160,18 +159,8 @@ public class ApplyCommands {
             return;
         }
         customSound.saveToItem(stack, customName);
-        CompoundTag tag = stack.getOrCreateTag();
 
-        if (stack.getItem() instanceof InstrumentItem) {
-            tag.putString("instrument", "");
-        } else {
-            tag.remove("instrument");
-        }
-
-        if (stack.getItem() instanceof BlockItem) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG);
-            customSound.saveToNbt(blockEntityTag);
-        }
+        stack.remove(DataComponents.INSTRUMENT);
 
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }

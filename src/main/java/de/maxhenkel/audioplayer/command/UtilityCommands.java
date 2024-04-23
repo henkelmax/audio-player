@@ -9,14 +9,17 @@ import de.maxhenkel.audioplayer.FileNameManager;
 import de.maxhenkel.audioplayer.PlayerType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.InstrumentItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
+
+import java.util.Optional;
 
 import java.util.Optional;
 
@@ -35,27 +38,23 @@ public class UtilityCommands {
             return;
         }
 
-        if (!itemInHand.hasTag()) {
-            context.getSource().sendFailure(Component.literal("Item does not contain NBT data"));
-            return;
-        }
-
         if (!CustomSound.clearItem(itemInHand)) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
 
-        CompoundTag tag = itemInHand.getTag();
-        if (tag == null) {
-            return;
+        if (itemInHand.has(DataComponents.INSTRUMENT)) {
+            Optional<Holder.Reference<Instrument>> holder = BuiltInRegistries.INSTRUMENT.getHolder(Instruments.PONDER_GOAT_HORN);
+            holder.ifPresent(instrumentReference -> itemInHand.set(DataComponents.INSTRUMENT, instrumentReference));
         }
 
-        if (itemInHand.getItem() instanceof InstrumentItem) {
-            tag.putString("instrument", "minecraft:ponder_goat_horn");
+        if (itemInHand.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)) {
+            itemInHand.remove(DataComponents.HIDE_ADDITIONAL_TOOLTIP);
         }
 
-        tag.remove(ItemStack.TAG_DISPLAY);
-        tag.remove("HideFlags");
+        if (itemInHand.has(DataComponents.LORE)) {
+            itemInHand.remove(DataComponents.LORE);
+        }
 
         context.getSource().sendSuccess(() -> Component.literal("Successfully cleared item"), false);
     }

@@ -6,6 +6,7 @@ import de.maxhenkel.audioplayer.PlayerManager;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
@@ -94,8 +95,8 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
         ci.setReturnValue(!PlayerManager.instance().isPlaying(channelId));
     }
 
-    @Inject(method = "load", at = @At(value = "RETURN"))
-    public void load(CompoundTag compound, CallbackInfo ci) {
+    @Inject(method = "loadAdditional", at = @At(value = "RETURN"))
+    public void load(CompoundTag compound, HolderLookup.Provider provider, CallbackInfo ci) {
         if (compound.hasUUID("ChannelID") && !item.isEmpty()) {
             channelId = compound.getUUID("ChannelID");
         } else {
@@ -104,7 +105,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
     }
 
     @Inject(method = "saveAdditional", at = @At(value = "RETURN"))
-    public void save(CompoundTag compound, CallbackInfo ci) {
+    public void save(CompoundTag compound, HolderLookup.Provider provider, CallbackInfo ci) {
         if (channelId != null && !item.isEmpty()) {
             compound.putUUID("ChannelID", channelId);
         }
