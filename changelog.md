@@ -1,3 +1,0 @@
-- Added `/audioplayer name` command
-- Added `/audioplayer apply <file_name> ...` command
-- Fixed lore getting removed when setting an item static
