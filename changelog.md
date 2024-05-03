@@ -1,1 +1,1 @@
-- Fixed custom goat horns playing original audio
+- Fixed vanilla goat horns not playing audio

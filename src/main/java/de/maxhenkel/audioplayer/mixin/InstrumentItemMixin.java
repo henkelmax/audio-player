@@ -24,13 +24,12 @@ public class InstrumentItemMixin {
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     private void useOn(Level level, Player p, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> ci) {
         ItemStack itemInHand = p.getItemInHand(interactionHand);
-        if (!(p instanceof ServerPlayer player)) {
-            ci.setReturnValue(InteractionResultHolder.consume(itemInHand));
-            return;
-        }
-
         CustomSound customSound = CustomSound.of(itemInHand);
         if (customSound == null) {
+            return;
+        }
+        if (!(p instanceof ServerPlayer player)) {
+            ci.setReturnValue(InteractionResultHolder.consume(itemInHand));
             return;
         }
         itemInHand.set(DataComponents.INSTRUMENT, InstrumentUtils.EMPTY_INSTRUMENT);
