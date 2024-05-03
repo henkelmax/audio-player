@@ -1,1 +1,1 @@
-- Updated to 1.20.6
+- Fixed custom goat horns playing original audio

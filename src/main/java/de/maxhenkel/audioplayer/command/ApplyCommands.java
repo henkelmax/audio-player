@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.FileNameManager;
+import de.maxhenkel.audioplayer.InstrumentUtils;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
@@ -160,7 +161,7 @@ public class ApplyCommands {
         }
         customSound.saveToItem(stack, customName);
 
-        stack.remove(DataComponents.INSTRUMENT);
+        stack.set(DataComponents.INSTRUMENT, InstrumentUtils.EMPTY_INSTRUMENT);
 
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
