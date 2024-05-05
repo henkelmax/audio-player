@@ -55,7 +55,10 @@ public class AudioManager {
 
     public static void saveSound(MinecraftServer server, UUID id, String url) throws UnsupportedAudioFileException, IOException {
         byte[] data = download(new URL(url), AudioPlayer.SERVER_CONFIG.maxUploadSize.get());
+        saveSound(server, id, FileNameManager.getFileNameFromUrl(url), data);
+    }
 
+    public static void saveSound(MinecraftServer server, UUID id, String fileName, byte[] data) throws UnsupportedAudioFileException, IOException {
         AudioConverter.AudioType audioType = AudioConverter.getAudioType(data);
         checkExtensionAllowed(audioType);
 
@@ -69,7 +72,7 @@ public class AudioManager {
             IOUtils.write(data, outputStream);
         }
 
-        FileNameManager.instance().ifPresent(mgr -> mgr.addFileName(id, FileNameManager.getFileNameFromUrl(url)));
+        FileNameManager.instance().ifPresent(mgr -> mgr.addFileName(id, fileName));
     }
 
     public static void saveSound(MinecraftServer server, UUID id, Path file) throws UnsupportedAudioFileException, IOException {

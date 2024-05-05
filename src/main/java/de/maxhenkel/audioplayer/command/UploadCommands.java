@@ -1,12 +1,16 @@
 package de.maxhenkel.audioplayer.command;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
 import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.Filebin;
+import de.maxhenkel.audioplayer.webserver.UrlUtils;
+import de.maxhenkel.audioplayer.webserver.WebServer;
+import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
@@ -144,6 +148,43 @@ public class UploadCommands {
                 context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
             }
         }).start();
+    }
+
+    @RequiresPermission("audioplayer.upload")
+    @Command("web")
+    public void web(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        WebServer webServer = WebServerEvents.getWebServer();
+        if (webServer == null) {
+            context.getSource().sendFailure(Component.literal("Web server is not running"));
+            return;
+        }
+
+        UUID token = webServer.getTokenManager().generateToken(context.getSource().getPlayerOrException().getUUID());
+
+        String uploadUrl = UrlUtils.generateUploadUrl(token);
+
+        if (uploadUrl != null) {
+            context.getSource().sendSuccess(() ->
+                            Component.literal("Click ")
+                                    .append(Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
+                                        return style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadUrl))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
+                                    }))
+                                    .append(" to upload your sound.")
+                    , false);
+            return;
+        }
+
+        context.getSource().sendSuccess(() ->
+                        Component.literal("Visit the website and use ")
+                                .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
+                                    return style
+                                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
+                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                                }))
+                                .append(".")
+                , false);
     }
 
     @RequiresPermission("audioplayer.upload")
