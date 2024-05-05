@@ -6,8 +6,8 @@ import java.util.UUID;
 public interface ChannelHolder {
 
     @Nullable
-    UUID soundplayer$getChannelID();
+    UUID audioplayer$getChannelID();
 
-    void soundplayer$setChannelID(@Nullable UUID channelID);
+    void audioplayer$setChannelID(@Nullable UUID channelID);
 
 }
