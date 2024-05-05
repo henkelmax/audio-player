@@ -41,7 +41,7 @@ public class RecordItemMixin {
         }
 
         if (level.getBlockEntity(blockPos) instanceof ChannelHolder channelHolder) {
-            channelHolder.soundplayer$setChannelID(channel);
+            channelHolder.audioplayer$setChannelID(channel);
         }
 
         itemStack.shrink(1);
