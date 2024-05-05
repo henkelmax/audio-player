@@ -29,11 +29,11 @@ public class AbstractSkullBlockMixin {
         if (!(blockEntity instanceof ChannelHolder channelHolder)) {
             return;
         }
-        UUID channelID = channelHolder.soundplayer$getChannelID();
+        UUID channelID = channelHolder.audioplayer$getChannelID();
         if (channelID != null) {
             PlayerManager.instance().stop(channelID);
         }
-        channelHolder.soundplayer$setChannelID(null);
+        channelHolder.audioplayer$setChannelID(null);
     }
 
 }

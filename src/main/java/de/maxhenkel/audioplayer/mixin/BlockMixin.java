@@ -41,7 +41,7 @@ public class BlockMixin {
         if (!(blockEntity instanceof CustomSoundHolder customSoundHolder)) {
             return;
         }
-        CustomSound customSound = customSoundHolder.soundplayer$getCustomSound();
+        CustomSound customSound = customSoundHolder.audioplayer$getCustomSound();
         if (customSound == null) {
             return;
         }

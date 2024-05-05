@@ -4,6 +4,6 @@ import de.maxhenkel.audioplayer.CustomSound;
 
 public interface CustomSoundHolder {
 
-    CustomSound soundplayer$getCustomSound();
+    CustomSound audioplayer$getCustomSound();
 
 }
