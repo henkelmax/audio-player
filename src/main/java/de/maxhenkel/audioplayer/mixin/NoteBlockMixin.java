@@ -40,20 +40,20 @@ public class NoteBlockMixin extends Block {
         if (!(blockEntity instanceof ChannelHolder channelHolder)) {
             return;
         }
-        CustomSound customSound = soundHolder.soundplayer$getCustomSound();
+        CustomSound customSound = soundHolder.audioplayer$getCustomSound();
         if (customSound == null) {
             return;
         }
-        UUID channelId = channelHolder.soundplayer$getChannelID();
+        UUID channelId = channelHolder.audioplayer$getChannelID();
         if (channelId != null && PlayerManager.instance().isPlaying(channelId)) {
             PlayerManager.instance().stop(channelId);
-            channelHolder.soundplayer$setChannelID(null);
+            channelHolder.audioplayer$setChannelID(null);
         }
 
         UUID channel = AudioManager.play(serverLevel, blockPos, PlayerType.NOTE_BLOCK, customSound, null);
 
         if (channel != null) {
-            channelHolder.soundplayer$setChannelID(channel);
+            channelHolder.audioplayer$setChannelID(channel);
             cir.setReturnValue(true);
         }
     }
@@ -62,11 +62,11 @@ public class NoteBlockMixin extends Block {
     public void destroy(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState) {
         BlockEntity blockEntity = levelAccessor.getBlockEntity(blockPos.above());
         if (blockEntity instanceof ChannelHolder channelHolder) {
-            UUID channelID = channelHolder.soundplayer$getChannelID();
+            UUID channelID = channelHolder.audioplayer$getChannelID();
             if (channelID != null) {
                 PlayerManager.instance().stop(channelID);
             }
-            channelHolder.soundplayer$setChannelID(null);
+            channelHolder.audioplayer$setChannelID(null);
         }
         super.destroy(levelAccessor, blockPos, blockState);
     }

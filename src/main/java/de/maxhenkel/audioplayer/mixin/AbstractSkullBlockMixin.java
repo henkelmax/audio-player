@@ -33,11 +33,11 @@ public abstract class AbstractSkullBlockMixin extends BaseEntityBlock {
             super.neighborChanged(blockState, level, blockPos, block, blockPos2, bl);
             return;
         }
-        UUID channelID = channelHolder.soundplayer$getChannelID();
+        UUID channelID = channelHolder.audioplayer$getChannelID();
         if (channelID != null) {
             PlayerManager.instance().stop(channelID);
         }
-        channelHolder.soundplayer$setChannelID(null);
+        channelHolder.audioplayer$setChannelID(null);
         super.neighborChanged(blockState, level, blockPos, block, blockPos2, bl);
     }
 
