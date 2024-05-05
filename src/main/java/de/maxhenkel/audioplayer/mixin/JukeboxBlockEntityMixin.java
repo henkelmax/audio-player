@@ -46,12 +46,12 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Cle
 
     @Nullable
     @Override
-    public UUID soundplayer$getChannelID() {
+    public UUID audioplayer$getChannelID() {
         return channelId;
     }
 
     @Override
-    public void soundplayer$setChannelID(@Nullable UUID channelID) {
+    public void audioplayer$setChannelID(@Nullable UUID channelID) {
         this.channelId = channelID;
         setChanged();
     }

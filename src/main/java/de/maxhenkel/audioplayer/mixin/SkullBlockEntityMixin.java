@@ -37,19 +37,19 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
 
     @Nullable
     @Override
-    public UUID soundplayer$getChannelID() {
+    public UUID audioplayer$getChannelID() {
         return channelID;
     }
 
     @Override
-    public void soundplayer$setChannelID(@Nullable UUID channelID) {
+    public void audioplayer$setChannelID(@Nullable UUID channelID) {
         this.channelID = channelID;
         setChanged();
     }
 
     @Nullable
     @Override
-    public CustomSound soundplayer$getCustomSound() {
+    public CustomSound audioplayer$getCustomSound() {
         return customSound;
     }
 
