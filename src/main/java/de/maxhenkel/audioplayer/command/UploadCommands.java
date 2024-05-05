@@ -164,26 +164,26 @@ public class UploadCommands {
         String uploadUrl = UrlUtils.generateUploadUrl(token);
 
         if (uploadUrl != null) {
-            context.getSource().sendSuccess(() ->
-                            Component.literal("Click ")
-                                    .append(Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
-                                        return style
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadUrl))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
-                                    }))
-                                    .append(" to upload your sound.")
+            context.getSource().sendSuccess(
+                    Component.literal("Click ")
+                            .append(Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
+                                return style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadUrl))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
+                            }))
+                            .append(" to upload your sound.")
                     , false);
             return;
         }
 
-        context.getSource().sendSuccess(() ->
-                        Component.literal("Visit the website and use ")
-                                .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
-                                    return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
-                                }))
-                                .append(".")
+        context.getSource().sendSuccess(
+                Component.literal("Visit the website and use ")
+                        .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
+                            return style
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                        }))
+                        .append(".")
                 , false);
     }
 
