@@ -32,7 +32,7 @@ public class InstrumentItemMixin {
             ci.setReturnValue(InteractionResultHolder.consume(itemInHand));
             return;
         }
-        itemInHand.set(DataComponents.INSTRUMENT, InstrumentUtils.EMPTY_INSTRUMENT);
+        itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
         UUID channel = AudioManager.play((ServerLevel) level, p.blockPosition(), PlayerType.GOAT_HORN, customSound, player);
         if (channel == null) {
             return;

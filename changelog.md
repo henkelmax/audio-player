@@ -1,1 +1,1 @@
-- Added web server upload support (Experimental)
+- Updated to 1.21
