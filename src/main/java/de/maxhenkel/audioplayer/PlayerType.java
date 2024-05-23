@@ -1,10 +1,10 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.SkullBlock;
 
 import javax.annotation.Nullable;
@@ -17,7 +17,7 @@ public enum PlayerType {
             AudioPlayer.SERVER_CONFIG.maxMusicDiscRange,
             AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration,
             Plugin.MUSIC_DISC_CATEGORY,
-            itemStack -> itemStack.getItem() instanceof RecordItem
+            itemStack -> itemStack.has(DataComponents.JUKEBOX_PLAYABLE)
     ),
     NOTE_BLOCK(
             AudioPlayer.SERVER_CONFIG.noteBlockRange,

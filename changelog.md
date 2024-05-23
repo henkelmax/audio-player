@@ -1,1 +1,1 @@
-- Improved audio format detection
+- Updated to 1.21

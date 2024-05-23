@@ -21,8 +21,6 @@ import net.minecraft.world.item.*;
 
 import java.util.Optional;
 
-import java.util.Optional;
-
 @Command("audioplayer")
 public class UtilityCommands {
 
@@ -46,6 +44,14 @@ public class UtilityCommands {
         if (itemInHand.has(DataComponents.INSTRUMENT)) {
             Optional<Holder.Reference<Instrument>> holder = BuiltInRegistries.INSTRUMENT.getHolder(Instruments.PONDER_GOAT_HORN);
             holder.ifPresent(instrumentReference -> itemInHand.set(DataComponents.INSTRUMENT, instrumentReference));
+        }
+        if (itemInHand.has(DataComponents.JUKEBOX_PLAYABLE)) {
+            JukeboxPlayable jukeboxPlayable = itemInHand.getItem().components().get(DataComponents.JUKEBOX_PLAYABLE);
+            if (jukeboxPlayable != null) {
+                itemInHand.set(DataComponents.JUKEBOX_PLAYABLE, jukeboxPlayable);
+            } else {
+                itemInHand.remove(DataComponents.JUKEBOX_PLAYABLE);
+            }
         }
 
         if (itemInHand.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)) {

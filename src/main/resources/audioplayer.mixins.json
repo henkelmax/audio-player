@@ -9,7 +9,8 @@
     "NoteBlockMixin",
     "SkullBlockEntityMixin",
     "BlockMixin",
-    "AbstractSkullBlockMixin"
+    "AbstractSkullBlockMixin",
+    "JukeboxSongPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
