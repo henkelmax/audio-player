@@ -1,1 +1,2 @@
-- Added web server upload support (Experimental)
+- Fixed Filebin uploads not working
+- Delete Filebin bins after the upload is complete
