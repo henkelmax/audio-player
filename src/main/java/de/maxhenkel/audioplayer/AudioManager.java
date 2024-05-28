@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import javax.annotation.Nullable;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -116,7 +117,11 @@ public class AudioManager {
 
     private static byte[] download(URL url, long limit) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        BufferedInputStream bis = new BufferedInputStream(url.openStream());
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("User-Agent", Filebin.USER_AGENT);
+        connection.connect();
+
+        BufferedInputStream bis = new BufferedInputStream(connection.getInputStream());
 
         int nRead;
         byte[] data = new byte[32768];
