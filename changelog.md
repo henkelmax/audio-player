@@ -1,2 +1,1 @@
-- Fixed Filebin uploads not working
-- Delete Filebin bins after the upload is complete
+- Improved audio format detection

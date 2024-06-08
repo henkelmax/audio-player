@@ -3,10 +3,8 @@ package de.maxhenkel.audioplayer;
 import de.maxhenkel.voicechat.api.mp3.Mp3Decoder;
 
 import javax.annotation.Nullable;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,50 +13,46 @@ import java.nio.file.Path;
 
 public class AudioConverter {
 
-    private static final byte[][] MP3_MAGIC_BYTES = new byte[][]{
-            {(byte) 0xFF, (byte) 0xFB},
-            {(byte) 0xFF, (byte) 0xF3},
-            {(byte) 0xFF, (byte) 0xF2},
-            {(byte) 0x49, (byte) 0x44, (byte) 0x33}
-    };
-
     public static AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 48000F, 16, 1, 2, 48000F, false);
 
     @Nullable
-    public static AudioType getAudioType(byte[] data) throws UnsupportedAudioFileException, IOException {
-        if (hasMp3MagicBytes(data)) {
-            return AudioType.MP3;
-        }
-        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
-        if (isWav(audioInputStream.getFormat())) {
+    public static AudioType getAudioType(Path path) throws IOException {
+        if (isWav(Files.newInputStream(path))) {
             return AudioType.WAV;
+        }
+        if (isMp3File(Files.newInputStream(path))) {
+            return AudioType.MP3;
         }
         return null;
     }
 
     @Nullable
-    public static AudioType getAudioType(Path path) throws UnsupportedAudioFileException, IOException {
-        if (AudioType.WAV.isValidFileName(path)) {
-            try (AudioInputStream ais = AudioSystem.getAudioInputStream(path.toFile())) {
-                if (isWav(ais.getFormat())) {
-                    return AudioType.WAV;
-                }
-            }
-        } else if (AudioType.MP3.isValidFileName(path)) {
-            if (isMp3File(path)) {
-                return AudioType.MP3;
-            }
+    public static AudioType getAudioType(byte[] data) throws IOException {
+        if (isWav(new ByteArrayInputStream(data))) {
+            return AudioType.WAV;
+        }
+        if (isMp3File(new ByteArrayInputStream(data))) {
+            return AudioType.MP3;
         }
         return null;
     }
 
-    public static boolean isWav(AudioFormat audioFormat) {
-        AudioFormat.Encoding encoding = audioFormat.getEncoding();
-        return encoding.equals(AudioFormat.Encoding.PCM_SIGNED) ||
-                encoding.equals(AudioFormat.Encoding.PCM_UNSIGNED) ||
-                encoding.equals(AudioFormat.Encoding.PCM_FLOAT) ||
-                encoding.equals(AudioFormat.Encoding.ALAW) ||
-                encoding.equals(AudioFormat.Encoding.ULAW);
+    public static boolean isWav(InputStream inputStream) throws IOException {
+        try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
+            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(bis);
+            return fileFormat.getType().toString().equalsIgnoreCase("wave");
+        } catch (UnsupportedAudioFileException e) {
+            return false;
+        }
+    }
+
+    public static boolean isMp3File(InputStream inputStream) throws IOException {
+        try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
+            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(bis);
+            return fileFormat.getType().toString().equalsIgnoreCase("mp3");
+        } catch (UnsupportedAudioFileException e) {
+            return false;
+        }
     }
 
     public static short[] convert(Path file) throws IOException, UnsupportedAudioFileException {
@@ -122,31 +116,6 @@ public class AudioConverter {
         public String getExtension() {
             return extension;
         }
-    }
-
-    public static boolean isMp3File(Path path) throws IOException {
-        try (InputStream is = Files.newInputStream(path)) {
-            return hasMp3MagicBytes(is.readNBytes(3));
-        }
-    }
-
-    private static boolean hasMp3MagicBytes(byte[] data) {
-        for (byte[] magicBytes : MP3_MAGIC_BYTES) {
-            if (data.length < magicBytes.length) {
-                return false;
-            }
-            boolean valid = true;
-            for (int i = 0; i < magicBytes.length; i++) {
-                if (data[i] != magicBytes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }
