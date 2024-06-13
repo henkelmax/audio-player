@@ -62,7 +62,7 @@ It's also possible to bulk apply audio to more than one item at a time by holdin
 
 Starting with version `1.9.1`, you can also apply custom audio by its original file name:
 `/audioplayer apply "<FILE_NAME>"`.
-This command works wit and without the file extension (like `.mp3` or `.wav`).
+This command works with and without the file extension (like `.mp3` or `.wav`).
 Note that the file name must be unique for this to work.
 
 **Getting the audio from an existing item**
