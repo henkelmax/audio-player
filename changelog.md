@@ -1,1 +1,1 @@
-- Fixed voice chat dependency
+- Added volume command for server side volume adjustment
