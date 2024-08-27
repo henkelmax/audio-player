@@ -33,7 +33,7 @@ public class AudioManager {
         } else {
             volume = 1.0f;
         }
-        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(server, id),volume));
+        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(server, id), volume));
     }
 
     public static Path getSoundFile(MinecraftServer server, UUID id, String extension) {

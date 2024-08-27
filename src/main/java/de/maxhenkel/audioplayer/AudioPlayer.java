@@ -46,6 +46,7 @@ public class AudioPlayer implements ModInitializer {
                     UploadCommands.class,
                     ApplyCommands.class,
                     UtilityCommands.class,
+                    VolumeCommands.class,
                     PlayCommands.class
             ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
