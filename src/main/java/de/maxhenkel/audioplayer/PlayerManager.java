@@ -205,9 +205,10 @@ public class PlayerManager {
     private interface Stoppable {
         void stop();
     }
-    
+
     private record PlayerReference(Stoppable onStop,
-                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player, UUID sound, boolean byCommand) {
+                                   AtomicReference<de.maxhenkel.voicechat.api.audiochannel.AudioPlayer> player,
+                                   UUID sound, boolean byCommand) {
     }
 
     @Nullable
