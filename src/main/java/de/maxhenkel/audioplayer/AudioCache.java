@@ -14,21 +14,25 @@ public class AudioCache {
         this.accessQueue = new ArrayDeque<>();
     }
 
-    public synchronized short[] get(UUID id, AudioSupplier supplier) throws Exception {
-        short[] data = audioCache.get(id);
-        if (data == null) {
-            short[] uncachedData = supplier.get();
-            pushCache(id, uncachedData);
-            return uncachedData;
+    public short[] get(UUID id, AudioSupplier supplier) throws Exception {
+        synchronized (audioCache) {
+            short[] data = audioCache.get(id);
+            if (data == null) {
+                short[] uncachedData = supplier.get();
+                pushCache(id, uncachedData);
+                return uncachedData;
+            }
+            accessQueue.remove(id);
+            accessQueue.addFirst(id);
+            return data;
         }
-        accessQueue.remove(id);
-        accessQueue.addFirst(id);
-        return data;
     }
 
-    public synchronized void remove(UUID id) {
-        audioCache.remove(id);
-        accessQueue.remove(id);
+    public void remove(UUID id) {
+        synchronized (audioCache) {
+            audioCache.remove(id);
+            accessQueue.remove(id);
+        }
     }
 
     private void pushCache(UUID id, short[] data) {
