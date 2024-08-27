@@ -27,7 +27,13 @@ public class AudioManager {
     public static LevelResource AUDIO_DATA = new LevelResource("audio_player_data");
 
     public static short[] getSound(MinecraftServer server, UUID id) throws Exception {
-        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(server, id)));
+        float volume;
+        if (VolumeOverrideManager.instance().isPresent()) {
+            volume = VolumeOverrideManager.instance().get().getAudioVolume(id);
+        } else {
+            volume = 1.0f;
+        }
+        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(server, id),volume));
     }
 
     public static Path getSoundFile(MinecraftServer server, UUID id, String extension) {
@@ -48,6 +54,15 @@ public class AudioManager {
             return file;
         }
         throw new FileNotFoundException("Audio does not exist");
+    }
+
+    public static boolean checkSoundExists(MinecraftServer server, UUID id) {
+        Path file = getSoundFile(server, id, AudioConverter.AudioType.MP3.getExtension());
+        if (Files.exists(file)) {
+            return true;
+        }
+        file = getSoundFile(server, id, AudioConverter.AudioType.WAV.getExtension());
+        return Files.exists(file);
     }
 
     public static Path getUploadFolder() {
