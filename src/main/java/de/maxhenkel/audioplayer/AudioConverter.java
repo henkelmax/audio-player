@@ -75,16 +75,11 @@ public class AudioConverter {
     }
 
     private static short[] convert(AudioInputStream source, float volume) throws IOException {
-        long startTime = System.nanoTime();
         AudioFormat sourceFormat = source.getFormat();
         AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
         AudioInputStream stream1 = AudioSystem.getAudioInputStream(convertFormat, source);
         AudioInputStream stream2 = AudioSystem.getAudioInputStream(FORMAT, stream1);
-        short[] rval = Plugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(),volume));
-        long endTime = System.nanoTime();
-        long durationMillis = (endTime - startTime) / 1000000;
-        AudioPlayer.LOGGER.info("Converting took, {}", durationMillis);
-        return rval;
+        return Plugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(),volume));
     }
 
     private static byte[] adjustVolume(byte[] audioSamples, float volume) {
