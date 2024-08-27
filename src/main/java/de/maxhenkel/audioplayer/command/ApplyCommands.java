@@ -29,7 +29,7 @@ public class ApplyCommands {
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName, @OptionalArgument @Name("channel") String channelId) throws CommandSyntaxException {
+    public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         UUID id = getId(context, fileName);
         if (id == null) {
             return;
@@ -39,7 +39,7 @@ public class ApplyCommands {
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("custom_name") String customName, @OptionalArgument @Name("channel") String channelId) throws CommandSyntaxException {
+    public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         UUID id = getId(context, fileName);
         if (id == null) {
             return;
