@@ -55,12 +55,11 @@ public class VolumeOverrideManager {
     }
 
     /**
-     * Gets the volume override associated with the provided sound ID, or 1.0f if there is no override set
+     * Gets the volume override associated with the provided sound ID, or 1 if there is no override set
      *
      * @param audioId the audio ID
      */
-    @Nullable
-    public Float getAudioVolume(UUID audioId) {
+    public float getAudioVolume(UUID audioId) {
         return volumes.getOrDefault(audioId, 1F);
     }
 
