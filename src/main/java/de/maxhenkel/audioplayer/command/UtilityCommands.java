@@ -2,11 +2,8 @@ package de.maxhenkel.audioplayer.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.maxhenkel.admiral.annotations.Command;
-import de.maxhenkel.admiral.annotations.RequiresPermission;
-import de.maxhenkel.audioplayer.CustomSound;
-import de.maxhenkel.audioplayer.FileNameManager;
-import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.admiral.annotations.*;
+import de.maxhenkel.audioplayer.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
@@ -102,7 +99,7 @@ public class UtilityCommands {
         })), false);
     }
 
-    private static CustomSound getHeldSound(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public static CustomSound getHeldSound(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
