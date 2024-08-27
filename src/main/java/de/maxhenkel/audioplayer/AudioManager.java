@@ -31,7 +31,7 @@ public class AudioManager {
         if (VolumeOverrideManager.instance().isPresent()) {
             volume = VolumeOverrideManager.instance().get().getAudioVolume(id);
         } else {
-            volume = 1.0f;
+            volume = 1F;
         }
         return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(server, id), volume));
     }
