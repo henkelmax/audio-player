@@ -79,22 +79,22 @@ public class AudioConverter {
         AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
         AudioInputStream stream1 = AudioSystem.getAudioInputStream(convertFormat, source);
         AudioInputStream stream2 = AudioSystem.getAudioInputStream(FORMAT, stream1);
-        return Plugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(),volume));
+        return Plugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(), volume));
     }
 
     private static byte[] adjustVolume(byte[] audioSamples, float volume) {
-        for (int i = 0; i < audioSamples.length; i+=2) {
-            short buf1 = audioSamples[i+1];
+        for (int i = 0; i < audioSamples.length; i += 2) {
+            short buf1 = audioSamples[i + 1];
             short buf2 = audioSamples[i];
 
-            buf1 = (short) ((buf1 & 0xff) << 8);
-            buf2 = (short) (buf2 & 0xff);
+            buf1 = (short) ((buf1 & 0xFF) << 8);
+            buf2 = (short) (buf2 & 0xFF);
 
-            short res= (short) (buf1 | buf2);
+            short res = (short) (buf1 | buf2);
             res = (short) (res * volume);
 
             audioSamples[i] = (byte) res;
-            audioSamples[i+1] = (byte) (res >> 8);
+            audioSamples[i + 1] = (byte) (res >> 8);
 
         }
         return audioSamples;
@@ -113,7 +113,7 @@ public class AudioConverter {
             return convert(source, volume);
         } catch (Exception e) {
             AudioPlayer.LOGGER.warn("Error converting mp3 file with native decoder");
-            return convert(AudioSystem.getAudioInputStream(file.toFile()),volume);
+            return convert(AudioSystem.getAudioInputStream(file.toFile()), volume);
         }
     }
 
