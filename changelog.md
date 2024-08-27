@@ -1,1 +1,1 @@
-- Improved audio format detection
+- Added volume command for server side volume adjustment
