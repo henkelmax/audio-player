@@ -16,13 +16,13 @@ public class VolumeCommands {
 
     @RequiresPermission("audioplayer.volume")
     @Command("volume")
-    public void volumeWithId(CommandContext<CommandSourceStack> context, @Name("id") UUID uuid, @OptionalArgument @Name("volume") @Min("0.00") @Max("100.00") Float volume) throws CommandSyntaxException {
+    public void volumeWithId(CommandContext<CommandSourceStack> context, @Name("id") UUID uuid, @OptionalArgument @Name("volume") @Min("1") @Max("100") Integer volume) {
         volumeCommand(context, uuid, volume);
     }
 
     @RequiresPermission("audioplayer.volume")
     @Command("volume")
-    public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("0.00") @Max("100.00") Float volume) throws CommandSyntaxException {
+    public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("1") @Max("100") Integer volume) throws CommandSyntaxException {
         CustomSound customSound = UtilityCommands.getHeldSound(context);
         if (customSound == null) {
             return;
@@ -30,7 +30,7 @@ public class VolumeCommands {
         volumeCommand(context, customSound.getSoundId(), volume);
     }
 
-    private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {
+    private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Integer volume) {
         if (!AudioManager.checkSoundExists(context.getSource().getServer(), id)) {
             context.getSource().sendFailure(Component.literal("Sound does not exist"));
             return;
@@ -43,16 +43,16 @@ public class VolumeCommands {
         VolumeOverrideManager mgr = optionalMgr.get();
         if (volume == null) {
             float currentVolume = mgr.getAudioVolume(id);
-            context.getSource().sendSuccess(() -> Component.literal("Current volume is %.2f".formatted(currentVolume * 100f)), false);
-        } else {
-            if (volume == 100.00f) {
-                // will remove volume from json, to keep json file smaller
-                mgr.setAudioVolume(id, null);
-            }
-            mgr.setAudioVolume(id, volume / 100f);
-            AudioPlayer.AUDIO_CACHE.remove(id);
-            context.getSource().sendSuccess(() -> Component.literal("Set volume, this will apply next time the sound plays"), false);
+            context.getSource().sendSuccess(() -> Component.literal("Current volume is %d%%".formatted(Math.round(currentVolume * 100F))), false);
+            return;
         }
+        if (volume == 100) {
+            // Will remove volume from json, to keep json file smaller
+            mgr.setAudioVolume(id, null);
+        }
+        mgr.setAudioVolume(id, volume / 100F);
+        AudioPlayer.AUDIO_CACHE.remove(id);
+        context.getSource().sendSuccess(() -> Component.literal("Successfully set sound volume to %d%%, this will apply next time the sound plays".formatted(volume)), false);
     }
 
 }
