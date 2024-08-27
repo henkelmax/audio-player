@@ -26,6 +26,11 @@ public class AudioCache {
         return data;
     }
 
+    public synchronized void remove(UUID id) {
+        audioCache.remove(id);
+        accessQueue.remove(id);
+    }
+
     private void pushCache(UUID id, short[] data) {
         if (size <= 0) {
             return;

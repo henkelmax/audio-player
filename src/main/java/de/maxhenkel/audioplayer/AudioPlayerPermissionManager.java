@@ -14,6 +14,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
 
     public static final AudioPlayerPermissionManager INSTANCE = new AudioPlayerPermissionManager();
 
+    private static final Permission VOLUME_PERMISSION = new Permission("audioplayer.volume", PermissionType.EVERYONE);
     private static final Permission UPLOAD_PERMISSION = new Permission("audioplayer.upload", PermissionType.EVERYONE);
     private static final Permission APPLY_PERMISSION = new Permission("audioplayer.apply", PermissionType.EVERYONE);
     private static final Permission APPLY_ANNOUNCER_PERMISSION = new AnnouncerPermission("audioplayer.set_static", PermissionType.EVERYONE);
@@ -23,7 +24,8 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
             UPLOAD_PERMISSION,
             APPLY_PERMISSION,
             APPLY_ANNOUNCER_PERMISSION,
-            PLAY_COMMAND_PERMISSION
+            PLAY_COMMAND_PERMISSION,
+            VOLUME_PERMISSION
     );
 
     @Override
