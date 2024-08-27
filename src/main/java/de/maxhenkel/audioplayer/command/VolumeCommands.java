@@ -43,7 +43,7 @@ public class VolumeCommands {
         VolumeOverrideManager mgr = optionalMgr.get();
         if (volume == null) {
             float currentVolume = mgr.getAudioVolume(id);
-            context.getSource().sendSuccess(() -> Component.literal("Current volume is %d%%".formatted(Math.round(currentVolume * 100F))), false);
+            context.getSource().sendSuccess(Component.literal("Current volume is %d%%".formatted(Math.round(currentVolume * 100F))), false);
             return;
         }
         if (volume == 100) {
@@ -52,7 +52,7 @@ public class VolumeCommands {
         }
         mgr.setAudioVolume(id, volume / 100F);
         AudioPlayer.AUDIO_CACHE.remove(id);
-        context.getSource().sendSuccess(() -> Component.literal("Successfully set sound volume to %d%%, this will apply next time the sound plays".formatted(volume)), false);
+        context.getSource().sendSuccess(Component.literal("Successfully set sound volume to %d%%, this will apply next time the sound plays".formatted(volume)), false);
     }
 
 }
