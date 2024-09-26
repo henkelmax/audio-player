@@ -14,13 +14,13 @@ import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CustomSound {
 
     public static final String CUSTOM_SOUND = "CustomSound";
+    public static final String CUSTOM_SOUND_RANDOM = "CustomSoundRandomized";
     public static final String CUSTOM_SOUND_RANGE = "CustomSoundRange";
     public static final String CUSTOM_SOUND_STATIC = "IsStaticCustomSound";
     private static final String ID = "id";
@@ -28,14 +28,16 @@ public class CustomSound {
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
     protected UUID soundId;
+    protected ArrayList<UUID> randomSounds;
     @Nullable
     protected Float range;
     protected boolean staticSound;
 
-    public CustomSound(UUID soundId, @Nullable Float range, boolean staticSound) {
+    public CustomSound(UUID soundId, @Nullable Float range, @Nullable ArrayList<UUID> randomSounds, boolean staticSound) {
         this.soundId = soundId;
         this.range = range;
         this.staticSound = staticSound;
+        this.randomSounds = randomSounds;
     }
 
     @Nullable
@@ -55,6 +57,10 @@ public class CustomSound {
         } else {
             return null;
         }
+        ArrayList<UUID> randomSounds = null;
+        if (tag.contains(CUSTOM_SOUND_RANDOM)) {
+            randomSounds = readUUIDArrayFromNbt(tag,CUSTOM_SOUND_RANDOM);
+        }
         Float range = null;
         if (tag.contains(CUSTOM_SOUND_RANGE)) {
             range = tag.getFloat(CUSTOM_SOUND_RANGE);
@@ -63,11 +69,37 @@ public class CustomSound {
         if (tag.contains(CUSTOM_SOUND_STATIC)) {
             staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC);
         }
-        return new CustomSound(soundId, range, staticSound);
+        return new CustomSound(soundId, range, randomSounds, staticSound);
     }
 
     public UUID getSoundId() {
+        if (isRandomized()) {
+            return randomSounds.get(ThreadLocalRandom.current().nextInt(randomSounds.size()));
+        }
         return soundId;
+    }
+
+    public boolean isRandomized() { return randomSounds != null && !randomSounds.isEmpty(); }
+
+    public ArrayList<UUID> getRandomSounds() { return randomSounds;  }
+
+    public void addRandomSound(UUID id) {
+        if (randomSounds == null) {
+            randomSounds = new ArrayList<>();
+            randomSounds.add(soundId);
+        }
+        randomSounds.add(id);
+    }
+
+    public void setRandomization(boolean enabled) {
+        if (enabled) {
+            if (randomSounds == null) {
+                randomSounds = new ArrayList<>();
+                randomSounds.add(soundId);
+            }
+        } else {
+            randomSounds = null;
+        }
     }
 
     public Optional<Float> getRange() {
@@ -98,6 +130,11 @@ public class CustomSound {
         } else {
             tag.remove(CUSTOM_SOUND);
         }
+        if (randomSounds != null) {
+            saveUUIDArrayToNbt(tag,CUSTOM_SOUND_RANDOM, randomSounds);
+        } else {
+            tag.remove(CUSTOM_SOUND_RANDOM);
+        }
         if (range != null) {
             tag.putFloat(CUSTOM_SOUND_RANGE, range);
         } else {
@@ -108,6 +145,29 @@ public class CustomSound {
         } else {
             tag.remove(CUSTOM_SOUND_STATIC);
         }
+    }
+
+    public static void saveUUIDArrayToNbt(CompoundTag tag, String id, List<UUID> uuids) {
+        List<Long> uuidList = new ArrayList<>();
+        for (UUID uuid : uuids) {
+            uuidList.add(uuid.getMostSignificantBits());
+            uuidList.add(uuid.getLeastSignificantBits());
+        }
+        tag.putLongArray(id,uuidList);
+    }
+
+    public static ArrayList<UUID> readUUIDArrayFromNbt(CompoundTag tag, String id) {
+        long[] uuids = tag.getLongArray(id);
+        if (uuids.length % 2 != 0) {
+            throw new IllegalArgumentException("Invalid UUID array length: " + uuids.length);
+        }
+        ArrayList<UUID> uuidList = new ArrayList<>(uuids.length/2);
+        for (int i = 0; i < uuids.length; i += 2) {
+            long msb = uuids[i];
+            long lsb = uuids[i+1];
+            uuidList.add(new UUID(msb, lsb));
+        }
+        return uuidList;
     }
 
     public void saveToItemIgnoreLore(ItemStack stack) {
@@ -156,7 +216,7 @@ public class CustomSound {
     }
 
     public CustomSound asStatic(boolean staticSound) {
-        return new CustomSound(soundId, range, staticSound);
+        return new CustomSound(soundId, range, randomSounds, staticSound);
     }
 
     public static boolean clearItem(ItemStack stack) {
@@ -169,6 +229,7 @@ public class CustomSound {
             return false;
         }
         tag.remove(CUSTOM_SOUND);
+        tag.remove(CUSTOM_SOUND_RANDOM);
         tag.remove(CUSTOM_SOUND_RANGE);
         tag.remove(CUSTOM_SOUND_STATIC);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
@@ -179,6 +240,7 @@ public class CustomSound {
             }
             CompoundTag blockEntityTag = blockEntityData.copyTag();
             blockEntityTag.remove(CUSTOM_SOUND);
+            blockEntityTag.remove(CUSTOM_SOUND_RANDOM);
             blockEntityTag.remove(CUSTOM_SOUND_RANGE);
             blockEntityTag.remove(CUSTOM_SOUND_STATIC);
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
