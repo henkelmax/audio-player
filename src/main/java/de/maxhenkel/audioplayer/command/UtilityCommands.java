@@ -22,6 +22,7 @@ import java.util.UUID;
 
 @Command("audioplayer")
 public class UtilityCommands {
+    @RequiresPermission("audioplayer.apply")
     @Command("set_random")
     public void set_random(CommandContext<CommandSourceStack> context, @Name("enabled") boolean enabled) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
@@ -122,29 +123,22 @@ public class UtilityCommands {
             return;
         }
 
+        FileNameManager mgr = optionalMgr.get();
+
         if (customSound.isRandomized()) {
             ArrayList<UUID> sounds = customSound.getRandomSounds();
             context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())),false);
-            for (int i = 0; i < sounds.size(); i++) {
-                FileNameManager mgr = optionalMgr.get();
-                String fileName = mgr.getFileName(sounds.get(i));
-                if (fileName == null) {
-                    context.getSource().sendFailure(Component.literal("Custom audio does not have an associated file name"));
-                    return;
-                }
-
-                context.getSource().sendSuccess(() -> Component.literal("Audio file name: ").append(Component.literal(fileName).withStyle(style -> {
-                    return style
-                            .withColor(ChatFormatting.GREEN)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")))
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, fileName));
-                })), false);
+            for (UUID sound : sounds) {
+                sendSoundName(context,mgr,sound);
             }
             return;
         }
 
-        FileNameManager mgr = optionalMgr.get();
-        String fileName = mgr.getFileName(customSound.getSoundId());
+        sendSoundName(context,mgr,customSound.getSoundId());
+    }
+
+    public static void sendSoundName(CommandContext<CommandSourceStack> context, FileNameManager mgr, UUID id) {
+        String fileName = mgr.getFileName(id);
         if (fileName == null) {
             context.getSource().sendFailure(Component.literal("Custom audio does not have an associated file name"));
             return;

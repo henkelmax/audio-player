@@ -4,6 +4,9 @@ import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.BlockItem;
@@ -84,10 +87,7 @@ public class CustomSound {
     public ArrayList<UUID> getRandomSounds() { return randomSounds;  }
 
     public void addRandomSound(UUID id) {
-        if (randomSounds == null) {
-            randomSounds = new ArrayList<>();
-            randomSounds.add(soundId);
-        }
+        setRandomization(true);
         randomSounds.add(id);
     }
 
@@ -148,24 +148,18 @@ public class CustomSound {
     }
 
     public static void saveUUIDArrayToNbt(CompoundTag tag, String id, List<UUID> uuids) {
-        List<Long> uuidList = new ArrayList<>();
+        ListTag uuidList = new ListTag();
         for (UUID uuid : uuids) {
-            uuidList.add(uuid.getMostSignificantBits());
-            uuidList.add(uuid.getLeastSignificantBits());
+            uuidList.add(NbtUtils.createUUID(uuid));
         }
-        tag.putLongArray(id,uuidList);
+        tag.put(id, uuidList);
     }
 
     public static ArrayList<UUID> readUUIDArrayFromNbt(CompoundTag tag, String id) {
-        long[] uuids = tag.getLongArray(id);
-        if (uuids.length % 2 != 0) {
-            throw new IllegalArgumentException("Invalid UUID array length: " + uuids.length);
-        }
-        ArrayList<UUID> uuidList = new ArrayList<>(uuids.length/2);
-        for (int i = 0; i < uuids.length; i += 2) {
-            long msb = uuids[i];
-            long lsb = uuids[i+1];
-            uuidList.add(new UUID(msb, lsb));
+        ListTag list = tag.getList(id, Tag.TAG_INT_ARRAY);
+        ArrayList<UUID> uuidList = new ArrayList<>(list.size());
+        for (Tag value : list) {
+            uuidList.add(NbtUtils.loadUUID(value));
         }
         return uuidList;
     }
