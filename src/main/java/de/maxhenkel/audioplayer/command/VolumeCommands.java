@@ -27,6 +27,12 @@ public class VolumeCommands {
         if (customSound == null) {
             return;
         }
+        if (customSound.isRandomized()) {
+            for (UUID id : customSound.getRandomSounds()) {
+                volumeCommand(context, id, volume);
+            }
+            return;
+        }
         volumeCommand(context, customSound.getSoundId(), volume);
     }
 
