@@ -26,7 +26,6 @@ import java.util.UUID;
 
 @Command("audioplayer")
 public class ApplyCommands {
-
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
@@ -34,7 +33,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, range, false), customName);
+        apply(context, new CustomSound(id, range, null, false), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
@@ -44,7 +43,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, null, false), customName);
+        apply(context, new CustomSound(id, null, null, false), customName);
     }
 
     // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
@@ -54,7 +53,7 @@ public class ApplyCommands {
     @Command("musicdisc")
     @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, range, false), customName);
+        apply(context, new CustomSound(sound, range, null, false), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
@@ -62,7 +61,7 @@ public class ApplyCommands {
     @Command("musicdisc")
     @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, null, false), customName);
+        apply(context, new CustomSound(sound, null,null, false), customName);
     }
 
     @Nullable
@@ -159,7 +158,6 @@ public class ApplyCommands {
         if (!type.isValid(stack)) {
             return;
         }
-        customSound.saveToItem(stack, customName);
 
         if (stack.has(DataComponents.INSTRUMENT)) {
             stack.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
@@ -168,7 +166,16 @@ public class ApplyCommands {
             stack.set(DataComponents.JUKEBOX_PLAYABLE, ComponentUtils.CUSTOM_JUKEBOX_PLAYABLE);
         }
 
-        context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
+        CustomSound handItemSound = CustomSound.of(stack);
+
+        if (handItemSound != null && handItemSound.isRandomized()) {
+            handItemSound.addRandomSound(customSound.getSoundId());
+            handItemSound.saveToItem(stack, customName);
+            context.getSource().sendSuccess(() -> Component.literal("Successfully added sound to ").append(stack.getHoverName()), false);
+        } else {
+            customSound.saveToItem(stack, customName);
+            context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
+        }
     }
 
     private static void checkRange(ConfigEntry<Float> maxRange, @Nullable Float range) throws CommandSyntaxException {
