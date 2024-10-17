@@ -5,7 +5,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.InstrumentItem;
 import net.minecraft.world.item.ItemStack;
@@ -22,14 +22,14 @@ import java.util.UUID;
 public class InstrumentItemMixin {
 
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
-    private void useOn(Level level, Player p, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> ci) {
+    private void useOn(Level level, Player p, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> ci) {
         ItemStack itemInHand = p.getItemInHand(interactionHand);
         CustomSound customSound = CustomSound.of(itemInHand);
         if (customSound == null) {
             return;
         }
         if (!(p instanceof ServerPlayer player)) {
-            ci.setReturnValue(InteractionResultHolder.consume(itemInHand));
+            ci.setReturnValue(InteractionResult.CONSUME);
             return;
         }
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
@@ -38,8 +38,8 @@ public class InstrumentItemMixin {
             return;
         }
         player.startUsingItem(interactionHand);
-        player.getCooldowns().addCooldown(itemInHand.getItem(), AudioPlayer.SERVER_CONFIG.goatHornCooldown.get());
+        player.getCooldowns().addCooldown(itemInHand, AudioPlayer.SERVER_CONFIG.goatHornCooldown.get());
         level.gameEvent(GameEvent.INSTRUMENT_PLAY, player.position(), GameEvent.Context.of(player));
-        ci.setReturnValue(InteractionResultHolder.consume(itemInHand));
+        ci.setReturnValue(InteractionResult.CONSUME);
     }
 }

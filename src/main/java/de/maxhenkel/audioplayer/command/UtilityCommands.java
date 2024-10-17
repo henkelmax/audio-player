@@ -8,7 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -42,7 +42,7 @@ public class UtilityCommands {
 
         sound.setRandomization(enabled);
 
-        sound.saveToItem(itemInHand,null,false);
+        sound.saveToItem(itemInHand, null, false);
 
         if (enabled) {
             context.getSource().sendSuccess(() -> Component.literal("Successfully enabled randomization, more sounds can now be added to this item"), false);
@@ -69,7 +69,7 @@ public class UtilityCommands {
         }
 
         if (itemInHand.has(DataComponents.INSTRUMENT)) {
-            Optional<Holder.Reference<Instrument>> holder = BuiltInRegistries.INSTRUMENT.getHolder(Instruments.PONDER_GOAT_HORN);
+            Optional<Holder.Reference<Instrument>> holder = context.getSource().getServer().registryAccess().lookupOrThrow(Registries.INSTRUMENT).get(Instruments.PONDER_GOAT_HORN);
             holder.ifPresent(instrumentReference -> itemInHand.set(DataComponents.INSTRUMENT, instrumentReference));
         }
         if (itemInHand.has(DataComponents.JUKEBOX_PLAYABLE)) {
@@ -100,7 +100,7 @@ public class UtilityCommands {
         }
         if (customSound.isRandomized()) {
             ArrayList<UUID> sounds = customSound.getRandomSounds();
-            context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())),false);
+            context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
             for (int i = 0; i < sounds.size(); i++) {
                 int finalI = i;
                 context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(sounds.get(finalI), Component.literal("Sound %d.".formatted(finalI))), false);
@@ -127,14 +127,14 @@ public class UtilityCommands {
 
         if (customSound.isRandomized()) {
             ArrayList<UUID> sounds = customSound.getRandomSounds();
-            context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())),false);
+            context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
             for (UUID sound : sounds) {
-                sendSoundName(context,mgr,sound);
+                sendSoundName(context, mgr, sound);
             }
             return;
         }
 
-        sendSoundName(context,mgr,customSound.getSoundId());
+        sendSoundName(context, mgr, customSound.getSoundId());
     }
 
     public static void sendSoundName(CommandContext<CommandSourceStack> context, FileNameManager mgr, UUID id) {

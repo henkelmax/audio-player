@@ -1,1 +1,1 @@
-- Added multiple sounds on one item (randomized playback)
+- Updated to 1.21.2
