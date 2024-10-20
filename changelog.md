@@ -1,1 +1,1 @@
-- Added volume command for server side volume adjustment
+- Fixed URL encoding when downloading from Filebin
