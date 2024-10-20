@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,7 +19,7 @@ public class Filebin {
 
     public static final String USER_AGENT = "AudioPlayer/curl";
 
-    public static void downloadSound(MinecraftServer server, UUID sound) throws IOException, InterruptedException, UnsupportedAudioFileException {
+    public static void downloadSound(MinecraftServer server, UUID sound) throws IOException, InterruptedException, UnsupportedAudioFileException, URISyntaxException {
         String url = getBin(sound);
 
         HttpClient client = HttpClient.newHttpClient();
@@ -64,7 +65,7 @@ public class Filebin {
                 }
 
                 String filename = file.get("filename").getAsString();
-                AudioManager.saveSound(server, sound, url + "/" + filename);
+                AudioManager.saveSound(server, sound, url + "/" + new URI(null, null, filename, null).toASCIIString());
                 deleteBin(url);
                 return;
             }
