@@ -1,1 +1,1 @@
-- Added multiple sounds on one item (randomized playback)
+- Fixed URL encoding when downloading from Filebin
