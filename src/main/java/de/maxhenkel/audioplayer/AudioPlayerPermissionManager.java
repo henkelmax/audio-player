@@ -78,8 +78,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
             if (player == null) {
                 return false;
             }
-            //TODO Add back when fabric-permissions-api-v0 is updated
-            TriState permissionValue = TriState.DEFAULT; // Permissions.getPermissionValue(player, permission);
+            TriState permissionValue = Permissions.getPermissionValue(player, permission);
             switch (permissionValue) {
                 case DEFAULT:
                     return type.hasPermission(player);
