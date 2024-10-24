@@ -144,32 +144,38 @@
 
   const triggerFileUpload = async (): Promise<void> => {
     if (selectedFile.value) {
-      const response = await uploadFile(selectedFile.value, token.value);
+      try {
+        const response = await uploadFile(selectedFile.value, token.value);
 
-      if (response.status === 401) {
-        finishHeadline.value = 'Unauthorized request!';
-        finishSubText.value = 'The file could not be uploaded. Please request a new token in Minecraft and try again.';
-        finishButtonText.value = 'Try again!';
-      } else if (response.status === 400) {
-        finishHeadline.value = 'Upload could not be processed';
-        finishSubText.value = 'The file could not be uploaded. Please request a new token in Minecraft and try again.';
-        finishButtonText.value = 'Try again!';
-      } else if (response.status === 404) {
-        finishHeadline.value = 'URL not found';
-        finishSubText.value = 'Please request a new token in Minecraft and try again. If the issue persists, please reach out to your server admin.';
-        finishButtonText.value = 'Try again!';
-      } else if (response.status === 413) {
+        if (response.status === 401) {
+          finishHeadline.value = 'Unauthorized request!';
+          finishSubText.value = 'The file could not be uploaded. Please request a new token in Minecraft and try again.';
+          finishButtonText.value = 'Try again!';
+        } else if (response.status === 400) {
+          finishHeadline.value = 'Upload could not be processed';
+          finishSubText.value = 'The file could not be uploaded. Please request a new token in Minecraft and try again.';
+          finishButtonText.value = 'Try again!';
+        } else if (response.status === 404) {
+          finishHeadline.value = 'URL not found';
+          finishSubText.value = 'Please request a new token in Minecraft and try again. If the issue persists, please reach out to your server admin.';
+          finishButtonText.value = 'Try again!';
+        } else if (response.status === 413) {
+          finishHeadline.value = 'File too big';
+          finishSubText.value = 'Your file was too big, please request a new token in Minecraft and try again with a smaller file.';
+          finishButtonText.value = 'Try again!';
+        } else if (response.status === 200) {
+          finishHeadline.value = 'Sound uploaded successfully!';
+          finishSubText.value = 'Your file was uploaded successfully. You can now go back into Minecraft and use it!';
+          finishButtonText.value = 'Upload another file!';
+        } else {
+          finishHeadline.value = 'Unexpected critical error';
+          finishSubText.value = 'Please reach out to your server admin.';
+          finishButtonText.value = 'Try again';
+        }
+      } catch (error) {
         finishHeadline.value = 'File too big';
         finishSubText.value = 'Your file was too big, please request a new token in Minecraft and try again with a smaller file.';
         finishButtonText.value = 'Try again!';
-      } else if (response.status === 200) {
-        finishHeadline.value = 'Sound uploaded successfully!';
-        finishSubText.value = 'Your file was uploaded successfully. You can now go back into Minecraft and use it!';
-        finishButtonText.value = 'Upload another file!';
-      } else {
-        finishHeadline.value = 'Unexpected critical error';
-        finishSubText.value = 'Please reach out to your server admin.';
-        finishButtonText.value = 'Try again';
       }
 
       isFileUploadProcessDone.value = true;

@@ -24,6 +24,9 @@ dependencies {
         exclude group: 'junit', module: 'junit'
     }
 
+    implementation "org.microhttp:microhttp:${microhttp_version}"
+    shadow "org.microhttp:microhttp:${microhttp_version}"
+
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
 
@@ -55,6 +58,7 @@ processResources {
 shadowJar {
     relocate 'javazoom', "de.maxhenkel.audioplayer.javazoom"
     relocate 'org.tritonus', "de.maxhenkel.audioplayer.tritonus"
+    relocate 'org.microhttp', "de.maxhenkel.audioplayer.microhttp"
 }
 
 node {
