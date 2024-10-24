@@ -1,1 +1,1 @@
-- Updated to 1.21.3
+- Switched to microhttp for HTTP requests
