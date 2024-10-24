@@ -36,6 +36,7 @@ public class WebServer implements AutoCloseable {
         port = AudioPlayer.WEB_SERVER_CONFIG.port.get();
         Options options = Options.builder()
                 .withPort(port)
+                .withHost(null)
                 .withRequestTimeout(Duration.ofSeconds(60))
                 .withConcurrency(1)
                 .withMaxRequestSize(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().intValue())
