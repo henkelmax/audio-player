@@ -1,1 +1,1 @@
-- Fixed URL encoding when downloading from Filebin
+- Switched to microhttp for HTTP requests
