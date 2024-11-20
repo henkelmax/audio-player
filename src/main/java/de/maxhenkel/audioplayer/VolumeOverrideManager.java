@@ -107,4 +107,20 @@ public class VolumeOverrideManager {
         return Optional.ofNullable(INSTANCE);
     }
 
+    private static final float LOG_BASE = 2.0f;
+
+    public static float convertToLinearScaleFactor(float logarithmicScaleFactor) {
+        if (logarithmicScaleFactor <= 0) {
+            return 0;
+        }
+
+        return 1 + (float) (Math.log10(logarithmicScaleFactor) / LOG_BASE);
+    }
+
+    public static float convertToLogarithmicScaleFactor(float linearScaleFactor) {
+        linearScaleFactor = Math.max(0, Math.min(linearScaleFactor, 1));
+
+        return (float) Math.pow(10, (linearScaleFactor - 1) * LOG_BASE);
+    }
+
 }
