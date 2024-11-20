@@ -1,1 +1,1 @@
-- Switched to microhttp for HTTP requests
+- Update volume command to make it perceptually linear
