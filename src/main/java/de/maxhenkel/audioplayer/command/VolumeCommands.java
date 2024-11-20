@@ -56,7 +56,7 @@ public class VolumeCommands {
             context.getSource().sendSuccess(() -> Component.literal("Current volume is %s%%".formatted(percentFormat.format(currentVolume * 100F))), false);
             return;
         }
-        if (volume == 100) {
+        if (volume == 100F) {
             // Will remove volume from json, to keep json file smaller
             mgr.setAudioVolume(id, null);
         }
