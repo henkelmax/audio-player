@@ -1,1 +1,1 @@
-- Update volume command to make it perceptually linear
+- Update to 1.21.4
