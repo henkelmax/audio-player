@@ -1,1 +1,1 @@
-- Update to 1.21.4
+- Fixed permissions not working from the console when using a permission manager
