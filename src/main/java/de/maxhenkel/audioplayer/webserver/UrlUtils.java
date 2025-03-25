@@ -4,13 +4,14 @@ import de.maxhenkel.audioplayer.AudioPlayer;
 
 import javax.annotation.Nullable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.UUID;
 
 public class UrlUtils {
 
     @Nullable
-    public static String generateUploadUrl(UUID token) {
+    public static URI generateUploadUrl(UUID token) {
         String urlString = AudioPlayer.WEB_SERVER_CONFIG.url.get();
 
         if (urlString.isBlank()) {
@@ -48,7 +49,7 @@ public class UrlUtils {
         finalUrl.append("?token=");
         finalUrl.append(token.toString());
 
-        return finalUrl.toString();
+        return URI.create(finalUrl.toString());
     }
 
 }

@@ -8,6 +8,7 @@ import de.maxhenkel.audioplayer.interfaces.CustomJukeboxSongPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -108,14 +109,15 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
     @Override
     public void audioplayer$onSave(ItemStack item, CompoundTag compound, HolderLookup.Provider provider) {
         if (channelId != null && !item.isEmpty()) {
-            compound.putUUID("ChannelID", channelId);
+            compound.store("ChannelID", UUIDUtil.CODEC, channelId);
         }
     }
 
     @Override
     public void audioplayer$onLoad(ItemStack item, CompoundTag compound, HolderLookup.Provider provider) {
-        if (compound.hasUUID("ChannelID") && !item.isEmpty()) {
-            channelId = compound.getUUID("ChannelID");
+        UUID id = compound.read("ChannelID", UUIDUtil.CODEC).orElse(null);
+        if (id != null && !item.isEmpty()) {
+            channelId = id;
             song = null;
         } else {
             channelId = null;

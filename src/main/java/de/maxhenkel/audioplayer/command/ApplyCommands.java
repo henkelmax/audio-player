@@ -61,7 +61,7 @@ public class ApplyCommands {
     @Command("musicdisc")
     @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, null,null, false), customName);
+        apply(context, new CustomSound(sound, null, null, false), customName);
     }
 
     @Nullable

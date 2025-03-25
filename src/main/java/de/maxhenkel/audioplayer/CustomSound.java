@@ -2,17 +2,16 @@ package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Unit;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -56,22 +55,16 @@ public class CustomSound {
     public static CustomSound of(CompoundTag tag) {
         UUID soundId;
         if (tag.contains(CUSTOM_SOUND)) {
-            soundId = tag.getUUID(CUSTOM_SOUND);
+            soundId = tag.read(CUSTOM_SOUND, UUIDUtil.CODEC).orElse(null);
         } else {
             return null;
         }
         ArrayList<UUID> randomSounds = null;
         if (tag.contains(CUSTOM_SOUND_RANDOM)) {
-            randomSounds = readUUIDArrayFromNbt(tag,CUSTOM_SOUND_RANDOM);
+            randomSounds = readUUIDArrayFromNbt(tag, CUSTOM_SOUND_RANDOM);
         }
-        Float range = null;
-        if (tag.contains(CUSTOM_SOUND_RANGE)) {
-            range = tag.getFloat(CUSTOM_SOUND_RANGE);
-        }
-        boolean staticSound = false;
-        if (tag.contains(CUSTOM_SOUND_STATIC)) {
-            staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC);
-        }
+        Float range = tag.getFloat(CUSTOM_SOUND_RANGE).orElse(null);
+        boolean staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC).orElse(false);
         return new CustomSound(soundId, range, randomSounds, staticSound);
     }
 
@@ -82,9 +75,13 @@ public class CustomSound {
         return soundId;
     }
 
-    public boolean isRandomized() { return randomSounds != null && !randomSounds.isEmpty(); }
+    public boolean isRandomized() {
+        return randomSounds != null && !randomSounds.isEmpty();
+    }
 
-    public ArrayList<UUID> getRandomSounds() { return randomSounds;  }
+    public ArrayList<UUID> getRandomSounds() {
+        return randomSounds;
+    }
 
     public void addRandomSound(UUID id) {
         setRandomization(true);
@@ -126,12 +123,12 @@ public class CustomSound {
 
     public void saveToNbt(CompoundTag tag) {
         if (soundId != null) {
-            tag.putUUID(CUSTOM_SOUND, soundId);
+            tag.store(CUSTOM_SOUND, UUIDUtil.CODEC, soundId);
         } else {
             tag.remove(CUSTOM_SOUND);
         }
         if (randomSounds != null) {
-            saveUUIDArrayToNbt(tag,CUSTOM_SOUND_RANDOM, randomSounds);
+            saveUUIDArrayToNbt(tag, CUSTOM_SOUND_RANDOM, randomSounds);
         } else {
             tag.remove(CUSTOM_SOUND_RANDOM);
         }
@@ -150,16 +147,16 @@ public class CustomSound {
     public static void saveUUIDArrayToNbt(CompoundTag tag, String id, List<UUID> uuids) {
         ListTag uuidList = new ListTag();
         for (UUID uuid : uuids) {
-            uuidList.add(NbtUtils.createUUID(uuid));
+            uuidList.add(UUIDUtil.CODEC.encodeStart(NbtOps.INSTANCE, uuid).getOrThrow());
         }
         tag.put(id, uuidList);
     }
 
     public static ArrayList<UUID> readUUIDArrayFromNbt(CompoundTag tag, String id) {
-        ListTag list = tag.getList(id, Tag.TAG_INT_ARRAY);
+        ListTag list = tag.getList(id).orElse(new ListTag());
         ArrayList<UUID> uuidList = new ArrayList<>(list.size());
         for (Tag value : list) {
-            uuidList.add(NbtUtils.loadUUID(value));
+            uuidList.add(UUIDUtil.CODEC.decode(NbtOps.INSTANCE, value).getOrThrow().getFirst());
         }
         return uuidList;
     }
@@ -206,7 +203,11 @@ public class CustomSound {
             }
         }
 
-        stack.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+        TooltipDisplay tooltipDisplay = stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+        LinkedHashSet<DataComponentType<?>> hiddenComponents = new LinkedHashSet<>(tooltipDisplay.hiddenComponents());
+        hiddenComponents.add(DataComponents.JUKEBOX_PLAYABLE);
+        hiddenComponents.add(DataComponents.INSTRUMENT);
+        stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(tooltipDisplay.hideTooltip(), hiddenComponents));
     }
 
     public CustomSound asStatic(boolean staticSound) {

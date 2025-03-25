@@ -7,6 +7,7 @@ import de.maxhenkel.audioplayer.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
@@ -15,8 +16,11 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.InstrumentComponent;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,7 +74,7 @@ public class UtilityCommands {
 
         if (itemInHand.has(DataComponents.INSTRUMENT)) {
             Optional<Holder.Reference<Instrument>> holder = context.getSource().getServer().registryAccess().lookupOrThrow(Registries.INSTRUMENT).get(Instruments.PONDER_GOAT_HORN);
-            holder.ifPresent(instrumentReference -> itemInHand.set(DataComponents.INSTRUMENT, instrumentReference));
+            holder.ifPresent(instrumentReference -> itemInHand.set(DataComponents.INSTRUMENT, new InstrumentComponent(instrumentReference)));
         }
         if (itemInHand.has(DataComponents.JUKEBOX_PLAYABLE)) {
             JukeboxPlayable jukeboxPlayable = itemInHand.getItem().components().get(DataComponents.JUKEBOX_PLAYABLE);
@@ -81,8 +85,12 @@ public class UtilityCommands {
             }
         }
 
-        if (itemInHand.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)) {
-            itemInHand.remove(DataComponents.HIDE_ADDITIONAL_TOOLTIP);
+        TooltipDisplay tooltipDisplay = itemInHand.get(DataComponents.TOOLTIP_DISPLAY);
+        if (tooltipDisplay != null) {
+            LinkedHashSet<DataComponentType<?>> hiddenComponents = new LinkedHashSet<>(tooltipDisplay.hiddenComponents());
+            hiddenComponents.remove(DataComponents.JUKEBOX_PLAYABLE);
+            hiddenComponents.remove(DataComponents.INSTRUMENT);
+            itemInHand.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(tooltipDisplay.hideTooltip(), hiddenComponents));
         }
 
         if (itemInHand.has(DataComponents.LORE)) {
@@ -147,8 +155,8 @@ public class UtilityCommands {
         context.getSource().sendSuccess(() -> Component.literal("Audio file name: ").append(Component.literal(fileName).withStyle(style -> {
             return style
                     .withColor(ChatFormatting.GREEN)
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")))
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, fileName));
+                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to copy")))
+                    .withClickEvent(new ClickEvent.CopyToClipboard(fileName));
         })), false);
     }
 

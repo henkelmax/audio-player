@@ -16,6 +16,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -35,8 +36,8 @@ public class UploadCommands {
                         Component.literal("Upload audio via Filebin ")
                                 .append(Component.literal("here").withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer upload"))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                                            .withClickEvent(new ClickEvent.RunCommand("/audioplayer upload"))
+                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to show more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
                 , false);
@@ -44,8 +45,8 @@ public class UploadCommands {
                         Component.literal("Upload audio with access to the servers file system ")
                                 .append(Component.literal("here").withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer serverfile"))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                                            .withClickEvent(new ClickEvent.RunCommand("/audioplayer serverfile"))
+                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to show more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
                 , false);
@@ -53,8 +54,8 @@ public class UploadCommands {
                         Component.literal("Upload audio from a URL ")
                                 .append(Component.literal("here").withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer url"))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to show more")));
+                                            .withClickEvent(new ClickEvent.RunCommand("/audioplayer url"))
+                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to show more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
                 , false);
@@ -65,14 +66,14 @@ public class UploadCommands {
     @Command("filebin")
     public void filebin(CommandContext<CommandSourceStack> context) {
         UUID uuid = UUID.randomUUID();
-        String uploadURL = Filebin.getBin(uuid);
+        URI uploadURL = Filebin.getBin(uuid);
 
         MutableComponent msg = Component.literal("Click ")
                 .append(Component.literal("this link")
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadURL))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
+                                    .withClickEvent(new ClickEvent.OpenUrl(uploadURL))
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 )
@@ -85,8 +86,8 @@ public class UploadCommands {
                 .append(Component.literal("here")
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/audioplayer filebin " + uuid))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to confirm upload")));
+                                    .withClickEvent(new ClickEvent.RunCommand("/audioplayer filebin " + uuid))
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to confirm upload")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 )
@@ -121,8 +122,8 @@ public class UploadCommands {
                                 .append(" file, enter the following command: ")
                                 .append(Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer url "))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
+                                            .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer url "))
+                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to fill in the command")));
                                 }))
                                 .append(".")
                 , false);
@@ -161,15 +162,15 @@ public class UploadCommands {
 
         UUID token = webServer.getTokenManager().generateToken(context.getSource().getPlayerOrException().getUUID());
 
-        String uploadUrl = UrlUtils.generateUploadUrl(token);
+        URI uploadUrl = UrlUtils.generateUploadUrl(token);
 
         if (uploadUrl != null) {
             context.getSource().sendSuccess(() ->
                             Component.literal("Click ")
                                     .append(Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
                                         return style
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, uploadUrl))
-                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
+                                                .withClickEvent(new ClickEvent.OpenUrl(uploadUrl))
+                                                .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open")));
                                     }))
                                     .append(" to upload your sound.")
                     , false);
@@ -180,8 +181,8 @@ public class UploadCommands {
                         Component.literal("Visit the website and use ")
                                 .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, token.toString()))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                                            .withClickEvent(new ClickEvent.CopyToClipboard(token.toString()))
+                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to copy")));
                                 }))
                                 .append(".")
                 , false);
@@ -200,8 +201,8 @@ public class UploadCommands {
                                 .append(" on the server and run the command ")
                                 .append(Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer serverfile "))
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to fill in the command")));
+                                            .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer serverfile "))
+                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to fill in the command")));
                                 }))
                                 .append(".")
                 , false);
@@ -249,8 +250,8 @@ public class UploadCommands {
                 .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, soundID.toString()))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Copy sound ID")));
+                                    .withClickEvent(new ClickEvent.CopyToClipboard(soundID.toString()))
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Copy sound ID")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 )
@@ -258,8 +259,8 @@ public class UploadCommands {
                 .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on item"))
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/audioplayer apply %s".formatted(soundID.toString())))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Put the sound on an item")));
+                                    .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer apply %s".formatted(soundID.toString())))
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Put the sound on an item")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 );

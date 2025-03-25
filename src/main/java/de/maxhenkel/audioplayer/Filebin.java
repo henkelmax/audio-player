@@ -20,11 +20,11 @@ public class Filebin {
     public static final String USER_AGENT = "AudioPlayer/curl";
 
     public static void downloadSound(MinecraftServer server, UUID sound) throws IOException, InterruptedException, UnsupportedAudioFileException, URISyntaxException {
-        String url = getBin(sound);
+        URI url = getBin(sound);
 
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
+                    .uri(url)
                     .header("Accept", "application/json")
                     .header("User-Agent", USER_AGENT)
                     .build();
@@ -74,10 +74,10 @@ public class Filebin {
         }
     }
 
-    public static void deleteBin(String url) {
+    public static void deleteBin(URI url) {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
+                    .uri(url)
                     .header("Accept", "application/json")
                     .header("User-Agent", USER_AGENT)
                     .DELETE()
@@ -92,14 +92,14 @@ public class Filebin {
         }
     }
 
-    public static String getBin(UUID sound) {
+    public static URI getBin(UUID sound) {
         String filebinUrl = AudioPlayer.SERVER_CONFIG.filebinUrl.get();
 
         if (!filebinUrl.endsWith("/")) {
             filebinUrl += "/";
         }
 
-        return filebinUrl + sound;
+        return URI.create(filebinUrl + sound);
     }
 
 }
