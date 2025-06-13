@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version "${shadow_version}"
+    id 'com.gradleup.shadow' version "${shadow_version}"
     id 'fabric-loom' version "${fabric_loom_version}"
     id 'mod-update' version "${mod_update_version}"
     id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
