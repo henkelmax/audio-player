@@ -19,10 +19,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.InstrumentComponent;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Command("audioplayer")
 public class UtilityCommands {
@@ -107,7 +104,7 @@ public class UtilityCommands {
             return;
         }
         if (customSound.isRandomized()) {
-            ArrayList<UUID> sounds = customSound.getRandomSounds();
+            List<UUID> sounds = customSound.getRandomSounds();
             context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
             for (int i = 0; i < sounds.size(); i++) {
                 int finalI = i;
@@ -134,7 +131,7 @@ public class UtilityCommands {
         FileNameManager mgr = optionalMgr.get();
 
         if (customSound.isRandomized()) {
-            ArrayList<UUID> sounds = customSound.getRandomSounds();
+            List<UUID> sounds = customSound.getRandomSounds();
             context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
             for (UUID sound : sounds) {
                 sendSoundName(context, mgr, sound);

@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer;
 
+import com.mojang.serialization.Codec;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
@@ -14,12 +15,16 @@ import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CustomSound {
+
+    public static final Codec<List<UUID>> UUID_LIST_CODEC = Codec.list(UUIDUtil.CODEC);
 
     public static final String CUSTOM_SOUND = "CustomSound";
     public static final String CUSTOM_SOUND_RANDOM = "CustomSoundRandomized";
@@ -30,12 +35,12 @@ public class CustomSound {
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
     protected UUID soundId;
-    protected ArrayList<UUID> randomSounds;
+    protected List<UUID> randomSounds;
     @Nullable
     protected Float range;
     protected boolean staticSound;
 
-    public CustomSound(UUID soundId, @Nullable Float range, @Nullable ArrayList<UUID> randomSounds, boolean staticSound) {
+    public CustomSound(UUID soundId, @Nullable Float range, @Nullable List<UUID> randomSounds, boolean staticSound) {
         this.soundId = soundId;
         this.range = range;
         this.staticSound = staticSound;
@@ -68,6 +73,19 @@ public class CustomSound {
         return new CustomSound(soundId, range, randomSounds, staticSound);
     }
 
+    @Nullable
+    public static CustomSound of(ValueInput valueInput) {
+        UUID soundId = valueInput.read(CUSTOM_SOUND, UUIDUtil.CODEC).orElse(null);
+        if (soundId == null) {
+            return null;
+        }
+        List<UUID> randomSounds = valueInput.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
+
+        Float range = valueInput.read(CUSTOM_SOUND_RANGE, Codec.FLOAT).orElse(null);
+        boolean staticSound = valueInput.read(CUSTOM_SOUND_STATIC, Codec.BOOL).orElse(false);
+        return new CustomSound(soundId, range, randomSounds, staticSound);
+    }
+
     public UUID getSoundId() {
         if (isRandomized()) {
             return randomSounds.get(ThreadLocalRandom.current().nextInt(randomSounds.size()));
@@ -79,7 +97,7 @@ public class CustomSound {
         return randomSounds != null && !randomSounds.isEmpty();
     }
 
-    public ArrayList<UUID> getRandomSounds() {
+    public List<UUID> getRandomSounds() {
         return randomSounds;
     }
 
@@ -141,6 +159,29 @@ public class CustomSound {
             tag.putBoolean(CUSTOM_SOUND_STATIC, true);
         } else {
             tag.remove(CUSTOM_SOUND_STATIC);
+        }
+    }
+
+    public void saveToValueOutput(ValueOutput valueOutput) {
+        if (soundId != null) {
+            valueOutput.store(CUSTOM_SOUND, UUIDUtil.CODEC, soundId);
+        } else {
+            valueOutput.discard(CUSTOM_SOUND);
+        }
+        if (randomSounds != null) {
+            valueOutput.store(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC, randomSounds);
+        } else {
+            valueOutput.discard(CUSTOM_SOUND_RANDOM);
+        }
+        if (range != null) {
+            valueOutput.putFloat(CUSTOM_SOUND_RANGE, range);
+        } else {
+            valueOutput.discard(CUSTOM_SOUND_RANGE);
+        }
+        if (staticSound) {
+            valueOutput.putBoolean(CUSTOM_SOUND_STATIC, true);
+        } else {
+            valueOutput.discard(CUSTOM_SOUND_STATIC);
         }
     }
 

@@ -5,13 +5,13 @@ import de.maxhenkel.audioplayer.PlayerManager;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import de.maxhenkel.audioplayer.interfaces.CustomSoundHolder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -55,19 +55,19 @@ public class SkullBlockEntityMixin extends BlockEntity implements CustomSoundHol
     }
 
     @Inject(method = "saveAdditional", at = @At("RETURN"))
-    private void saveAdditional(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
+    private void saveAdditional(ValueOutput valueOutput, CallbackInfo ci) {
         if (channelID != null) {
-            tag.store("ChannelID", UUIDUtil.CODEC, channelID);
+            valueOutput.store("ChannelID", UUIDUtil.CODEC, channelID);
         }
         if (customSound != null) {
-            customSound.saveToNbt(tag);
+            customSound.saveToValueOutput(valueOutput);
         }
     }
 
     @Inject(method = "loadAdditional", at = @At("RETURN"))
-    private void load(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
-        channelID = tag.read("ChannelID", UUIDUtil.CODEC).orElse(null);
-        customSound = CustomSound.of(tag);
+    private void load(ValueInput valueInput, CallbackInfo ci) {
+        channelID = valueInput.read("ChannelID", UUIDUtil.CODEC).orElse(null);
+        customSound = CustomSound.of(valueInput);
     }
 
     @Override
