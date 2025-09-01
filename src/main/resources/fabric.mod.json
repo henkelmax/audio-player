@@ -27,7 +27,7 @@
   "depends": {
     "fabricloader": "${fabric_loader_dependency}",
     "minecraft": "${minecraft_dependency}",
-    "voicechat": ">=${minecraft_version}-${voicechat_api_version}"
+    "voicechat_api": ">=${voicechat_api_version}"
   },
   "breaks": {
     "fabric-api": "${fabric_api_dependency_breaks}"
