@@ -35,7 +35,6 @@ public class AudioPlayerMod implements ModInitializer {
                     PlayCommands.class
             ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
-        FileNameManager.init();
     }
 
     public static Path getModConfigFolder() {

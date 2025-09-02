@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -86,18 +87,11 @@ public class UtilityCommands {
         if (customSound == null) {
             return;
         }
-        Optional<FileNameManager> fileNameManager = FileNameManager.instance();
-
-        if (fileNameManager.isEmpty()) {
-            context.getSource().sendFailure(Component.literal("An internal error occurred"));
-            return;
-        }
-
-        sendSoundName(context, fileNameManager.get(), customSound.getSoundId());
+        sendSoundName(context, customSound.getSoundId());
     }
 
-    public static void sendSoundName(CommandContext<CommandSourceStack> context, FileNameManager mgr, UUID id) {
-        String fileName = mgr.getFileName(id);
+    public static void sendSoundName(CommandContext<CommandSourceStack> context, UUID id) {
+        String fileName = AudioStorageManager.fileNameManager().getFileName(id);
         if (fileName == null) {
             context.getSource().sendFailure(Component.literal("Custom audio does not have an associated file name"));
             return;

@@ -34,6 +34,7 @@ public class AudioStorageManager {
 
     private final MinecraftServer server;
     private final ExecutorService executor;
+    private final FileNameManager fileNameManager;
     private final VolumeOverrideManager volumeOverrideManager;
     private final AudioCache audioCache;
 
@@ -44,6 +45,7 @@ public class AudioStorageManager {
             thread.setDaemon(true);
             return thread;
         });
+        fileNameManager = new FileNameManager(getAudioDataFolder().resolve("file-name-mappings.json"));
         volumeOverrideManager = new VolumeOverrideManager(getAudioDataFolder().resolve("volume-overrides.json"));
         audioCache = new AudioCache();
     }
@@ -75,6 +77,10 @@ public class AudioStorageManager {
 
     public static AudioStorageManager instance() {
         return instance;
+    }
+
+    public static FileNameManager fileNameManager() {
+        return instance().fileNameManager;
     }
 
     public static VolumeOverrideManager volumeOverrideManager() {
@@ -170,7 +176,7 @@ public class AudioStorageManager {
             IOUtils.write(data, outputStream);
         }
 
-        FileNameManager.instance().ifPresent(mgr -> mgr.addFileName(id, fileName));
+        fileNameManager.addFileName(id, fileName);
     }
 
     private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioFileException {

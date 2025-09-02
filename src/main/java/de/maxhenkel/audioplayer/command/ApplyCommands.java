@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.CustomSound;
-import de.maxhenkel.audioplayer.FileNameManager;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Command("audioplayer")
@@ -67,14 +66,7 @@ public class ApplyCommands {
         } catch (Exception ignored) {
         }
 
-        Optional<FileNameManager> optionalFileNameManager = FileNameManager.instance();
-        if (optionalFileNameManager.isEmpty()) {
-            context.getSource().sendFailure(Component.literal("An internal error occurred"));
-            return null;
-        }
-
-        FileNameManager fileNameManager = optionalFileNameManager.get();
-        UUID audioId = fileNameManager.getAudioId(fileName);
+        UUID audioId = AudioStorageManager.fileNameManager().getAudioId(fileName);
 
         if (audioId == null) {
             context.getSource().sendFailure(Component.literal("No audio with name '%s' found or more than one found".formatted(fileName)));

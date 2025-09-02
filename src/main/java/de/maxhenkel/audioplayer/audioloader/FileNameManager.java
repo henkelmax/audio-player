@@ -1,10 +1,9 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.audioloader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -12,14 +11,23 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FileNameManager {
 
-    private final File file;
+    private static final ExecutorService SAVE_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("FileNameSaver");
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    private final Path file;
     private final Gson gson;
     private Map<UUID, String> fileNames;
 
-    public FileNameManager(File file) {
+    public FileNameManager(Path file) {
         this.file = file;
         this.gson = new GsonBuilder().create();
         this.fileNames = new HashMap<>();
@@ -27,10 +35,10 @@ public class FileNameManager {
     }
 
     public void load() {
-        if (!file.exists()) {
+        if (!Files.exists(file)) {
             return;
         }
-        try (Reader reader = new FileReader(file)) {
+        try (Reader reader = Files.newBufferedReader(file)) {
             Type fileNameMapType = new TypeToken<Map<UUID, String>>() {
             }.getType();
             fileNames = gson.fromJson(reader, fileNameMapType);
@@ -40,16 +48,22 @@ public class FileNameManager {
         if (fileNames == null) {
             fileNames = new HashMap<>();
         }
-        save();
+        saveSync();
     }
 
-    public void save() {
-        file.getParentFile().mkdirs();
-        try (Writer writer = new FileWriter(file)) {
-            gson.toJson(fileNames, writer);
+    public void saveSync() {
+        try {
+            Files.createDirectories(file.getParent());
+            try (Writer writer = Files.newBufferedWriter(file)) {
+                gson.toJson(fileNames, writer);
+            }
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to save file name mappings", e);
         }
+    }
+
+    private void saveAsync() {
+        SAVE_EXECUTOR_SERVICE.execute(this::saveSync);
     }
 
     @Nullable
@@ -102,39 +116,12 @@ public class FileNameManager {
             return;
         }
         fileNames.put(audioId, fileName);
-        //TODO Save off-thread
-        save();
+        saveAsync();
     }
 
     public void remove(UUID audioId) {
         fileNames.remove(audioId);
-        save();
-    }
-
-    @Nullable
-    private static FileNameManager INSTANCE;
-
-    public static void init() {
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            AudioPlayerMod.LOGGER.info("Loading audio file name mappings...");
-            Path audioDataFolder = AudioStorageManager.instance().getAudioDataFolder();
-            if (Files.exists(audioDataFolder)) {
-                try {
-                    Files.createDirectories(audioDataFolder);
-                } catch (IOException e) {
-                    AudioPlayerMod.LOGGER.error("Failed to create audio data folder", e);
-                    return;
-                }
-            }
-            INSTANCE = new FileNameManager(audioDataFolder.resolve("file-name-mappings.json").toFile());
-        });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            INSTANCE = null;
-        });
-    }
-
-    public static Optional<FileNameManager> instance() {
-        return Optional.ofNullable(INSTANCE);
+        saveAsync();
     }
 
 }
