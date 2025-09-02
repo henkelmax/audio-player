@@ -1,7 +1,5 @@
 package de.maxhenkel.audioplayer.webserver;
 
-import de.maxhenkel.audioplayer.AudioPlayerMod;
-
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.UUID;
@@ -75,7 +73,7 @@ public class TokenManager {
         }
 
         public boolean isValid() {
-            return System.currentTimeMillis() - time <= AudioPlayerMod.WEB_SERVER_CONFIG.tokenTimeout.get();
+            return System.currentTimeMillis() - time <= WebServerEvents.WEB_SERVER_CONFIG.tokenTimeout.get();
         }
     }
 

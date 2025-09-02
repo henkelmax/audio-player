@@ -1,6 +1,8 @@
 package de.maxhenkel.audioplayer.webserver;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.config.WebServerConfig;
+import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 
@@ -8,12 +10,20 @@ import javax.annotation.Nullable;
 
 public class WebServerEvents {
 
+    public static WebServerConfig WEB_SERVER_CONFIG;
+
     @Nullable
     private static WebServer webServer;
 
     public static void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register(WebServerEvents::onServerStarted);
         ServerLifecycleEvents.SERVER_STOPPING.register(WebServerEvents::onServerStopped);
+
+        if (AudioPlayerMod.SERVER_CONFIG.runWebServer.get()) {
+            WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).path(AudioPlayerMod.getModConfigFolder().resolve("webserver.properties")).build();
+        } else {
+            WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).build();
+        }
     }
 
     public static void onServerStarted(MinecraftServer server) {

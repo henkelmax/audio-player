@@ -4,7 +4,6 @@ import de.maxhenkel.admiral.MinecraftAdmiral;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
-import de.maxhenkel.audioplayer.config.WebServerConfig;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.api.ModInitializer;
@@ -20,10 +19,11 @@ public class AudioPlayerMod implements ModInitializer {
     public static final String MODID = "audioplayer";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static ServerConfig SERVER_CONFIG;
-    public static WebServerConfig WEB_SERVER_CONFIG;
 
     @Override
     public void onInitialize() {
+        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(getModConfigFolder().resolve("audioplayer-server.properties")).build();
+
         WebServerEvents.onInitialize();
         AudioStorageManager.onInitialize();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -36,12 +36,10 @@ public class AudioPlayerMod implements ModInitializer {
             ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
         FileNameManager.init();
-        Path configFolder = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(configFolder.resolve("audioplayer-server.properties")).build();
-        if (SERVER_CONFIG.runWebServer.get()) {
-            WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).path(configFolder.resolve("webserver.properties")).build();
-        } else {
-            WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).build();
-        }
     }
+
+    public static Path getModConfigFolder() {
+        return FabricLoader.getInstance().getConfigDir().resolve(MODID);
+    }
+
 }

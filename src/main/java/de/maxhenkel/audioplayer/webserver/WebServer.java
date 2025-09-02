@@ -8,6 +8,9 @@ import net.minecraft.server.level.ServerPlayer;
 import org.microhttp.*;
 
 import javax.annotation.Nullable;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
@@ -32,7 +35,7 @@ public class WebServer implements AutoCloseable {
     }
 
     public WebServer start() throws Exception {
-        port = AudioPlayerMod.WEB_SERVER_CONFIG.port.get();
+        port = WebServerEvents.WEB_SERVER_CONFIG.port.get();
         Options options = Options.builder()
                 .withPort(port)
                 .withHost(null)
@@ -62,8 +65,8 @@ public class WebServer implements AutoCloseable {
     }
 
     private boolean handleAuth(Request request, Consumer<Response> responseConsumer) {
-        String username = AudioPlayerMod.WEB_SERVER_CONFIG.authUsername.get();
-        String password = AudioPlayerMod.WEB_SERVER_CONFIG.authPassword.get();
+        String username = WebServerEvents.WEB_SERVER_CONFIG.authUsername.get();
+        String password = WebServerEvents.WEB_SERVER_CONFIG.authPassword.get();
         if (username.isBlank() || password.isBlank()) {
             return true;
         }
@@ -272,6 +275,48 @@ public class WebServer implements AutoCloseable {
             return;
         }
         AudioStorageManager.instance().handleDownload(new WebServerImporter(token, audioData, null), player); //TODO File name
+    }
+
+    @Nullable
+    public static URI generateUploadUrl(UUID token) {
+        String urlString = WebServerEvents.WEB_SERVER_CONFIG.url.get();
+
+        if (urlString.isBlank()) {
+            return null;
+        }
+
+        URL url;
+        try {
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            AudioPlayerMod.LOGGER.error("Invalid web server URL: {}", urlString);
+            return null;
+        }
+
+        StringBuilder finalUrl = new StringBuilder();
+        if (url.getProtocol() == null || url.getProtocol().isEmpty() || url.getProtocol().equals("http")) {
+            finalUrl.append("http");
+        } else if (url.getProtocol().equals("https")) {
+            finalUrl.append("https");
+        } else {
+            AudioPlayerMod.LOGGER.error("Invalid web server URL protocol: {}", url.getProtocol());
+            return null;
+        }
+        finalUrl.append("://");
+        if (url.getHost().isEmpty()) {
+            AudioPlayerMod.LOGGER.error("Invalid web server URL host: {}", url.getHost());
+            return null;
+        }
+        finalUrl.append(url.getHost());
+        if (url.getPort() != -1) {
+            finalUrl.append(":");
+            finalUrl.append(url.getPort());
+        }
+
+        finalUrl.append("?token=");
+        finalUrl.append(token.toString());
+
+        return URI.create(finalUrl.toString());
     }
 
 }

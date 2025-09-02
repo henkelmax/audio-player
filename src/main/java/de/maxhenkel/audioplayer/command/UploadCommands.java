@@ -9,7 +9,6 @@ import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.importer.FilebinImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.ServerfileImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.UrlImporter;
-import de.maxhenkel.audioplayer.webserver.UrlUtils;
 import de.maxhenkel.audioplayer.webserver.WebServer;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import net.minecraft.ChatFormatting;
@@ -104,7 +103,7 @@ public class UploadCommands {
 
         UUID token = webServer.getTokenManager().generateToken(context.getSource().getPlayerOrException().getUUID());
 
-        URI uploadUrl = UrlUtils.generateUploadUrl(token);
+        URI uploadUrl = WebServer.generateUploadUrl(token);
 
         if (uploadUrl != null) {
             context.getSource().sendSuccess(() ->
