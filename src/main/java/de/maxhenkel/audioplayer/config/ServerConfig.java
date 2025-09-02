@@ -16,6 +16,7 @@ public class ServerConfig {
     public final ConfigEntry<Float> maxMusicDiscRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
+    public final ConfigEntry<Integer> maxUploadDuration;
     public final ConfigEntry<Integer> maxMusicDiscDuration;
     public final ConfigEntry<Integer> maxNoteBlockDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
@@ -98,6 +99,13 @@ public class ServerConfig {
                 "Whether users should be able to upload .mp3 files",
                 "Note that .mp3 files require Simple Voice Chats mp3 decoder",
                 "Playing .mp3 files can be slightly more CPU intensive"
+        );
+        maxUploadDuration = builder.integerEntry(
+                "max_import_duration",
+                60 * 5,
+                1,
+                Integer.MAX_VALUE,
+                "The maximum allowed duration of a custom audio file in seconds"
         );
         maxMusicDiscDuration = builder.integerEntry(
                 "max_music_disc_duration",

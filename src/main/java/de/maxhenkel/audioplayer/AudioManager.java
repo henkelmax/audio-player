@@ -67,8 +67,4 @@ public class AudioManager {
         return channelID;
     }
 
-    public static float getLengthSeconds(short[] audio) {
-        return (float) audio.length / AudioUtils.FORMAT.getSampleRate();
-    }
-
 }

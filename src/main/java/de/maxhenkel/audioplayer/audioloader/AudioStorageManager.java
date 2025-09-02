@@ -135,7 +135,7 @@ public class AudioStorageManager {
                         if (e instanceof ComponentException c) {
                             player.sendSystemMessage(Component.literal("Error: ").append(c.getComponent()).withStyle(ChatFormatting.RED));
                         } else {
-                            player.sendSystemMessage(Component.literal("Failed to import sound: %s".formatted(e.getMessage())).withStyle(ChatFormatting.RED));
+                            player.sendSystemMessage(Component.literal("Error: %s".formatted(e.getMessage())).withStyle(ChatFormatting.RED));
                         }
                     }
                 });
@@ -157,6 +157,11 @@ public class AudioStorageManager {
             throw new FileAlreadyExistsException("This audio already exists");
         }
         Files.createDirectories(soundFile.getParent());
+
+        float lengthSeconds = AudioUtils.getLengthSeconds(data);
+        if (lengthSeconds > AudioPlayer.SERVER_CONFIG.maxUploadDuration.get().floatValue()) {
+            throw new IOException("Maximum upload duration exceeded (%.1fs>%ss)".formatted(lengthSeconds, AudioPlayer.SERVER_CONFIG.maxUploadDuration.get()));
+        }
 
         try (OutputStream outputStream = Files.newOutputStream(soundFile)) {
             IOUtils.write(data, outputStream);

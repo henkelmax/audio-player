@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -60,7 +61,7 @@ public class StaticAudioPlayer implements de.maxhenkel.voicechat.api.audiochanne
         try {
             short[] audio = AudioStorageManager.instance().getSound(sound);
 
-            if (AudioManager.getLengthSeconds(audio) > maxLengthSeconds) {
+            if (AudioUtils.getLengthSeconds(audio) > maxLengthSeconds) {
                 if (p != null) {
                     p.displayClientMessage(Component.literal("Audio is too long to play").withStyle(ChatFormatting.DARK_RED), true);
                 } else {
