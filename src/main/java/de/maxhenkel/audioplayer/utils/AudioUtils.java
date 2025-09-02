@@ -67,7 +67,7 @@ public class AudioUtils {
         return converted;
     }
 
-    private static void adjustVolume(short[] audioSamples, float volume) {
+    public static void adjustVolume(short[] audioSamples, float volume) {
         for (int i = 0; i < audioSamples.length; i++) {
             audioSamples[i] = (short) (audioSamples[i] * volume);
         }
