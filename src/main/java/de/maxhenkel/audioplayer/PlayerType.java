@@ -16,21 +16,21 @@ public enum PlayerType {
             AudioPlayer.SERVER_CONFIG.musicDiscRange,
             AudioPlayer.SERVER_CONFIG.maxMusicDiscRange,
             AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration,
-            Plugin.MUSIC_DISC_CATEGORY,
+            VoicechatAudioPlayerPlugin.MUSIC_DISC_CATEGORY,
             itemStack -> itemStack.has(DataComponents.JUKEBOX_PLAYABLE)
     ),
     NOTE_BLOCK(
             AudioPlayer.SERVER_CONFIG.noteBlockRange,
             AudioPlayer.SERVER_CONFIG.maxNoteBlockRange,
             AudioPlayer.SERVER_CONFIG.maxNoteBlockDuration,
-            Plugin.NOTE_BLOCK_CATEGORY,
+            VoicechatAudioPlayerPlugin.NOTE_BLOCK_CATEGORY,
             itemStack -> itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock
     ),
     GOAT_HORN(
             AudioPlayer.SERVER_CONFIG.goatHornRange,
             AudioPlayer.SERVER_CONFIG.maxGoatHornRange,
             AudioPlayer.SERVER_CONFIG.maxGoatHornDuration,
-            Plugin.GOAT_HORN_CATEGORY,
+            VoicechatAudioPlayerPlugin.GOAT_HORN_CATEGORY,
             itemStack -> itemStack.getItem() instanceof InstrumentItem
     );
 

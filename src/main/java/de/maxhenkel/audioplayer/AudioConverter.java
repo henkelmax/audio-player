@@ -79,7 +79,7 @@ public class AudioConverter {
         AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
         AudioInputStream stream1 = AudioSystem.getAudioInputStream(convertFormat, source);
         AudioInputStream stream2 = AudioSystem.getAudioInputStream(FORMAT, stream1);
-        return Plugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(), volume));
+        return VoicechatAudioPlayerPlugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(), volume));
     }
 
     private static byte[] adjustVolume(byte[] audioSamples, float volume) {
@@ -102,11 +102,11 @@ public class AudioConverter {
 
     public static short[] convertMp3(Path file, float volume) throws IOException, UnsupportedAudioFileException {
         try {
-            Mp3Decoder mp3Decoder = Plugin.voicechatApi.createMp3Decoder(Files.newInputStream(file));
+            Mp3Decoder mp3Decoder = VoicechatAudioPlayerPlugin.voicechatApi.createMp3Decoder(Files.newInputStream(file));
             if (mp3Decoder == null) {
                 throw new IOException("Error creating mp3 decoder");
             }
-            byte[] data = Plugin.voicechatApi.getAudioConverter().shortsToBytes(mp3Decoder.decode());
+            byte[] data = VoicechatAudioPlayerPlugin.voicechatApi.getAudioConverter().shortsToBytes(mp3Decoder.decode());
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
             AudioFormat audioFormat = mp3Decoder.getAudioFormat();
             AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());

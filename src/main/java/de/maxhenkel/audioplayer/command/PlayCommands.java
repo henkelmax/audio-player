@@ -7,7 +7,7 @@ import de.maxhenkel.admiral.annotations.Min;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
 import de.maxhenkel.audioplayer.PlayerManager;
-import de.maxhenkel.audioplayer.Plugin;
+import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,7 @@ public class PlayCommands {
     @Command("play")
     public void play(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @Name("location") Vec3 location, @Name("range") @Min("0") float range) throws CommandSyntaxException {
         @Nullable ServerPlayer player = context.getSource().getPlayer();
-        VoicechatServerApi api = Plugin.voicechatServerApi;
+        VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) {
             return;
         }

@@ -16,7 +16,7 @@ public class AudioManager {
     public static UUID play(ServerLevel level, BlockPos pos, PlayerType type, CustomSound sound, @Nullable Player player) {
         float range = sound.getRange(type);
 
-        VoicechatServerApi api = Plugin.voicechatServerApi;
+        VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) {
             return null;
         }

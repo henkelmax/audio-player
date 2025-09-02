@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Enumeration;
 
-public class Plugin implements VoicechatPlugin {
+public class VoicechatAudioPlayerPlugin implements VoicechatPlugin {
 
     public static String MUSIC_DISC_CATEGORY = "music_discs";
     public static String NOTE_BLOCK_CATEGORY = "note_blocks";
@@ -73,7 +73,7 @@ public class Plugin implements VoicechatPlugin {
     @Nullable
     private int[][] getIcon(String path) {
         try {
-            Enumeration<URL> resources = Plugin.class.getClassLoader().getResources(path);
+            Enumeration<URL> resources = VoicechatAudioPlayerPlugin.class.getClassLoader().getResources(path);
             while (resources.hasMoreElements()) {
                 BufferedImage bufferedImage = ImageIO.read(resources.nextElement().openStream());
                 if (bufferedImage.getWidth() != 16) {
