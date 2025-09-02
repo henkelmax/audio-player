@@ -33,7 +33,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, range, null), customName);
+        apply(context, new CustomSound(id, range), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
@@ -43,7 +43,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, null, null), customName);
+        apply(context, new CustomSound(id, null), customName);
     }
 
     // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
@@ -51,13 +51,13 @@ public class ApplyCommands {
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, range, null), customName);
+        apply(context, new CustomSound(sound, range), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, null, null), customName);
+        apply(context, new CustomSound(sound, null), customName);
     }
 
     @Nullable
@@ -138,16 +138,8 @@ public class ApplyCommands {
             stack.set(DataComponents.JUKEBOX_PLAYABLE, ComponentUtils.CUSTOM_JUKEBOX_PLAYABLE);
         }
 
-        CustomSound handItemSound = CustomSound.of(stack);
-
-        if (handItemSound != null && handItemSound.isRandomized()) {
-            handItemSound.addRandomSound(customSound.getSoundId());
-            handItemSound.saveToItem(stack, customName);
-            context.getSource().sendSuccess(() -> Component.literal("Successfully added sound to ").append(stack.getHoverName()), false);
-        } else {
-            customSound.saveToItem(stack, customName);
-            context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
-        }
+        customSound.saveToItem(stack, customName);
+        context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
 
     private static void checkRange(ConfigEntry<Float> maxRange, @Nullable Float range) throws CommandSyntaxException {

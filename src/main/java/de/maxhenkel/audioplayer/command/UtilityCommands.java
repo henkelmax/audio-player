@@ -26,35 +26,6 @@ import java.util.*;
 public class UtilityCommands {
 
     @RequiresPermission("audioplayer.apply")
-    @Command("set_random")
-    public void set_random(CommandContext<CommandSourceStack> context, @Name("enabled") boolean enabled) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-
-        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
-        if (playerType == null) {
-            context.getSource().sendFailure(Component.nullToEmpty("Invalid Item"));
-            return;
-        }
-
-        CustomSound sound = getHeldSound(context);
-
-        if (sound == null) {
-            return;
-        }
-
-        sound.setRandomization(enabled);
-
-        sound.saveToItem(itemInHand, null, false);
-
-        if (enabled) {
-            context.getSource().sendSuccess(() -> Component.literal("Successfully enabled randomization, more sounds can now be added to this item"), false);
-        } else {
-            context.getSource().sendSuccess(() -> Component.literal("Successfully disabled randomization, extra sounds have been removed"), false);
-        }
-    }
-
-    @RequiresPermission("audioplayer.apply")
     @Command("clear")
     public void clear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
@@ -103,15 +74,7 @@ public class UtilityCommands {
     public void id(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CustomSound customSound = getHeldSound(context);
         if (customSound == null) {
-            return;
-        }
-        if (customSound.isRandomized()) {
-            List<UUID> sounds = customSound.getRandomSounds();
-            context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
-            for (int i = 0; i < sounds.size(); i++) {
-                int finalI = i;
-                context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(sounds.get(finalI), Component.literal("Sound %d.".formatted(finalI))), false);
-            }
+            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
         context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(customSound.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
@@ -123,25 +86,14 @@ public class UtilityCommands {
         if (customSound == null) {
             return;
         }
-        Optional<FileNameManager> optionalMgr = FileNameManager.instance();
+        Optional<FileNameManager> fileNameManager = FileNameManager.instance();
 
-        if (optionalMgr.isEmpty()) {
+        if (fileNameManager.isEmpty()) {
             context.getSource().sendFailure(Component.literal("An internal error occurred"));
             return;
         }
 
-        FileNameManager mgr = optionalMgr.get();
-
-        if (customSound.isRandomized()) {
-            List<UUID> sounds = customSound.getRandomSounds();
-            context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
-            for (UUID sound : sounds) {
-                sendSoundName(context, mgr, sound);
-            }
-            return;
-        }
-
-        sendSoundName(context, mgr, customSound.getSoundId());
+        sendSoundName(context, fileNameManager.get(), customSound.getSoundId());
     }
 
     public static void sendSoundName(CommandContext<CommandSourceStack> context, FileNameManager mgr, UUID id) {

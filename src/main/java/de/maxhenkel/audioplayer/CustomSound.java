@@ -20,28 +20,22 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CustomSound {
 
-    public static final Codec<List<UUID>> UUID_LIST_CODEC = Codec.list(UUIDUtil.CODEC);
-
     public static final String CUSTOM_SOUND = "CustomSound";
-    public static final String CUSTOM_SOUND_RANDOM = "CustomSoundRandomized";
     public static final String CUSTOM_SOUND_RANGE = "CustomSoundRange";
     private static final String ID = "id";
 
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
     protected UUID soundId;
-    protected List<UUID> randomSounds;
     @Nullable
     protected Float range;
 
-    public CustomSound(UUID soundId, @Nullable Float range, @Nullable List<UUID> randomSounds) {
+    public CustomSound(UUID soundId, @Nullable Float range) {
         this.soundId = soundId;
         this.range = range;
-        this.randomSounds = randomSounds;
     }
 
     @Nullable
@@ -61,12 +55,8 @@ public class CustomSound {
         } else {
             return null;
         }
-        ArrayList<UUID> randomSounds = null;
-        if (tag.contains(CUSTOM_SOUND_RANDOM)) {
-            randomSounds = readUUIDArrayFromNbt(tag, CUSTOM_SOUND_RANDOM);
-        }
         Float range = tag.getFloat(CUSTOM_SOUND_RANGE).orElse(null);
-        return new CustomSound(soundId, range, randomSounds);
+        return new CustomSound(soundId, range);
     }
 
     @Nullable
@@ -75,41 +65,12 @@ public class CustomSound {
         if (soundId == null) {
             return null;
         }
-        List<UUID> randomSounds = valueInput.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
-
         Float range = valueInput.read(CUSTOM_SOUND_RANGE, Codec.FLOAT).orElse(null);
-        return new CustomSound(soundId, range, randomSounds);
+        return new CustomSound(soundId, range);
     }
 
     public UUID getSoundId() {
-        if (isRandomized()) {
-            return randomSounds.get(ThreadLocalRandom.current().nextInt(randomSounds.size()));
-        }
         return soundId;
-    }
-
-    public boolean isRandomized() {
-        return randomSounds != null && !randomSounds.isEmpty();
-    }
-
-    public List<UUID> getRandomSounds() {
-        return randomSounds;
-    }
-
-    public void addRandomSound(UUID id) {
-        setRandomization(true);
-        randomSounds.add(id);
-    }
-
-    public void setRandomization(boolean enabled) {
-        if (enabled) {
-            if (randomSounds == null) {
-                randomSounds = new ArrayList<>();
-                randomSounds.add(soundId);
-            }
-        } else {
-            randomSounds = null;
-        }
     }
 
     public Optional<Float> getRange() {
@@ -136,11 +97,6 @@ public class CustomSound {
         } else {
             tag.remove(CUSTOM_SOUND);
         }
-        if (randomSounds != null) {
-            saveUUIDArrayToNbt(tag, CUSTOM_SOUND_RANDOM, randomSounds);
-        } else {
-            tag.remove(CUSTOM_SOUND_RANDOM);
-        }
         if (range != null) {
             tag.putFloat(CUSTOM_SOUND_RANGE, range);
         } else {
@@ -153,11 +109,6 @@ public class CustomSound {
             valueOutput.store(CUSTOM_SOUND, UUIDUtil.CODEC, soundId);
         } else {
             valueOutput.discard(CUSTOM_SOUND);
-        }
-        if (randomSounds != null) {
-            valueOutput.store(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC, randomSounds);
-        } else {
-            valueOutput.discard(CUSTOM_SOUND_RANDOM);
         }
         if (range != null) {
             valueOutput.putFloat(CUSTOM_SOUND_RANGE, range);
@@ -242,7 +193,6 @@ public class CustomSound {
             return false;
         }
         tag.remove(CUSTOM_SOUND);
-        tag.remove(CUSTOM_SOUND_RANDOM);
         tag.remove(CUSTOM_SOUND_RANGE);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         if (stack.getItem() instanceof BlockItem) {
@@ -252,7 +202,6 @@ public class CustomSound {
             }
             CompoundTag blockEntityTag = blockEntityData.copyTag();
             blockEntityTag.remove(CUSTOM_SOUND);
-            blockEntityTag.remove(CUSTOM_SOUND_RANDOM);
             blockEntityTag.remove(CUSTOM_SOUND_RANGE);
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
         }
