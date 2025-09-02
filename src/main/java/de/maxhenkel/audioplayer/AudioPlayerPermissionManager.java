@@ -16,13 +16,11 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
     private static final Permission VOLUME_PERMISSION = new Permission("audioplayer.volume", PermissionType.EVERYONE);
     private static final Permission UPLOAD_PERMISSION = new Permission("audioplayer.upload", PermissionType.EVERYONE);
     private static final Permission APPLY_PERMISSION = new Permission("audioplayer.apply", PermissionType.EVERYONE);
-    private static final Permission APPLY_ANNOUNCER_PERMISSION = new AnnouncerPermission("audioplayer.set_static", PermissionType.EVERYONE);
     private static final Permission PLAY_COMMAND_PERMISSION = new Permission("audioplayer.play_command", PermissionType.OPS);
 
     private static final List<Permission> PERMISSIONS = List.of(
             UPLOAD_PERMISSION,
             APPLY_PERMISSION,
-            APPLY_ANNOUNCER_PERMISSION,
             PLAY_COMMAND_PERMISSION,
             VOLUME_PERMISSION
     );
@@ -90,18 +88,6 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
         }
     }
 
-    private static class AnnouncerPermission extends Permission {
-
-        public AnnouncerPermission(String permission, PermissionType type) {
-            super(permission, type);
-        }
-
-        @Override
-        public boolean canUse() {
-            return AudioPlayer.SERVER_CONFIG.allowStaticAudio.get() && super.canUse();
-        }
-    }
-
     private static enum PermissionType {
 
         EVERYONE, NOONE, OPS;
@@ -110,7 +96,8 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
             return switch (this) {
                 case EVERYONE -> true;
                 case NOONE -> false;
-                case OPS -> player != null && player.hasPermissions(player.getServer().getOperatorUserPermissionLevel());
+                case OPS ->
+                        player != null && player.hasPermissions(player.getServer().getOperatorUserPermissionLevel());
             };
         }
 

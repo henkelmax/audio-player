@@ -21,7 +21,6 @@ public class ServerConfig {
     public final ConfigEntry<Integer> maxNoteBlockDuration;
     public final ConfigEntry<Integer> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
-    public final ConfigEntry<Boolean> allowStaticAudio;
     public final ConfigEntry<Boolean> runWebServer;
 
     public ServerConfig(ConfigBuilder builder) {
@@ -136,13 +135,6 @@ public class ServerConfig {
                 "The maximum amount of audio files that are cached in memory",
                 "Setting this to 0 will disable the cache",
                 "A higher value will result in less disk reads, but more RAM usage"
-        );
-        allowStaticAudio = builder.booleanEntry(
-                "allow_static_audio",
-                true,
-                "Static audio does not have directionality or falloff (volume does not decrease with distance)",
-                "The /audioplayer setstatic [enabled] command can be used when this is set to true",
-                "If this config option is disabled, static audio is completely disabled and will play as if the option wouldn't be set"
         );
         runWebServer = builder.booleanEntry(
                 "run_web_server",

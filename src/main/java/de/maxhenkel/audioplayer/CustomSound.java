@@ -29,7 +29,6 @@ public class CustomSound {
     public static final String CUSTOM_SOUND = "CustomSound";
     public static final String CUSTOM_SOUND_RANDOM = "CustomSoundRandomized";
     public static final String CUSTOM_SOUND_RANGE = "CustomSoundRange";
-    public static final String CUSTOM_SOUND_STATIC = "IsStaticCustomSound";
     private static final String ID = "id";
 
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
@@ -38,12 +37,10 @@ public class CustomSound {
     protected List<UUID> randomSounds;
     @Nullable
     protected Float range;
-    protected boolean staticSound;
 
-    public CustomSound(UUID soundId, @Nullable Float range, @Nullable List<UUID> randomSounds, boolean staticSound) {
+    public CustomSound(UUID soundId, @Nullable Float range, @Nullable List<UUID> randomSounds) {
         this.soundId = soundId;
         this.range = range;
-        this.staticSound = staticSound;
         this.randomSounds = randomSounds;
     }
 
@@ -69,8 +66,7 @@ public class CustomSound {
             randomSounds = readUUIDArrayFromNbt(tag, CUSTOM_SOUND_RANDOM);
         }
         Float range = tag.getFloat(CUSTOM_SOUND_RANGE).orElse(null);
-        boolean staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC).orElse(false);
-        return new CustomSound(soundId, range, randomSounds, staticSound);
+        return new CustomSound(soundId, range, randomSounds);
     }
 
     @Nullable
@@ -82,8 +78,7 @@ public class CustomSound {
         List<UUID> randomSounds = valueInput.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
 
         Float range = valueInput.read(CUSTOM_SOUND_RANGE, Codec.FLOAT).orElse(null);
-        boolean staticSound = valueInput.read(CUSTOM_SOUND_STATIC, Codec.BOOL).orElse(false);
-        return new CustomSound(soundId, range, randomSounds, staticSound);
+        return new CustomSound(soundId, range, randomSounds);
     }
 
     public UUID getSoundId() {
@@ -135,10 +130,6 @@ public class CustomSound {
         }
     }
 
-    public boolean isStaticSound() {
-        return staticSound;
-    }
-
     public void saveToNbt(CompoundTag tag) {
         if (soundId != null) {
             tag.store(CUSTOM_SOUND, UUIDUtil.CODEC, soundId);
@@ -154,11 +145,6 @@ public class CustomSound {
             tag.putFloat(CUSTOM_SOUND_RANGE, range);
         } else {
             tag.remove(CUSTOM_SOUND_RANGE);
-        }
-        if (staticSound) {
-            tag.putBoolean(CUSTOM_SOUND_STATIC, true);
-        } else {
-            tag.remove(CUSTOM_SOUND_STATIC);
         }
     }
 
@@ -177,11 +163,6 @@ public class CustomSound {
             valueOutput.putFloat(CUSTOM_SOUND_RANGE, range);
         } else {
             valueOutput.discard(CUSTOM_SOUND_RANGE);
-        }
-        if (staticSound) {
-            valueOutput.putBoolean(CUSTOM_SOUND_STATIC, true);
-        } else {
-            valueOutput.discard(CUSTOM_SOUND_STATIC);
         }
     }
 
@@ -251,10 +232,6 @@ public class CustomSound {
         stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(tooltipDisplay.hideTooltip(), hiddenComponents));
     }
 
-    public CustomSound asStatic(boolean staticSound) {
-        return new CustomSound(soundId, range, randomSounds, staticSound);
-    }
-
     public static boolean clearItem(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) {
@@ -267,7 +244,6 @@ public class CustomSound {
         tag.remove(CUSTOM_SOUND);
         tag.remove(CUSTOM_SOUND_RANDOM);
         tag.remove(CUSTOM_SOUND_RANGE);
-        tag.remove(CUSTOM_SOUND_STATIC);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         if (stack.getItem() instanceof BlockItem) {
             CustomData blockEntityData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
@@ -278,7 +254,6 @@ public class CustomSound {
             blockEntityTag.remove(CUSTOM_SOUND);
             blockEntityTag.remove(CUSTOM_SOUND_RANDOM);
             blockEntityTag.remove(CUSTOM_SOUND_RANGE);
-            blockEntityTag.remove(CUSTOM_SOUND_STATIC);
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
         }
         return true;

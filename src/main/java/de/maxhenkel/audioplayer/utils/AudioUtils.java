@@ -58,7 +58,11 @@ public class AudioUtils {
     }
 
     public static float getLengthSeconds(short[] audio) {
-        return (float) audio.length / AudioUtils.FORMAT.getSampleRate();
+        return getLengthSeconds(audio.length);
+    }
+
+    public static float getLengthSeconds(int sampleLength) {
+        return (float) sampleLength / AudioUtils.FORMAT.getSampleRate();
     }
 
     public static float getLengthSeconds(byte[] file) throws UnsupportedAudioFileException, IOException {

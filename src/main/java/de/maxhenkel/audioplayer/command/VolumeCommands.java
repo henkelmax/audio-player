@@ -58,7 +58,7 @@ public class VolumeCommands {
         }
         float volumeLinear = volume / 100F;
         mgr.setAudioVolume(id, VolumeOverrideManager.convertToLogarithmicScaleFactor(volumeLinear));
-        AudioPlayer.AUDIO_CACHE.remove(id);
+        AudioStorageManager.audioCache().invalidate(id);
         context.getSource().sendSuccess(() -> Component.literal("Successfully set sound volume to %s%%, this will apply next time the sound plays".formatted(percentFormat.format(volume))), false);
     }
 

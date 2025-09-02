@@ -1,6 +1,5 @@
 package de.maxhenkel.audioplayer;
 
-import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -34,17 +33,6 @@ public class AudioManager {
                     api,
                     level,
                     playerPos,
-                    sound.getSoundId(),
-                    (player instanceof ServerPlayer p) ? p : null,
-                    range,
-                    type.getCategory(),
-                    type.getMaxDuration().get()
-            );
-        } else if (sound.isStaticSound() && AudioPlayer.SERVER_CONFIG.allowStaticAudio.get()) { //TODO Move option
-            channelID = PlayerManager.instance().playStatic(
-                    api,
-                    level,
-                    new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
                     sound.getSoundId(),
                     (player instanceof ServerPlayer p) ? p : null,
                     range,

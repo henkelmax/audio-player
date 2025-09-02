@@ -1,7 +1,6 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.admiral.MinecraftAdmiral;
-import de.maxhenkel.audioplayer.audioloader.AudioCache;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
@@ -25,7 +24,6 @@ public class AudioPlayer implements ModInitializer {
     public static ServerConfig SERVER_CONFIG;
     public static WebServerConfig WEB_SERVER_CONFIG;
 
-    public static AudioCache AUDIO_CACHE;
     public static ScheduledExecutorService SCHEDULED_EXECUTOR = Executors.newScheduledThreadPool(1, r -> {
         Thread thread = new Thread(r, "AudioPlayerExecutor");
         thread.setDaemon(true);
@@ -56,7 +54,5 @@ public class AudioPlayer implements ModInitializer {
         } else {
             WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).build();
         }
-
-        AUDIO_CACHE = new AudioCache(SERVER_CONFIG.cacheSize.get());
     }
 }

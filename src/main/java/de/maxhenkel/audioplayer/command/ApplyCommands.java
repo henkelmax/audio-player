@@ -33,7 +33,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, range, null, false), customName);
+        apply(context, new CustomSound(id, range, null), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
@@ -43,25 +43,21 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, null, null, false), customName);
+        apply(context, new CustomSound(id, null, null), customName);
     }
 
     // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
-    @Command("musicdisc")
-    @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, range, null, false), customName);
+        apply(context, new CustomSound(sound, range, null), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
-    @Command("musicdisc")
-    @Command("goathorn")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, null, null, false), customName);
+        apply(context, new CustomSound(sound, null, null), customName);
     }
 
     @Nullable
@@ -102,30 +98,6 @@ public class ApplyCommands {
             return;
         }
         apply(context, itemInHand, type, sound, customName);
-    }
-
-    @RequiresPermission("audioplayer.set_static")
-    @Command("setstatic")
-    public void setStatic(CommandContext<CommandSourceStack> context, @Name("enabled") Optional<Boolean> enabled) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
-
-        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
-
-        if (playerType == null) {
-            sendInvalidHandItemMessage(context, itemInHand);
-            return;
-        }
-        CustomSound customSound = CustomSound.of(itemInHand);
-        if (customSound == null) {
-            context.getSource().sendFailure(Component.literal("This item does not have custom audio"));
-            return;
-        }
-
-        CustomSound newSound = customSound.asStatic(enabled.orElse(true));
-        newSound.saveToItemIgnoreLore(itemInHand);
-
-        context.getSource().sendSuccess(() -> Component.literal((enabled.orElse(true) ? "Enabled" : "Disabled") + " static audio"), false);
     }
 
     private static void applyShulker(CommandContext<CommandSourceStack> context, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {

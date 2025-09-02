@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.audioloader.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.audioloader.importer.AudioImporter;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
@@ -34,6 +35,7 @@ public class AudioStorageManager {
     private final MinecraftServer server;
     private final ExecutorService executor;
     private final VolumeOverrideManager volumeOverrideManager;
+    private final AudioCache audioCache;
 
     public AudioStorageManager(MinecraftServer server) {
         this.server = server;
@@ -43,6 +45,7 @@ public class AudioStorageManager {
             return thread;
         });
         volumeOverrideManager = new VolumeOverrideManager(getAudioDataFolder().resolve("volume-overrides.json"));
+        audioCache = new AudioCache();
     }
 
     public static void onInitialize() {
@@ -78,16 +81,16 @@ public class AudioStorageManager {
         return instance().volumeOverrideManager;
     }
 
+    public static AudioCache audioCache() {
+        return instance().audioCache;
+    }
+
     public Path getSoundFile(UUID id, String extension) {
         return getAudioDataFolder().resolve(id.toString() + "." + extension);
     }
 
     public Path getAudioDataFolder() {
         return server.getWorldPath(AUDIO_DATA_LEVEL_RESOURCE);
-    }
-
-    public short[] getSound(UUID id) throws Exception {
-        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioUtils.convert(getExistingSoundFile(id), volumeOverrideManager.getAudioVolume(id)));
     }
 
     public Path getExistingSoundFile(UUID id) throws FileNotFoundException {
