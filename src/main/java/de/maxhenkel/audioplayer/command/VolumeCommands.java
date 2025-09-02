@@ -5,12 +5,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioloader.VolumeOverrideManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
-import java.util.Optional;
 import java.util.UUID;
 
 @Command("audioplayer")
@@ -43,12 +43,7 @@ public class VolumeCommands {
             context.getSource().sendFailure(Component.literal("Sound does not exist"));
             return;
         }
-        Optional<VolumeOverrideManager> optionalMgr = VolumeOverrideManager.instance();
-        if (optionalMgr.isEmpty()) {
-            context.getSource().sendFailure(Component.literal("An internal error occurred"));
-            return;
-        }
-        VolumeOverrideManager mgr = optionalMgr.get();
+        VolumeOverrideManager mgr = AudioStorageManager.instance().getVolumeOverrideManager();
         DecimalFormat percentFormat = new DecimalFormat("#.00");
         if (volume == null) {
             float currentVolumeLog = mgr.getAudioVolume(id);

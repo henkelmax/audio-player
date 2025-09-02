@@ -32,6 +32,7 @@ public class AudioStorageManager {
 
     private final MinecraftServer server;
     private final ExecutorService executor;
+    private final VolumeOverrideManager volumeOverrideManager;
 
     public AudioStorageManager(MinecraftServer server) {
         this.server = server;
@@ -40,10 +41,12 @@ public class AudioStorageManager {
             thread.setDaemon(true);
             return thread;
         });
+        volumeOverrideManager = new VolumeOverrideManager(getAudioDataFolder().resolve("volume-overrides.json"));
     }
 
     public static void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register(AudioStorageManager::onServerStarted);
+        ServerLifecycleEvents.SERVER_STOPPED.register(AudioStorageManager::onServerStopped);
         try {
             Files.createDirectories(AudioStorageManager.getUploadFolder());
         } catch (IOException e) {
@@ -55,8 +58,23 @@ public class AudioStorageManager {
         instance = new AudioStorageManager(server);
     }
 
+    private static void onServerStopped(MinecraftServer server) {
+        if (instance != null) {
+            instance.close();
+        }
+        instance = null;
+    }
+
+    private void close() {
+        executor.shutdown();
+    }
+
     public static AudioStorageManager instance() {
         return instance;
+    }
+
+    public VolumeOverrideManager getVolumeOverrideManager() {
+        return volumeOverrideManager;
     }
 
     public Path getSoundFile(UUID id, String extension) {
@@ -68,13 +86,7 @@ public class AudioStorageManager {
     }
 
     public short[] getSound(UUID id) throws Exception {
-        float volume;
-        if (VolumeOverrideManager.instance().isPresent()) {
-            volume = VolumeOverrideManager.instance().get().getAudioVolume(id);
-        } else {
-            volume = 1F;
-        }
-        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(id), volume));
+        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(id), volumeOverrideManager.getAudioVolume(id)));
     }
 
     public Path getExistingSoundFile(UUID id) throws FileNotFoundException {

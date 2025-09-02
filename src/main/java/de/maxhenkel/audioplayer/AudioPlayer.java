@@ -47,7 +47,6 @@ public class AudioPlayer implements ModInitializer {
                     PlayCommands.class
             ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
-        VolumeOverrideManager.init();
         FileNameManager.init();
         Path configFolder = FabricLoader.getInstance().getConfigDir().resolve(MODID);
         SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(configFolder.resolve("audioplayer-server.properties")).build();
