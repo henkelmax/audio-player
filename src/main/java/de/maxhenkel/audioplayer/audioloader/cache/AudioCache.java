@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.audioloader.cache;
 
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 
 import java.util.Collections;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class AudioCache {
     private final Map<UUID, CachedAudio> audioCache;
 
     public AudioCache() {
-        audioCache = Collections.synchronizedMap(new LruCache<>(AudioPlayer.SERVER_CONFIG.cacheSize.get()));
+        audioCache = Collections.synchronizedMap(new LruCache<>(AudioPlayerMod.SERVER_CONFIG.cacheSize.get()));
     }
 
     public CachedAudio getAudio(UUID audioId) throws Exception {

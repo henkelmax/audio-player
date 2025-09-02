@@ -3,7 +3,7 @@ package de.maxhenkel.audioplayer.audioloader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -45,7 +45,7 @@ public class VolumeOverrideManager {
             }.getType();
             volumes = gson.fromJson(reader, fileNameMapType);
         } catch (Exception e) {
-            AudioPlayer.LOGGER.error("Failed to load volume overrides", e);
+            AudioPlayerMod.LOGGER.error("Failed to load volume overrides", e);
         }
         if (volumes == null) {
             volumes = new HashMap<>();
@@ -60,7 +60,7 @@ public class VolumeOverrideManager {
                 gson.toJson(volumes, writer);
             }
         } catch (Exception e) {
-            AudioPlayer.LOGGER.error("Failed to save file name mappings", e);
+            AudioPlayerMod.LOGGER.error("Failed to save file name mappings", e);
         }
     }
 

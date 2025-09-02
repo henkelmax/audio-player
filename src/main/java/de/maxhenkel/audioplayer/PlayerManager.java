@@ -115,7 +115,7 @@ public class PlayerManager {
                 if (p != null) {
                     p.displayClientMessage(Component.literal("Audio is too long to play").withStyle(ChatFormatting.DARK_RED), true);
                 } else {
-                    AudioPlayer.LOGGER.error("Audio {} was too long to play", sound);
+                    AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
                 }
                 return null;
             }
@@ -124,7 +124,7 @@ public class PlayerManager {
             playerThread.startPlaying();
             return playerThread;
         } catch (Exception e) {
-            AudioPlayer.LOGGER.error("Failed to play audio", e);
+            AudioPlayerMod.LOGGER.error("Failed to play audio", e);
             if (p != null) {
                 p.displayClientMessage(Component.literal("Failed to play audio: %s".formatted(e.getMessage())).withStyle(ChatFormatting.DARK_RED), true);
             }

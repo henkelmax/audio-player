@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.webserver;
 
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.importer.WebServerImporter;
 import net.minecraft.server.MinecraftServer;
@@ -32,13 +32,13 @@ public class WebServer implements AutoCloseable {
     }
 
     public WebServer start() throws Exception {
-        port = AudioPlayer.WEB_SERVER_CONFIG.port.get();
+        port = AudioPlayerMod.WEB_SERVER_CONFIG.port.get();
         Options options = Options.builder()
                 .withPort(port)
                 .withHost(null)
                 .withRequestTimeout(Duration.ofSeconds(60))
                 .withConcurrency(1)
-                .withMaxRequestSize(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().intValue())
+                .withMaxRequestSize(AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get().intValue())
                 .build();
 
         staticFileCache = StaticFileCache.of("web");
@@ -62,8 +62,8 @@ public class WebServer implements AutoCloseable {
     }
 
     private boolean handleAuth(Request request, Consumer<Response> responseConsumer) {
-        String username = AudioPlayer.WEB_SERVER_CONFIG.authUsername.get();
-        String password = AudioPlayer.WEB_SERVER_CONFIG.authPassword.get();
+        String username = AudioPlayerMod.WEB_SERVER_CONFIG.authUsername.get();
+        String password = AudioPlayerMod.WEB_SERVER_CONFIG.authPassword.get();
         if (username.isBlank() || password.isBlank()) {
             return true;
         }
@@ -157,7 +157,7 @@ public class WebServer implements AutoCloseable {
         }
         byte[] data = request.body();
 
-        if (data.length > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
+        if (data.length > AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get()) {
             responseConsumer.accept(
                     new Response(
                             414,

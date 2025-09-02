@@ -15,7 +15,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "de.maxhenkel.audioplayer.AudioPlayer"
+      "de.maxhenkel.audioplayer.AudioPlayerMod"
     ],
     "voicechat": [
       "de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin"

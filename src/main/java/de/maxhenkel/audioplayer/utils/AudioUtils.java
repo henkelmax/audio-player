@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.utils;
 
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.mp3.Mp3Decoder;
 
@@ -116,7 +116,7 @@ public class AudioUtils {
             AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());
             return convert(source);
         } catch (Exception e) {
-            AudioPlayer.LOGGER.warn("Error converting mp3 file with native decoder");
+            AudioPlayerMod.LOGGER.warn("Error converting mp3 file with native decoder");
             return convert(AudioSystem.getAudioInputStream(inputStreamSupplier.get()));
         }
     }

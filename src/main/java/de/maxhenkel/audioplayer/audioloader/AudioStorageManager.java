@@ -54,7 +54,7 @@ public class AudioStorageManager {
         try {
             Files.createDirectories(AudioStorageManager.getUploadFolder());
         } catch (IOException e) {
-            AudioPlayer.LOGGER.warn("Failed to create upload folder", e);
+            AudioPlayerMod.LOGGER.warn("Failed to create upload folder", e);
         }
     }
 
@@ -142,7 +142,7 @@ public class AudioStorageManager {
                         }
                     }
                 });
-                AudioPlayer.LOGGER.error("Failed to download audio using '{}' download handler", downloadHandler.getHandlerName(), e);
+                AudioPlayerMod.LOGGER.error("Failed to download audio using '{}' download handler", downloadHandler.getHandlerName(), e);
             }
         });
     }
@@ -162,8 +162,8 @@ public class AudioStorageManager {
         Files.createDirectories(soundFile.getParent());
 
         float lengthSeconds = AudioUtils.getLengthSeconds(data);
-        if (lengthSeconds > AudioPlayer.SERVER_CONFIG.maxUploadDuration.get().floatValue()) {
-            throw new IOException("Maximum upload duration exceeded (%.1fs>%ss)".formatted(lengthSeconds, AudioPlayer.SERVER_CONFIG.maxUploadDuration.get()));
+        if (lengthSeconds > AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get().floatValue()) {
+            throw new IOException("Maximum upload duration exceeded (%.1fs>%ss)".formatted(lengthSeconds, AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()));
         }
 
         try (OutputStream outputStream = Files.newOutputStream(soundFile)) {
@@ -178,12 +178,12 @@ public class AudioStorageManager {
             throw new UnsupportedAudioFileException("Unsupported audio format");
         }
         if (audioType.equals(AudioUtils.AudioType.MP3)) {
-            if (!AudioPlayer.SERVER_CONFIG.allowMp3Upload.get()) {
+            if (!AudioPlayerMod.SERVER_CONFIG.allowMp3Upload.get()) {
                 throw new UnsupportedAudioFileException("Importing mp3 files is not allowed on this server");
             }
         }
         if (audioType.equals(AudioUtils.AudioType.WAV)) {
-            if (!AudioPlayer.SERVER_CONFIG.allowWavUpload.get()) {
+            if (!AudioPlayerMod.SERVER_CONFIG.allowWavUpload.get()) {
                 throw new UnsupportedAudioFileException("Importing wav files is not allowed on this server");
             }
         }

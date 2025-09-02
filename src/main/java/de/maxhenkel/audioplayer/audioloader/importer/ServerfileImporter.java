@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.audioloader.importer;
 
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
@@ -82,7 +82,7 @@ public class ServerfileImporter implements AudioImporter {
                 player.sendSystemMessage(Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."));
             }
         } catch (Exception e) {
-            AudioPlayer.LOGGER.error("Failed to delete file {}", file, e);
+            AudioPlayerMod.LOGGER.error("Failed to delete file {}", file, e);
         }
     }
 

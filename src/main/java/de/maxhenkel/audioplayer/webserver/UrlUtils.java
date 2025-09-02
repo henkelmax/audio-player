@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.webserver;
 
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 
 import javax.annotation.Nullable;
 import java.net.MalformedURLException;
@@ -12,7 +12,7 @@ public class UrlUtils {
 
     @Nullable
     public static URI generateUploadUrl(UUID token) {
-        String urlString = AudioPlayer.WEB_SERVER_CONFIG.url.get();
+        String urlString = AudioPlayerMod.WEB_SERVER_CONFIG.url.get();
 
         if (urlString.isBlank()) {
             return null;
@@ -22,7 +22,7 @@ public class UrlUtils {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            AudioPlayer.LOGGER.error("Invalid web server URL: {}", urlString);
+            AudioPlayerMod.LOGGER.error("Invalid web server URL: {}", urlString);
             return null;
         }
 
@@ -32,12 +32,12 @@ public class UrlUtils {
         } else if (url.getProtocol().equals("https")) {
             finalUrl.append("https");
         } else {
-            AudioPlayer.LOGGER.error("Invalid web server URL protocol: {}", url.getProtocol());
+            AudioPlayerMod.LOGGER.error("Invalid web server URL protocol: {}", url.getProtocol());
             return null;
         }
         finalUrl.append("://");
         if (url.getHost().isEmpty()) {
-            AudioPlayer.LOGGER.error("Invalid web server URL host: {}", url.getHost());
+            AudioPlayerMod.LOGGER.error("Invalid web server URL host: {}", url.getHost());
             return null;
         }
         finalUrl.append(url.getHost());

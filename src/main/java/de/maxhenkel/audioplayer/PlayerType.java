@@ -13,23 +13,23 @@ import java.util.function.Predicate;
 public enum PlayerType {
 
     MUSIC_DISC(
-            AudioPlayer.SERVER_CONFIG.musicDiscRange,
-            AudioPlayer.SERVER_CONFIG.maxMusicDiscRange,
-            AudioPlayer.SERVER_CONFIG.maxMusicDiscDuration,
+            AudioPlayerMod.SERVER_CONFIG.musicDiscRange,
+            AudioPlayerMod.SERVER_CONFIG.maxMusicDiscRange,
+            AudioPlayerMod.SERVER_CONFIG.maxMusicDiscDuration,
             VoicechatAudioPlayerPlugin.MUSIC_DISC_CATEGORY,
             itemStack -> itemStack.has(DataComponents.JUKEBOX_PLAYABLE)
     ),
     NOTE_BLOCK(
-            AudioPlayer.SERVER_CONFIG.noteBlockRange,
-            AudioPlayer.SERVER_CONFIG.maxNoteBlockRange,
-            AudioPlayer.SERVER_CONFIG.maxNoteBlockDuration,
+            AudioPlayerMod.SERVER_CONFIG.noteBlockRange,
+            AudioPlayerMod.SERVER_CONFIG.maxNoteBlockRange,
+            AudioPlayerMod.SERVER_CONFIG.maxNoteBlockDuration,
             VoicechatAudioPlayerPlugin.NOTE_BLOCK_CATEGORY,
             itemStack -> itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock
     ),
     GOAT_HORN(
-            AudioPlayer.SERVER_CONFIG.goatHornRange,
-            AudioPlayer.SERVER_CONFIG.maxGoatHornRange,
-            AudioPlayer.SERVER_CONFIG.maxGoatHornDuration,
+            AudioPlayerMod.SERVER_CONFIG.goatHornRange,
+            AudioPlayerMod.SERVER_CONFIG.maxGoatHornRange,
+            AudioPlayerMod.SERVER_CONFIG.maxGoatHornDuration,
             VoicechatAudioPlayerPlugin.GOAT_HORN_CATEGORY,
             itemStack -> itemStack.getItem() instanceof InstrumentItem
     );

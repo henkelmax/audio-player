@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.utils;
 
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 
@@ -31,8 +31,8 @@ public class ChatUtils {
     }
 
     public static void checkFileSize(long size) throws IOException {
-        if (size > AudioPlayer.SERVER_CONFIG.maxUploadSize.get()) {
-            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayer.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
+        if (size > AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get()) {
+            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
         }
     }
 

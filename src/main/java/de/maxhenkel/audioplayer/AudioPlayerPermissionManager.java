@@ -48,7 +48,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
         if (loaded == null) {
             loaded = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
             if (loaded) {
-                AudioPlayer.LOGGER.info("Using Fabric Permissions API");
+                AudioPlayerMod.LOGGER.info("Using Fabric Permissions API");
             }
         }
         return loaded;

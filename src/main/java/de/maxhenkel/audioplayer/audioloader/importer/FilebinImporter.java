@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -129,12 +129,12 @@ public class FilebinImporter implements AudioImporter {
                 throw new IOException("%s responded with status %s".formatted(url, response.statusCode()));
             }
         } catch (Exception e) {
-            AudioPlayer.LOGGER.warn("Failed to delete bin '{}'", url, e);
+            AudioPlayerMod.LOGGER.warn("Failed to delete bin '{}'", url, e);
         }
     }
 
     public static URI getBin(UUID sound) {
-        String filebinUrl = AudioPlayer.SERVER_CONFIG.filebinUrl.get();
+        String filebinUrl = AudioPlayerMod.SERVER_CONFIG.filebinUrl.get();
 
         if (!filebinUrl.endsWith("/")) {
             filebinUrl += "/";
