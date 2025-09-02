@@ -57,52 +57,38 @@ public class AudioUtils {
         }
     }
 
-    public static short[] convert(Path file, float volume) throws IOException, UnsupportedAudioFileException {
-        return convert(file, getAudioType(file), volume);
+    public static short[] convert(Path file) throws IOException, UnsupportedAudioFileException {
+        return convert(file, getAudioType(file));
     }
 
-    public static short[] convert(Path file, AudioType audioType, float volume) throws IOException, UnsupportedAudioFileException {
+    public static short[] convert(Path file, float volume) throws IOException, UnsupportedAudioFileException {
+        short[] converted = convert(file);
+        adjustVolume(converted, volume);
+        return converted;
+    }
+
+    private static void adjustVolume(short[] audioSamples, float volume) {
+        for (int i = 0; i < audioSamples.length; i++) {
+            audioSamples[i] = (short) (audioSamples[i] * volume);
+        }
+    }
+
+    private static short[] convert(Path file, AudioType audioType) throws IOException, UnsupportedAudioFileException {
         if (audioType == AudioType.WAV) {
-            return convertWav(file, volume);
+            return convertWav(file);
         } else if (audioType == AudioType.MP3) {
-            return convertMp3(file, volume);
+            return convertMp3(file);
         }
         throw new UnsupportedAudioFileException("Unsupported audio type");
     }
 
-    public static short[] convertWav(Path file, float volume) throws IOException, UnsupportedAudioFileException {
+    private static short[] convertWav(Path file) throws IOException, UnsupportedAudioFileException {
         try (AudioInputStream source = AudioSystem.getAudioInputStream(file.toFile())) {
-            return convert(source, volume);
+            return convert(source);
         }
     }
 
-    private static short[] convert(AudioInputStream source, float volume) throws IOException {
-        AudioFormat sourceFormat = source.getFormat();
-        AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
-        AudioInputStream stream1 = AudioSystem.getAudioInputStream(convertFormat, source);
-        AudioInputStream stream2 = AudioSystem.getAudioInputStream(FORMAT, stream1);
-        return VoicechatAudioPlayerPlugin.voicechatApi.getAudioConverter().bytesToShorts(adjustVolume(stream2.readAllBytes(), volume));
-    }
-
-    private static byte[] adjustVolume(byte[] audioSamples, float volume) {
-        for (int i = 0; i < audioSamples.length; i += 2) {
-            short buf1 = audioSamples[i + 1];
-            short buf2 = audioSamples[i];
-
-            buf1 = (short) ((buf1 & 0xFF) << 8);
-            buf2 = (short) (buf2 & 0xFF);
-
-            short res = (short) (buf1 | buf2);
-            res = (short) (res * volume);
-
-            audioSamples[i] = (byte) res;
-            audioSamples[i + 1] = (byte) (res >> 8);
-
-        }
-        return audioSamples;
-    }
-
-    public static short[] convertMp3(Path file, float volume) throws IOException, UnsupportedAudioFileException {
+    public static short[] convertMp3(Path file) throws IOException, UnsupportedAudioFileException {
         try {
             Mp3Decoder mp3Decoder = VoicechatAudioPlayerPlugin.voicechatApi.createMp3Decoder(Files.newInputStream(file));
             if (mp3Decoder == null) {
@@ -112,11 +98,19 @@ public class AudioUtils {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
             AudioFormat audioFormat = mp3Decoder.getAudioFormat();
             AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());
-            return convert(source, volume);
+            return convert(source);
         } catch (Exception e) {
             AudioPlayer.LOGGER.warn("Error converting mp3 file with native decoder");
-            return convert(AudioSystem.getAudioInputStream(file.toFile()), volume);
+            return convert(AudioSystem.getAudioInputStream(file.toFile()));
         }
+    }
+
+    private static short[] convert(AudioInputStream source) throws IOException {
+        AudioFormat sourceFormat = source.getFormat();
+        AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
+        AudioInputStream stream1 = AudioSystem.getAudioInputStream(convertFormat, source);
+        AudioInputStream stream2 = AudioSystem.getAudioInputStream(FORMAT, stream1);
+        return VoicechatAudioPlayerPlugin.voicechatApi.getAudioConverter().bytesToShorts(stream2.readAllBytes());
     }
 
     public enum AudioType {
