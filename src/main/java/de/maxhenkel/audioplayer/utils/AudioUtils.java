@@ -22,7 +22,7 @@ public class AudioUtils {
         if (isWav(Files.newInputStream(path))) {
             return AudioType.WAV;
         }
-        if (isMp3File(Files.newInputStream(path))) {
+        if (isMp3(Files.newInputStream(path))) {
             return AudioType.MP3;
         }
         return null;
@@ -33,7 +33,7 @@ public class AudioUtils {
         if (isWav(new ByteArrayInputStream(data))) {
             return AudioType.WAV;
         }
-        if (isMp3File(new ByteArrayInputStream(data))) {
+        if (isMp3(new ByteArrayInputStream(data))) {
             return AudioType.MP3;
         }
         return null;
@@ -48,7 +48,7 @@ public class AudioUtils {
         }
     }
 
-    public static boolean isMp3File(InputStream inputStream) throws IOException {
+    public static boolean isMp3(InputStream inputStream) throws IOException {
         try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
             AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(bis);
             return fileFormat.getType().toString().equalsIgnoreCase("mp3");
