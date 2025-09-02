@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.utils;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ComponentUtils;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -11,7 +12,7 @@ public class ChatUtils {
 
     public static MutableComponent createApplyMessage(UUID soundID, MutableComponent component) {
         return component.append(" ")
-                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
+                .append(net.minecraft.network.chat.ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
                         .withStyle(style -> {
                             return style
                                     .withClickEvent(new ClickEvent.CopyToClipboard(soundID.toString()))
