@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.admiral.MinecraftAdmiral;
+import de.maxhenkel.audioplayer.audioloader.AudioCache;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;

@@ -1,4 +1,4 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.audioloader;
 
 import java.util.*;
 
