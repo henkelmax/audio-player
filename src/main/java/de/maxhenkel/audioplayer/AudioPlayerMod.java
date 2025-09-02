@@ -14,8 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class AudioPlayerMod implements ModInitializer {
 
@@ -23,15 +21,6 @@ public class AudioPlayerMod implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static ServerConfig SERVER_CONFIG;
     public static WebServerConfig WEB_SERVER_CONFIG;
-
-    public static ScheduledExecutorService SCHEDULED_EXECUTOR = Executors.newScheduledThreadPool(1, r -> {
-        Thread thread = new Thread(r, "AudioPlayerExecutor");
-        thread.setDaemon(true);
-        thread.setUncaughtExceptionHandler((t, e) -> {
-            AudioPlayerMod.LOGGER.error("Uncaught exception in thread {}", t.getName(), e);
-        });
-        return thread;
-    });
 
     @Override
     public void onInitialize() {
