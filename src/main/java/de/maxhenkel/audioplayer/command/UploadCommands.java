@@ -5,9 +5,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
-import de.maxhenkel.audioplayer.AudioPlayer;
-import de.maxhenkel.audioplayer.Filebin;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioloader.importer.FilebinImporter;
+import de.maxhenkel.audioplayer.audioloader.importer.ServerfileImporter;
+import de.maxhenkel.audioplayer.audioloader.importer.UrlImporter;
 import de.maxhenkel.audioplayer.webserver.UrlUtils;
 import de.maxhenkel.audioplayer.webserver.WebServer;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
@@ -15,19 +16,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.net.URI;
-import java.net.UnknownHostException;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Command("audioplayer")
 public class UploadCommands {
-
-    public static final Pattern SOUND_FILE_PATTERN = Pattern.compile("^[a-z0-9_ -]+.((wav)|(mp3))$", Pattern.CASE_INSENSITIVE);
 
     @RequiresPermission("audioplayer.upload")
     @Command
@@ -65,50 +58,14 @@ public class UploadCommands {
     @Command("upload")
     @Command("filebin")
     public void filebin(CommandContext<CommandSourceStack> context) {
-        UUID uuid = UUID.randomUUID();
-        URI uploadURL = Filebin.getBin(uuid);
-
-        MutableComponent msg = Component.literal("Click ")
-                .append(Component.literal("this link")
-                        .withStyle(style -> {
-                            return style
-                                    .withClickEvent(new ClickEvent.OpenUrl(uploadURL))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open")));
-                        })
-                        .withStyle(ChatFormatting.GREEN)
-                )
-                .append(" and upload your sound as ")
-                .append(Component.literal("mp3").withStyle(ChatFormatting.GRAY))
-                .append(" or ")
-                .append(Component.literal("wav").withStyle(ChatFormatting.GRAY))
-                .append(".\n")
-                .append("Once you have uploaded the file, click ")
-                .append(Component.literal("here")
-                        .withStyle(style -> {
-                            return style
-                                    .withClickEvent(new ClickEvent.RunCommand("/audioplayer filebin " + uuid))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to confirm upload")));
-                        })
-                        .withStyle(ChatFormatting.GREEN)
-                )
-                .append(".");
-
-        context.getSource().sendSuccess(() -> msg, false);
+        FilebinImporter.sendFilebinUploadMessage(context.getSource());
     }
 
     @RequiresPermission("audioplayer.upload")
     @Command("filebin")
     public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
-        new Thread(() -> {
-            try {
-                context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
-                Filebin.downloadSound(context.getSource().getServer(), sound);
-                context.getSource().sendSuccess(() -> sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
-            } catch (Exception e) {
-                AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.getMessage());
-                context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
-            }
-        }).start();
+        context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
+        AudioStorageManager.instance().handleDownload(new FilebinImporter(sound), context.getSource().getPlayer());
     }
 
     @RequiresPermission("audioplayer.upload")
@@ -132,23 +89,8 @@ public class UploadCommands {
     @RequiresPermission("audioplayer.upload")
     @Command("url")
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
-        UUID sound = UUID.randomUUID();
-        new Thread(() -> {
-            try {
-                context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
-                AudioStorageManager.instance().saveSound(sound, url);
-                context.getSource().sendSuccess(() -> sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
-            } catch (UnknownHostException e) {
-                AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.toString());
-                context.getSource().sendFailure(Component.literal("Failed to download sound: Unknown host"));
-            } catch (UnsupportedAudioFileException e) {
-                AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.toString());
-                context.getSource().sendFailure(Component.literal("Failed to download sound: Invalid file format"));
-            } catch (Exception e) {
-                AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.toString());
-                context.getSource().sendFailure(Component.literal("Failed to download sound: %s".formatted(e.getMessage())));
-            }
-        }).start();
+        context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
+        AudioStorageManager.instance().handleDownload(new UrlImporter(url), context.getSource().getPlayer());
     }
 
     @RequiresPermission("audioplayer.upload")
@@ -211,59 +153,7 @@ public class UploadCommands {
     @RequiresPermission("audioplayer.upload")
     @Command("serverfile")
     public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") String fileName) {
-        Matcher matcher = SOUND_FILE_PATTERN.matcher(fileName);
-        if (!matcher.matches()) {
-            context.getSource().sendFailure(Component.literal("Invalid file name! Valid characters are ")
-                    .append(Component.literal("A-Z").withStyle(ChatFormatting.GRAY))
-                    .append(", ")
-                    .append(Component.literal("0-9").withStyle(ChatFormatting.GRAY))
-                    .append(", ")
-                    .append(Component.literal("_").withStyle(ChatFormatting.GRAY))
-                    .append(" and ")
-                    .append(Component.literal("-").withStyle(ChatFormatting.GRAY))
-                    .append(". The name must also end in ")
-                    .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
-                    .append(" or ")
-                    .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
-                    .append(".")
-            );
-            return;
-        }
-        UUID uuid = UUID.randomUUID();
-        new Thread(() -> {
-            Path file = AudioStorageManager.getUploadFolder().resolve(fileName);
-            try {
-                AudioStorageManager.instance().saveSound(uuid, file);
-                context.getSource().sendSuccess(() -> sendUUIDMessage(uuid, Component.literal("Successfully copied sound.")), false);
-                context.getSource().sendSuccess(() -> Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
-            } catch (NoSuchFileException e) {
-                context.getSource().sendFailure(Component.literal("Could not find file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."));
-            } catch (Exception e) {
-                AudioPlayer.LOGGER.warn("{} failed to copy a sound: {}", context.getSource().getTextName(), e.getMessage());
-                context.getSource().sendFailure(Component.literal("Failed to copy sound: %s".formatted(e.getMessage())));
-            }
-        }).start();
-    }
-
-    public static MutableComponent sendUUIDMessage(UUID soundID, MutableComponent component) {
-        return component.append(" ")
-                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
-                        .withStyle(style -> {
-                            return style
-                                    .withClickEvent(new ClickEvent.CopyToClipboard(soundID.toString()))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Copy sound ID")));
-                        })
-                        .withStyle(ChatFormatting.GREEN)
-                )
-                .append(" ")
-                .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on item"))
-                        .withStyle(style -> {
-                            return style
-                                    .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer apply %s".formatted(soundID.toString())))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Put the sound on an item")));
-                        })
-                        .withStyle(ChatFormatting.GREEN)
-                );
+        AudioStorageManager.instance().handleDownload(new ServerfileImporter(fileName), context.getSource().getPlayer());
     }
 
 }

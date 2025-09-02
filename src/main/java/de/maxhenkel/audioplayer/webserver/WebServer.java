@@ -2,8 +2,7 @@ package de.maxhenkel.audioplayer.webserver;
 
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
-import de.maxhenkel.audioplayer.command.UploadCommands;
-import net.minecraft.network.chat.Component;
+import de.maxhenkel.audioplayer.audioloader.importer.WebServerImporter;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.microhttp.*;
@@ -272,15 +271,7 @@ public class WebServer implements AutoCloseable {
         if (player == null) {
             return;
         }
-        new Thread(() -> {
-            try {
-                AudioStorageManager.instance().saveSound(token, null, audioData); //TODO File name
-                player.sendSystemMessage(UploadCommands.sendUUIDMessage(token, Component.literal("Successfully uploaded sound.")));
-            } catch (Exception e) {
-                AudioPlayer.LOGGER.warn("{} failed to upload a sound: {}", player.getName().getString(), e.getMessage());
-                player.sendSystemMessage(Component.literal("Failed to upload sound: %s".formatted(e.getMessage())));
-            }
-        }).start();
+        AudioStorageManager.instance().handleDownload(new WebServerImporter(token, audioData, null), player); //TODO File name
     }
 
 }

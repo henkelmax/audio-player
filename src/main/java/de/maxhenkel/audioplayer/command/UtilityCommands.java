@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
@@ -23,6 +24,7 @@ import java.util.*;
 
 @Command("audioplayer")
 public class UtilityCommands {
+
     @RequiresPermission("audioplayer.apply")
     @Command("set_random")
     public void set_random(CommandContext<CommandSourceStack> context, @Name("enabled") boolean enabled) throws CommandSyntaxException {
@@ -108,11 +110,11 @@ public class UtilityCommands {
             context.getSource().sendSuccess(() -> Component.literal("Item contains %d sounds".formatted(sounds.size())), false);
             for (int i = 0; i < sounds.size(); i++) {
                 int finalI = i;
-                context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(sounds.get(finalI), Component.literal("Sound %d.".formatted(finalI))), false);
+                context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(sounds.get(finalI), Component.literal("Sound %d.".formatted(finalI))), false);
             }
             return;
         }
-        context.getSource().sendSuccess(() -> UploadCommands.sendUUIDMessage(customSound.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(customSound.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
     }
 
     @Command("name")

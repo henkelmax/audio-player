@@ -112,27 +112,6 @@ public class FileNameManager {
     }
 
     @Nullable
-    public static String getFileNameFromUrl(String url) {
-        String name = url.substring(url.lastIndexOf('/') + 1).trim();
-        if (name.isEmpty()) {
-            return null;
-        }
-        return name;
-    }
-
-    @Nullable
-    public static String getFileNameFromPath(Path path) {
-        if (Files.isDirectory(path)) {
-            return null;
-        }
-        String name = path.getFileName().toString();
-        if (name.isEmpty()) {
-            return null;
-        }
-        return name;
-    }
-
-    @Nullable
     private static FileNameManager INSTANCE;
 
     public static void init() {
