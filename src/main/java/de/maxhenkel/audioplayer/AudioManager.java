@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer;
 
-import de.maxhenkel.audioplayer.audioloader.AudioConverter;
+import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -68,7 +68,7 @@ public class AudioManager {
     }
 
     public static float getLengthSeconds(short[] audio) {
-        return (float) audio.length / AudioConverter.FORMAT.getSampleRate();
+        return (float) audio.length / AudioUtils.FORMAT.getSampleRate();
     }
 
 }

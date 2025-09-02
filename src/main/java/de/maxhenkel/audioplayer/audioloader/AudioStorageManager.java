@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.audioloader;
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.audioloader.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.audioloader.importer.AudioImporter;
+import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -86,15 +87,15 @@ public class AudioStorageManager {
     }
 
     public short[] getSound(UUID id) throws Exception {
-        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioConverter.convert(getExistingSoundFile(id), volumeOverrideManager.getAudioVolume(id)));
+        return AudioPlayer.AUDIO_CACHE.get(id, () -> AudioUtils.convert(getExistingSoundFile(id), volumeOverrideManager.getAudioVolume(id)));
     }
 
     public Path getExistingSoundFile(UUID id) throws FileNotFoundException {
-        Path file = getSoundFile(id, AudioConverter.AudioType.MP3.getExtension());
+        Path file = getSoundFile(id, AudioUtils.AudioType.MP3.getExtension());
         if (Files.exists(file)) {
             return file;
         }
-        file = getSoundFile(id, AudioConverter.AudioType.WAV.getExtension());
+        file = getSoundFile(id, AudioUtils.AudioType.WAV.getExtension());
         if (Files.exists(file)) {
             return file;
         }
@@ -102,11 +103,11 @@ public class AudioStorageManager {
     }
 
     public boolean checkSoundExists(UUID id) {
-        Path file = getSoundFile(id, AudioConverter.AudioType.MP3.getExtension());
+        Path file = getSoundFile(id, AudioUtils.AudioType.MP3.getExtension());
         if (Files.exists(file)) {
             return true;
         }
-        file = getSoundFile(id, AudioConverter.AudioType.WAV.getExtension());
+        file = getSoundFile(id, AudioUtils.AudioType.WAV.getExtension());
         return Files.exists(file);
     }
 
@@ -148,7 +149,7 @@ public class AudioStorageManager {
     }
 
     private void saveSound(UUID id, @Nullable String fileName, byte[] data) throws UnsupportedAudioFileException, IOException {
-        AudioConverter.AudioType audioType = AudioConverter.getAudioType(data);
+        AudioUtils.AudioType audioType = AudioUtils.getAudioType(data);
         checkExtensionAllowed(audioType);
 
         Path soundFile = getSoundFile(id, audioType.getExtension());
@@ -164,16 +165,16 @@ public class AudioStorageManager {
         FileNameManager.instance().ifPresent(mgr -> mgr.addFileName(id, fileName));
     }
 
-    private static void checkExtensionAllowed(@Nullable AudioConverter.AudioType audioType) throws UnsupportedAudioFileException {
+    private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioFileException {
         if (audioType == null) {
             throw new UnsupportedAudioFileException("Unsupported audio format");
         }
-        if (audioType.equals(AudioConverter.AudioType.MP3)) {
+        if (audioType.equals(AudioUtils.AudioType.MP3)) {
             if (!AudioPlayer.SERVER_CONFIG.allowMp3Upload.get()) {
                 throw new UnsupportedAudioFileException("Importing mp3 files is not allowed on this server");
             }
         }
-        if (audioType.equals(AudioConverter.AudioType.WAV)) {
+        if (audioType.equals(AudioUtils.AudioType.WAV)) {
             if (!AudioPlayer.SERVER_CONFIG.allowWavUpload.get()) {
                 throw new UnsupportedAudioFileException("Importing wav files is not allowed on this server");
             }

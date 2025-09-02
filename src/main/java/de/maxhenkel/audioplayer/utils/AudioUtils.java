@@ -1,4 +1,4 @@
-package de.maxhenkel.audioplayer.audioloader;
+package de.maxhenkel.audioplayer.utils;
 
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class AudioConverter {
+public class AudioUtils {
 
     public static AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 48000F, 16, 1, 2, 48000F, false);
 
