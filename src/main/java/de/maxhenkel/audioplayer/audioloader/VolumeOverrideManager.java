@@ -13,8 +13,17 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VolumeOverrideManager {
+
+    private static final ExecutorService SAVE_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("VolumeOverrideSaver");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final Path file;
     private final Gson gson;
@@ -27,7 +36,7 @@ public class VolumeOverrideManager {
         load();
     }
 
-    public void load() {
+    private void load() {
         if (!Files.exists(file)) {
             return;
         }
@@ -41,10 +50,10 @@ public class VolumeOverrideManager {
         if (volumes == null) {
             volumes = new HashMap<>();
         }
-        save();
+        saveSync();
     }
 
-    public void save() {
+    private void saveSync() {
         try {
             Files.createDirectories(file.getParent());
             try (Writer writer = Files.newBufferedWriter(file)) {
@@ -53,6 +62,10 @@ public class VolumeOverrideManager {
         } catch (Exception e) {
             AudioPlayer.LOGGER.error("Failed to save file name mappings", e);
         }
+    }
+
+    private void saveAsync() {
+        SAVE_EXECUTOR_SERVICE.execute(this::saveSync);
     }
 
     /**
@@ -73,13 +86,11 @@ public class VolumeOverrideManager {
     public void setAudioVolume(UUID audioId, @Nullable Float volume) {
         if (volume == null) {
             volumes.remove(audioId);
-            //TODO Save off-thread
-            save();
+            saveAsync();
             return;
         }
         volumes.put(audioId, volume);
-        //TODO Save off-thread
-        save();
+        saveAsync();
     }
 
     private static final float LOG_BASE = 2F;
