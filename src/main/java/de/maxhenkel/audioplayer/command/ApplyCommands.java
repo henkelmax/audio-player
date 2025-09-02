@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.FileNameManager;
-import de.maxhenkel.audioplayer.ComponentUtils;
+import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import de.maxhenkel.audioplayer.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;

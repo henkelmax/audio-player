@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

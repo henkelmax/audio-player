@@ -1,5 +1,6 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.utils;
 
+import de.maxhenkel.audioplayer.AudioPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
