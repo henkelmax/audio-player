@@ -43,7 +43,7 @@ public class VolumeCommands {
             context.getSource().sendFailure(Component.literal("Sound does not exist"));
             return;
         }
-        VolumeOverrideManager mgr = AudioStorageManager.instance().getVolumeOverrideManager();
+        VolumeOverrideManager mgr = AudioStorageManager.volumeOverrideManager();
         DecimalFormat percentFormat = new DecimalFormat("#.00");
         if (volume == null) {
             float currentVolumeLog = mgr.getAudioVolume(id);

@@ -73,8 +73,8 @@ public class AudioStorageManager {
         return instance;
     }
 
-    public VolumeOverrideManager getVolumeOverrideManager() {
-        return volumeOverrideManager;
+    public static VolumeOverrideManager volumeOverrideManager() {
+        return instance().volumeOverrideManager;
     }
 
     public Path getSoundFile(UUID id, String extension) {
