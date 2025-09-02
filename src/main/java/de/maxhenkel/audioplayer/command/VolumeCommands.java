@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
@@ -38,7 +39,7 @@ public class VolumeCommands {
     }
 
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {
-        if (!AudioManager.checkSoundExists(context.getSource().getServer(), id)) {
+        if (!AudioStorageManager.instance().checkSoundExists(id)) {
             context.getSource().sendFailure(Component.literal("Sound does not exist"));
             return;
         }

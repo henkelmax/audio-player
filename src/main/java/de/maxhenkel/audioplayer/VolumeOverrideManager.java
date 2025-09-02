@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 import javax.annotation.Nullable;
@@ -87,7 +88,7 @@ public class VolumeOverrideManager {
     public static void init() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             AudioPlayer.LOGGER.info("Loading audio file volume overrides...");
-            Path audioDataFolder = AudioManager.getAudioDataFolder(server);
+            Path audioDataFolder = AudioStorageManager.instance().getAudioDataFolder();
             if (Files.exists(audioDataFolder)) {
                 try {
                     Files.createDirectories(audioDataFolder);

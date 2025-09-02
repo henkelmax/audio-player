@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer;
 
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -150,7 +151,7 @@ public class PlayerManager {
     @Nullable
     private de.maxhenkel.voicechat.api.audiochannel.AudioPlayer playChannel(VoicechatServerApi api, AudioChannel channel, ServerLevel level, UUID sound, ServerPlayer p, int maxLengthSeconds) {
         try {
-            short[] audio = AudioManager.getSound(level.getServer(), sound);
+            short[] audio = AudioStorageManager.instance().getSound(sound);
 
             if (AudioManager.getLengthSeconds(audio) > maxLengthSeconds) {
                 if (p != null) {

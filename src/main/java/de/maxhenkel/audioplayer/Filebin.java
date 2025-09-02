@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import net.minecraft.server.MinecraftServer;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -65,7 +66,7 @@ public class Filebin {
                     }
 
                     String filename = file.get("filename").getAsString();
-                    AudioManager.saveSound(server, sound, url + "/" + new URI(null, null, filename, null).toASCIIString());
+                    AudioStorageManager.instance().saveSound(sound, url + "/" + new URI(null, null, filename, null).toASCIIString());
                     deleteBin(url);
                     return;
                 }

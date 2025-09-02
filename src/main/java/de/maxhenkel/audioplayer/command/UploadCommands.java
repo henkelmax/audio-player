@@ -5,9 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
-import de.maxhenkel.audioplayer.AudioManager;
 import de.maxhenkel.audioplayer.AudioPlayer;
 import de.maxhenkel.audioplayer.Filebin;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.webserver.UrlUtils;
 import de.maxhenkel.audioplayer.webserver.WebServer;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
@@ -136,7 +136,7 @@ public class UploadCommands {
         new Thread(() -> {
             try {
                 context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
-                AudioManager.saveSound(context.getSource().getServer(), sound, url);
+                AudioStorageManager.instance().saveSound(sound, url);
                 context.getSource().sendSuccess(() -> sendUUIDMessage(sound, Component.literal("Successfully downloaded sound.")), false);
             } catch (UnknownHostException e) {
                 AudioPlayer.LOGGER.warn("{} failed to download a sound: {}", context.getSource().getTextName(), e.toString());
@@ -197,7 +197,7 @@ public class UploadCommands {
                                 .append(" or ")
                                 .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
                                 .append(" file to ")
-                                .append(Component.literal(AudioManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
+                                .append(Component.literal(AudioStorageManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
                                 .append(" on the server and run the command ")
                                 .append(Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style
@@ -231,9 +231,9 @@ public class UploadCommands {
         }
         UUID uuid = UUID.randomUUID();
         new Thread(() -> {
-            Path file = AudioManager.getUploadFolder().resolve(fileName);
+            Path file = AudioStorageManager.getUploadFolder().resolve(fileName);
             try {
-                AudioManager.saveSound(context.getSource().getServer(), uuid, file);
+                AudioStorageManager.instance().saveSound(uuid, file);
                 context.getSource().sendSuccess(() -> sendUUIDMessage(uuid, Component.literal("Successfully copied sound.")), false);
                 context.getSource().sendSuccess(() -> Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."), false);
             } catch (NoSuchFileException e) {

@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer;
 
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -57,7 +58,7 @@ public class StaticAudioPlayer implements de.maxhenkel.voicechat.api.audiochanne
 
     public static StaticAudioPlayer create(VoicechatServerApi api, ServerLevel level, UUID sound, ServerPlayer p, int maxLengthSeconds, String category, Vec3 pos, UUID playerID, float distance) {
         try {
-            short[] audio = AudioManager.getSound(level.getServer(), sound);
+            short[] audio = AudioStorageManager.instance().getSound(sound);
 
             if (AudioManager.getLengthSeconds(audio) > maxLengthSeconds) {
                 if (p != null) {

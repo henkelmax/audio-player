@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.admiral.MinecraftAdmiral;
+import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
 import de.maxhenkel.audioplayer.config.WebServerConfig;
@@ -12,8 +13,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,6 +37,7 @@ public class AudioPlayer implements ModInitializer {
     @Override
     public void onInitialize() {
         WebServerEvents.onInitialize();
+        AudioStorageManager.onInitialize();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             MinecraftAdmiral.builder(dispatcher, registryAccess).addCommandClasses(
                     UploadCommands.class,
@@ -55,12 +55,6 @@ public class AudioPlayer implements ModInitializer {
             WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).path(configFolder.resolve("webserver.properties")).build();
         } else {
             WEB_SERVER_CONFIG = ConfigBuilder.builder(WebServerConfig::new).build();
-        }
-
-        try {
-            Files.createDirectories(AudioManager.getUploadFolder());
-        } catch (IOException e) {
-            LOGGER.warn("Failed to create upload folder", e);
         }
 
         AUDIO_CACHE = new AudioCache(SERVER_CONFIG.cacheSize.get());
