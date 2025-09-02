@@ -1,5 +1,7 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.audioloader;
 
+import de.maxhenkel.audioplayer.AudioPlayer;
+import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.mp3.Mp3Decoder;
 
 import javax.annotation.Nullable;

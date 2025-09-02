@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer;
 
+import de.maxhenkel.audioplayer.audioloader.AudioConverter;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
