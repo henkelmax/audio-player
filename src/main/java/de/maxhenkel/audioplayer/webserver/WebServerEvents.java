@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.webserver;
 
 import de.maxhenkel.audioplayer.AudioPlayer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 
 import javax.annotation.Nullable;
@@ -9,6 +10,11 @@ public class WebServerEvents {
 
     @Nullable
     private static WebServer webServer;
+
+    public static void onInitialize() {
+        ServerLifecycleEvents.SERVER_STARTED.register(WebServerEvents::onServerStarted);
+        ServerLifecycleEvents.SERVER_STOPPING.register(WebServerEvents::onServerStopped);
+    }
 
     public static void onServerStarted(MinecraftServer server) {
         closeServerIfRunning();

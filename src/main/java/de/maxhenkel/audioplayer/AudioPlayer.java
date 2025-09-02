@@ -8,7 +8,6 @@ import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +37,7 @@ public class AudioPlayer implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        WebServerEvents.onInitialize();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             MinecraftAdmiral.builder(dispatcher, registryAccess).addCommandClasses(
                     UploadCommands.class,
@@ -64,8 +64,5 @@ public class AudioPlayer implements ModInitializer {
         }
 
         AUDIO_CACHE = new AudioCache(SERVER_CONFIG.cacheSize.get());
-
-        ServerLifecycleEvents.SERVER_STARTED.register(WebServerEvents::onServerStarted);
-        ServerLifecycleEvents.SERVER_STOPPING.register(WebServerEvents::onServerStopped);
     }
 }
