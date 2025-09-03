@@ -33,6 +33,15 @@ public interface AudioPlayerApi {
 
     void clearAudioCache();
 
+    /**
+     * Sends a message to the player to enable voicechat in case they have it disabled
+     *
+     * @param player The player to send the message to
+     */
+    void notifyPlayerToEnableVoicechat(ServerPlayer player);
+
+    boolean canPlayerHearVoicechatAudio(ServerPlayer player);
+
     @Nullable
     VoicechatServerApi getVoicechatServerApi();
 

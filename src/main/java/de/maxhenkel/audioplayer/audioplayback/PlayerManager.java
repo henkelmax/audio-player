@@ -6,6 +6,7 @@ import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
+import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
@@ -76,13 +77,8 @@ public class PlayerManager {
         channel.setDistance(distance);
         api.getPlayersInRange(api.fromServerLevel(level), channel.getLocation(), distance + 1F, serverPlayer -> {
             VoicechatConnection connection = api.getConnectionOf(serverPlayer);
-            if (connection != null) {
-                return connection.isDisabled();
-            }
-            return true;
-        }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(player -> {
-            player.displayClientMessage(Component.literal("You need to enable voice chat to hear custom audio"), true);
-        });
+            return !ChatUtils.isAbleToHearVoicechat(connection);
+        }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(ChatUtils::sendEnableVoicechatMessage);
 
         return playChannel(channel, sound, p, maxLengthSeconds);
     }

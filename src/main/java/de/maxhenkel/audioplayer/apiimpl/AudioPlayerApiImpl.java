@@ -66,6 +66,16 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
+    public void notifyPlayerToEnableVoicechat(ServerPlayer player) {
+        ChatUtils.notifyToEnableVoicechatIfNoVoicechat(player);
+    }
+
+    @Override
+    public boolean canPlayerHearVoicechatAudio(ServerPlayer player) {
+        return ChatUtils.isAbleToHearVoicechat(player);
+    }
+
+    @Override
     @Nullable
     public VoicechatServerApi getVoicechatServerApi() {
         return VoicechatAudioPlayerPlugin.voicechatServerApi;
@@ -78,7 +88,7 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
 
     @Override
     public <T extends AudioChannel> ChannelReference<T> playChannel(T channel, UUID audioId, @Nullable ServerPlayer p) {
-        return PlayerManager.instance().playChannel(channel, audioId, p, Integer.MAX_VALUE);//TODO maxLengthSeconds
+        return PlayerManager.instance().playChannel(channel, audioId, p, Integer.MAX_VALUE);
     }
 
 }
