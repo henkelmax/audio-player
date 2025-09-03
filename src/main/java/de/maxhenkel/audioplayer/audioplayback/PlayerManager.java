@@ -1,5 +1,6 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.audioplayback;
 
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
 import de.maxhenkel.audioplayer.audioloader.player.PlayerThread;

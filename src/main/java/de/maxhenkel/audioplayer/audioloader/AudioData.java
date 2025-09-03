@@ -1,7 +1,7 @@
 package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
-import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;

@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.mixin;
 
-import de.maxhenkel.audioplayer.PlayerManager;
+import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

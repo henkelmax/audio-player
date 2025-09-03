@@ -6,7 +6,7 @@ import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
-import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.NonNullList;

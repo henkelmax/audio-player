@@ -1,8 +1,8 @@
 package de.maxhenkel.audioplayer.mixin;
 
-import de.maxhenkel.audioplayer.AudioManager;
-import de.maxhenkel.audioplayer.PlayerManager;
-import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.audioplayback.AudioManager;
+import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
+import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.interfaces.CustomJukeboxSongPlayer;
 import net.minecraft.core.BlockPos;

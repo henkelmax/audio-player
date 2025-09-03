@@ -6,7 +6,7 @@ import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Min;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
-import de.maxhenkel.audioplayer.PlayerManager;
+import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.commands.CommandSourceStack;
