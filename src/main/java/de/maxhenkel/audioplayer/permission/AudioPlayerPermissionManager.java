@@ -1,6 +1,7 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.permission;
 
 import de.maxhenkel.admiral.permissions.PermissionManager;
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
