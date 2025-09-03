@@ -5,11 +5,14 @@ import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.utils.ChatUtils;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -37,6 +40,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public void importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
         AudioStorageManager.instance().handleImport(importer, player);
+    }
+
+    @Override
+    public MutableComponent createApplyMessage(UUID soundID, MutableComponent component) {
+        return ChatUtils.createApplyMessage(soundID, component);
     }
 
 }
