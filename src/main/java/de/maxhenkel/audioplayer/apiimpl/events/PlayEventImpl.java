@@ -1,26 +1,25 @@
 package de.maxhenkel.audioplayer.apiimpl.events;
 
+import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.PlayEvent;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
-
 public class PlayEventImpl implements PlayEvent {
 
     protected final AudioData audioData;
     @Nullable
-    protected UUID overrideChannel;
+    protected ChannelReference<?> overrideChannel;
 
     public PlayEventImpl(AudioData audioData) {
         this.audioData = audioData;
     }
 
     @Override
-    public void overrideChannel(UUID channelId) {
-        overrideChannel = channelId;
+    public void overrideChannel(ChannelReference<?> channel) {
+        overrideChannel = channel;
     }
 
     @Override
@@ -29,7 +28,7 @@ public class PlayEventImpl implements PlayEvent {
     }
 
     @Nullable
-    public UUID getOverrideChannel() {
+    public ChannelReference<?> getOverrideChannel() {
         return overrideChannel;
     }
 

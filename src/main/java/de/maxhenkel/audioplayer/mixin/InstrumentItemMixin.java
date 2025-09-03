@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
@@ -41,7 +42,7 @@ public class InstrumentItemMixin {
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
         PlayEventImpl event = new PlayEventImpl(data);
         AudioEvents.PLAY_GOAT_HORN.invoker().accept(event);
-        UUID channel = event.getOverrideChannel();
+        ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
             channel = PlayerManager.instance().playLocational((ServerLevel) level, p.getEyePosition(), PlayerType.GOAT_HORN, data, player);
             if (channel == null) {

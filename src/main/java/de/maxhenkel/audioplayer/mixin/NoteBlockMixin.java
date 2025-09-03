@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.mixin;
 
+import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
@@ -53,13 +54,13 @@ public class NoteBlockMixin extends Block {
 
         PlayEventImpl event = new PlayEventImpl(data);
         AudioEvents.PLAY_NOTE_BLOCK.invoker().accept(event);
-        UUID channel = event.getOverrideChannel();
+        ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
             channel = PlayerManager.instance().playLocational(serverLevel, blockPos.getCenter(), PlayerType.NOTE_BLOCK, data, null);
         }
 
         if (channel != null) {
-            channelHolder.audioplayer$setChannelID(channel);
+            channelHolder.audioplayer$setChannelID(channel.getChannel().getId());
             cir.setReturnValue(true);
         }
     }

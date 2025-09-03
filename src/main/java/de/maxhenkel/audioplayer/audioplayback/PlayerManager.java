@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
@@ -41,12 +42,12 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID playLocational(ServerLevel level, Vec3 pos, PlayerType type, AudioData sound, @Nullable ServerPlayer player) {
+    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, PlayerType type, AudioData sound, @Nullable ServerPlayer player) {
         UUID soundIdToPlay = sound.getSoundIdToPlay();
         if (soundIdToPlay == null) {
             return null;
         }
-        ChannelReferenceImpl<LocationalAudioChannel> ref = playLocational(
+        return playLocational(
                 level,
                 pos,
                 soundIdToPlay,
@@ -55,10 +56,6 @@ public class PlayerManager {
                 type.getCategory(),
                 type.getMaxDuration().get()
         );
-        if (ref == null) {
-            return null;
-        }
-        return ref.getChannel().getId();
     }
 
     @Nullable
