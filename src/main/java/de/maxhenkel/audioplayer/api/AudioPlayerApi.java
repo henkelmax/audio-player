@@ -22,6 +22,8 @@ public interface AudioPlayerApi {
 
     void importAudio(AudioImporter importer, @Nullable ServerPlayer player);
 
-    MutableComponent createApplyMessage(UUID soundID, MutableComponent component);
+    MutableComponent createApplyMessage(UUID audioID, MutableComponent component);
+
+    void invalidateCachedAudio(UUID audioID);
 
 }

@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public class ChatUtils {
 
-    public static MutableComponent createApplyMessage(UUID soundID, MutableComponent component) {
+    public static MutableComponent createApplyMessage(UUID audioID, MutableComponent component) {
         return component.append(" ")
                 .append(net.minecraft.network.chat.ComponentUtils.wrapInSquareBrackets(Component.literal("Copy ID"))
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent.CopyToClipboard(soundID.toString()))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Copy sound ID")));
+                                    .withClickEvent(new ClickEvent.CopyToClipboard(audioID.toString()))
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Copy audio ID")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 )
@@ -24,8 +24,8 @@ public class ChatUtils {
                 .append(ComponentUtils.wrapInSquareBrackets(Component.literal("Put on item"))
                         .withStyle(style -> {
                             return style
-                                    .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer apply %s".formatted(soundID.toString())))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Put the sound on an item")));
+                                    .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer apply %s".formatted(audioID.toString())))
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Put the audio on an item")));
                         })
                         .withStyle(ChatFormatting.GREEN)
                 );
