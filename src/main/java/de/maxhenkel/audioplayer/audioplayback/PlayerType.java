@@ -1,7 +1,7 @@
 package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
-import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
+import de.maxhenkel.audioplayer.api.AudioPlayerConstants;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
@@ -18,21 +18,21 @@ public enum PlayerType {
             AudioPlayerMod.SERVER_CONFIG.musicDiscRange,
             AudioPlayerMod.SERVER_CONFIG.maxMusicDiscRange,
             AudioPlayerMod.SERVER_CONFIG.maxMusicDiscDuration,
-            VoicechatAudioPlayerPlugin.MUSIC_DISC_CATEGORY,
+            AudioPlayerConstants.MUSIC_DISC_CATEGORY,
             itemStack -> itemStack.has(DataComponents.JUKEBOX_PLAYABLE)
     ),
     NOTE_BLOCK(
             AudioPlayerMod.SERVER_CONFIG.noteBlockRange,
             AudioPlayerMod.SERVER_CONFIG.maxNoteBlockRange,
             AudioPlayerMod.SERVER_CONFIG.maxNoteBlockDuration,
-            VoicechatAudioPlayerPlugin.NOTE_BLOCK_CATEGORY,
+            AudioPlayerConstants.NOTE_BLOCK_CATEGORY,
             itemStack -> itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock
     ),
     GOAT_HORN(
             AudioPlayerMod.SERVER_CONFIG.goatHornRange,
             AudioPlayerMod.SERVER_CONFIG.maxGoatHornRange,
             AudioPlayerMod.SERVER_CONFIG.maxGoatHornDuration,
-            VoicechatAudioPlayerPlugin.GOAT_HORN_CATEGORY,
+            AudioPlayerConstants.GOAT_HORN_CATEGORY,
             itemStack -> itemStack.getItem() instanceof InstrumentItem
     );
 

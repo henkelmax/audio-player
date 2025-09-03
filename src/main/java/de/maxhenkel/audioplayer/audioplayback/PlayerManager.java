@@ -63,11 +63,6 @@ public class PlayerManager {
 
     @Nullable
     public ChannelReferenceImpl<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
-        return playLocational(level, pos, sound, p, distance, category, maxLengthSeconds, false);
-    }
-
-    @Nullable
-    public ChannelReferenceImpl<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) {
             return null;
@@ -92,14 +87,14 @@ public class PlayerManager {
             player.displayClientMessage(Component.literal("You need to enable voice chat to hear custom audio"), true);
         });
 
-        return playChannel(channel, sound, p, maxLengthSeconds, byCommand);
+        return playChannel(channel, sound, p, maxLengthSeconds);
     }
 
-    private <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds, boolean byCommand) {
+    private <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
         AtomicBoolean stopped = new AtomicBoolean();
         AtomicReference<PlayerThread<T>> player = new AtomicReference<>();
 
-        ChannelReferenceImpl<T> playerReference = new ChannelReferenceImpl<>(channel, sound, player, byCommand, () -> {
+        ChannelReferenceImpl<T> playerReference = new ChannelReferenceImpl<>(channel, sound, player, () -> {
             synchronized (stopped) {
                 stopped.set(true);
                 PlayerThread<T> audioPlayer = player.get();
@@ -112,7 +107,7 @@ public class PlayerManager {
         players.put(channel.getId(), playerReference);
 
         executor.execute(() -> {
-            PlayerThread<T> playerThread = playChannel(channel, sound, p, maxLengthSeconds);
+            PlayerThread<T> playerThread = playChannel0(channel, sound, p, maxLengthSeconds);
             if (playerThread == null) {
                 players.remove(channel.getId());
                 return;
@@ -132,7 +127,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    private <T extends AudioChannel> PlayerThread<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
+    private <T extends AudioChannel> PlayerThread<T> playChannel0(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
         try {
             CachedAudio audio = AudioStorageManager.audioCache().getAudio(sound);
 
@@ -184,9 +179,9 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID findChannelID(UUID sound, boolean onlyByCommand) {
+    public UUID findChannelID(UUID sound) {
         for (Map.Entry<UUID, ChannelReferenceImpl<?>> entry : players.entrySet()) {
-            if (entry.getValue().getAudioId().equals(sound) && (entry.getValue().isByCommand() || !onlyByCommand)) {
+            if (entry.getValue().getAudioId().equals(sound)) {
                 return entry.getKey();
             }
         }

@@ -1,14 +1,19 @@
 package de.maxhenkel.audioplayer.apiimpl;
 
 import de.maxhenkel.audioplayer.api.AudioPlayerApi;
+import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
+import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -55,6 +60,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public void clearAudioCache() {
         AudioStorageManager.audioCache().clear();
+    }
+
+    @Override
+    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID audioId, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+        return PlayerManager.instance().playLocational(level, pos, audioId, p, distance, category, maxLengthSeconds);
     }
 
 }

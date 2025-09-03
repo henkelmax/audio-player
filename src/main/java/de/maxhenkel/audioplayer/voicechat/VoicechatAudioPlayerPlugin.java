@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.voicechat;
 
+import de.maxhenkel.audioplayer.api.AudioPlayerConstants;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -14,10 +15,6 @@ import java.net.URL;
 import java.util.Enumeration;
 
 public class VoicechatAudioPlayerPlugin implements VoicechatPlugin {
-
-    public static String MUSIC_DISC_CATEGORY = "music_discs";
-    public static String NOTE_BLOCK_CATEGORY = "note_blocks";
-    public static String GOAT_HORN_CATEGORY = "goat_horns";
 
     public static VoicechatApi voicechatApi;
     @Nullable
@@ -47,19 +44,19 @@ public class VoicechatAudioPlayerPlugin implements VoicechatPlugin {
     private void onServerStarted(VoicechatServerStartedEvent event) {
         voicechatServerApi = event.getVoicechat();
         musicDiscs = voicechatServerApi.volumeCategoryBuilder()
-                .setId(MUSIC_DISC_CATEGORY)
+                .setId(AudioPlayerConstants.MUSIC_DISC_CATEGORY)
                 .setName("Music discs")
                 .setDescription("The volume of all custom music discs")
                 .setIcon(getIcon("category_music_discs.png"))
                 .build();
         noteBlocks = voicechatServerApi.volumeCategoryBuilder()
-                .setId(NOTE_BLOCK_CATEGORY)
+                .setId(AudioPlayerConstants.NOTE_BLOCK_CATEGORY)
                 .setName("Note blocks")
                 .setDescription("The volume of all note blocks with custom heads")
                 .setIcon(getIcon("category_note_blocks.png"))
                 .build();
         goatHorns = voicechatServerApi.volumeCategoryBuilder()
-                .setId(GOAT_HORN_CATEGORY)
+                .setId(AudioPlayerConstants.GOAT_HORN_CATEGORY)
                 .setName("Goat horns")
                 .setDescription("The volume of all custom goat horns")
                 .setIcon(getIcon("category_goat_horns.png"))

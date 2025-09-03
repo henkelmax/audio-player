@@ -7,8 +7,6 @@ import de.maxhenkel.admiral.annotations.Min;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
-import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
-import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,8 +29,7 @@ public class PlayCommands {
                 player,
                 range,
                 null,
-                Integer.MAX_VALUE,
-                true
+                Integer.MAX_VALUE
         );
         context.getSource().sendSuccess(() -> Component.literal("Successfully played %s".formatted(sound)), false);
     }
@@ -40,7 +37,7 @@ public class PlayCommands {
     @RequiresPermission("audioplayer.play_command")
     @Command("stop")
     private static int stop(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound) {
-        UUID channelID = PlayerManager.instance().findChannelID(sound, true);
+        UUID channelID = PlayerManager.instance().findChannelID(sound);
 
         if (channelID != null) {
             PlayerManager.instance().stop(channelID);

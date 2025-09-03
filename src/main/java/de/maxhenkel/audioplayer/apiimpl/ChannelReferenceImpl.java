@@ -3,9 +3,11 @@ package de.maxhenkel.audioplayer.apiimpl;
 import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.audioplayback.PlayerThread;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class ChannelReferenceImpl<T extends AudioChannel> implements ChannelReference<T> {
 
@@ -13,18 +15,12 @@ public class ChannelReferenceImpl<T extends AudioChannel> implements ChannelRefe
     private final UUID audioId;
     private final Stoppable onStop;
     private final AtomicReference<PlayerThread<T>> player;
-    private final boolean byCommand;
 
-    public ChannelReferenceImpl(T channel, UUID audioId, AtomicReference<PlayerThread<T>> player, boolean byCommand, Stoppable onStop) {
+    public ChannelReferenceImpl(T channel, UUID audioId, AtomicReference<PlayerThread<T>> player, Stoppable onStop) {
         this.channel = channel;
         this.audioId = audioId;
         this.onStop = onStop;
         this.player = player;
-        this.byCommand = byCommand;
-    }
-
-    public boolean isByCommand() {
-        return byCommand;
     }
 
     @Override
@@ -67,6 +63,15 @@ public class ChannelReferenceImpl<T extends AudioChannel> implements ChannelRefe
             return false;
         }
         return t.isStopped();
+    }
+
+    @Override
+    public void setOnChannelUpdate(@Nullable Consumer<T> onChannelUpdate) {
+        PlayerThread<T> t = player.get();
+        if (t == null) {
+            return;
+        }
+        t.setChannelUpdate(onChannelUpdate);
     }
 
     public interface Stoppable {
