@@ -1,9 +1,9 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
-import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
 import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.interfaces.CustomJukeboxSongPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -51,11 +51,11 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
 
     @Override
     public boolean audioplayer$customPlay(ServerLevel level, ItemStack item) {
-        CustomSound customSound = CustomSound.of(item);
-        if (customSound == null) {
+        AudioData data = AudioData.of(item);
+        if (data == null) {
             return false;
         }
-        UUID channel = AudioManager.play(level, blockPos, PlayerType.MUSIC_DISC, customSound, null);
+        UUID channel = AudioManager.play(level, blockPos, PlayerType.MUSIC_DISC, data, null);
         if (channel == null) {
             return false;
         }

@@ -3,7 +3,7 @@ package de.maxhenkel.audioplayer.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
-import de.maxhenkel.audioplayer.CustomSound;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import de.maxhenkel.audioplayer.PlayerType;
@@ -32,7 +32,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, range), customName);
+        apply(context, AudioData.withSoundAndRange(id, range), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
@@ -42,7 +42,7 @@ public class ApplyCommands {
         if (id == null) {
             return;
         }
-        apply(context, new CustomSound(id, null), customName);
+        apply(context, AudioData.withSoundAndRange(id, null), customName);
     }
 
     // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
@@ -50,13 +50,13 @@ public class ApplyCommands {
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, range), customName);
+        apply(context, AudioData.withSoundAndRange(sound, range), customName);
     }
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, new CustomSound(sound, null), customName);
+        apply(context, AudioData.withSoundAndRange(sound, null), customName);
     }
 
     @Nullable
@@ -75,12 +75,12 @@ public class ApplyCommands {
         return audioId;
     }
 
-    private static void apply(CommandContext<CommandSourceStack> context, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
+    private static void apply(CommandContext<CommandSourceStack> context, AudioData data, @Nullable String customName) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
         if (isShulkerBox(itemInHand)) {
-            applyShulker(context, sound, customName);
+            applyShulker(context, data, customName);
             return;
         }
 
@@ -89,20 +89,20 @@ public class ApplyCommands {
             sendInvalidHandItemMessage(context, itemInHand);
             return;
         }
-        apply(context, itemInHand, type, sound, customName);
+        apply(context, itemInHand, type, data, customName);
     }
 
-    private static void applyShulker(CommandContext<CommandSourceStack> context, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
+    private static void applyShulker(CommandContext<CommandSourceStack> context, AudioData data, @Nullable String customName) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (isShulkerBox(itemInHand)) {
-            processShulker(context, itemInHand, sound, customName);
+            processShulker(context, itemInHand, data, customName);
             return;
         }
         context.getSource().sendFailure(Component.literal("You don't have a shulker box in your main hand"));
     }
 
-    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack shulkerItem, CustomSound sound, @Nullable String customName) throws CommandSyntaxException {
+    private static void processShulker(CommandContext<CommandSourceStack> context, ItemStack shulkerItem, AudioData data, @Nullable String customName) throws CommandSyntaxException {
         ItemContainerContents contents = shulkerItem.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
         NonNullList<ItemStack> shulkerContents = NonNullList.withSize(ShulkerBoxBlockEntity.CONTAINER_SIZE, ItemStack.EMPTY);
         contents.copyInto(shulkerContents);
@@ -111,14 +111,14 @@ public class ApplyCommands {
             if (playerType == null) {
                 continue;
             }
-            apply(context, itemStack, playerType, sound, customName);
+            apply(context, itemStack, playerType, data, customName);
         }
         shulkerItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(shulkerContents));
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated contents"), false);
     }
 
-    private static void apply(CommandContext<CommandSourceStack> context, ItemStack stack, PlayerType type, CustomSound customSound, @Nullable String customName) throws CommandSyntaxException {
-        checkRange(type.getMaxRange(), customSound.getRange().orElse(null));
+    private static void apply(CommandContext<CommandSourceStack> context, ItemStack stack, PlayerType type, AudioData data, @Nullable String customName) throws CommandSyntaxException {
+        checkRange(type.getMaxRange(), data.getRange().orElse(null));
         if (!type.isValid(stack)) {
             return;
         }
@@ -130,7 +130,7 @@ public class ApplyCommands {
             stack.set(DataComponents.JUKEBOX_PLAYABLE, ComponentUtils.CUSTOM_JUKEBOX_PLAYABLE);
         }
 
-        customSound.saveToItem(stack, customName);
+        data.saveToItem(stack, customName);
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
 

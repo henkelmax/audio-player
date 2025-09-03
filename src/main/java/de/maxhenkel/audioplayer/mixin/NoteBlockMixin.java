@@ -1,11 +1,11 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.AudioManager;
-import de.maxhenkel.audioplayer.CustomSound;
 import de.maxhenkel.audioplayer.PlayerManager;
 import de.maxhenkel.audioplayer.PlayerType;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
-import de.maxhenkel.audioplayer.interfaces.CustomSoundHolder;
+import de.maxhenkel.audioplayer.interfaces.AudioDataHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -34,14 +34,14 @@ public class NoteBlockMixin extends Block {
             return;
         }
         BlockEntity blockEntity = level.getBlockEntity(blockPos.above());
-        if (!(blockEntity instanceof CustomSoundHolder soundHolder)) {
+        if (!(blockEntity instanceof AudioDataHolder soundHolder)) {
             return;
         }
         if (!(blockEntity instanceof ChannelHolder channelHolder)) {
             return;
         }
-        CustomSound customSound = soundHolder.audioplayer$getCustomSound();
-        if (customSound == null) {
+        AudioData data = soundHolder.audioplayer$getAudioData();
+        if (data == null) {
             return;
         }
         UUID channelId = channelHolder.audioplayer$getChannelID();
@@ -50,7 +50,7 @@ public class NoteBlockMixin extends Block {
             channelHolder.audioplayer$setChannelID(null);
         }
 
-        UUID channel = AudioManager.play(serverLevel, blockPos, PlayerType.NOTE_BLOCK, customSound, null);
+        UUID channel = AudioManager.play(serverLevel, blockPos, PlayerType.NOTE_BLOCK, data, null);
 
         if (channel != null) {
             channelHolder.audioplayer$setChannelID(channel);

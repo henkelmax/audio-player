@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer;
 
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class AudioManager {
 
     @Nullable
-    public static UUID play(ServerLevel level, BlockPos pos, PlayerType type, CustomSound sound, @Nullable Player player) {
+    public static UUID play(ServerLevel level, BlockPos pos, PlayerType type, AudioData sound, @Nullable Player player) {
         float range = sound.getRange(type);
 
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;

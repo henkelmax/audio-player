@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;
@@ -38,7 +39,7 @@ public class UtilityCommands {
             return;
         }
 
-        if (!CustomSound.clearItem(itemInHand)) {
+        if (!AudioData.clearItem(itemInHand)) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
@@ -73,21 +74,23 @@ public class UtilityCommands {
 
     @Command("id")
     public void id(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CustomSound customSound = getHeldSound(context);
-        if (customSound == null) {
+        AudioData data = getHeldData(context);
+        if (data == null) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
-        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(customSound.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
+        //TODO Return the actual ID and don't call the event
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(data.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
     }
 
     @Command("name")
     public void name(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CustomSound customSound = getHeldSound(context);
-        if (customSound == null) {
+        AudioData data = getHeldData(context);
+        if (data == null) {
             return;
         }
-        sendSoundName(context, customSound.getSoundId());
+        //TODO Return the actual ID and don't call the event
+        sendSoundName(context, data.getSoundId());
     }
 
     public static void sendSoundName(CommandContext<CommandSourceStack> context, UUID id) {
@@ -105,7 +108,7 @@ public class UtilityCommands {
         })), false);
     }
 
-    public static CustomSound getHeldSound(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public static AudioData getHeldData(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
@@ -116,13 +119,13 @@ public class UtilityCommands {
             return null;
         }
 
-        CustomSound customSound = CustomSound.of(itemInHand);
-        if (customSound == null) {
+        AudioData data = AudioData.of(itemInHand);
+        if (data == null) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return null;
         }
 
-        return customSound;
+        return data;
     }
 
 }

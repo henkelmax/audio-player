@@ -3,7 +3,7 @@ package de.maxhenkel.audioplayer.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
-import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.VolumeOverrideManager;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,11 +25,11 @@ public class VolumeCommands {
     @RequiresPermission("audioplayer.volume")
     @Command("volume")
     public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) throws CommandSyntaxException {
-        CustomSound customSound = UtilityCommands.getHeldSound(context);
-        if (customSound == null) {
+        AudioData data = UtilityCommands.getHeldData(context);
+        if (data == null) {
             return;
         }
-        volumeCommand(context, customSound.getSoundId(), volume);
+        volumeCommand(context, data.getSoundId(), volume);
     }
 
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {

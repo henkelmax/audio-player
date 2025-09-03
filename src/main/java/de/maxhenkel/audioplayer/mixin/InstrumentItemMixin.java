@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
@@ -25,8 +26,8 @@ public class InstrumentItemMixin {
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     private void useOn(Level level, Player p, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> ci) {
         ItemStack itemInHand = p.getItemInHand(interactionHand);
-        CustomSound customSound = CustomSound.of(itemInHand);
-        if (customSound == null) {
+        AudioData data = AudioData.of(itemInHand);
+        if (data == null) {
             return;
         }
         if (!(p instanceof ServerPlayer player)) {
@@ -34,7 +35,7 @@ public class InstrumentItemMixin {
             return;
         }
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        UUID channel = AudioManager.play((ServerLevel) level, p.blockPosition(), PlayerType.GOAT_HORN, customSound, player);
+        UUID channel = AudioManager.play((ServerLevel) level, p.blockPosition(), PlayerType.GOAT_HORN, data, player);
         if (channel == null) {
             return;
         }

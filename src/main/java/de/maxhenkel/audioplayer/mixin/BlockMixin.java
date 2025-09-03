@@ -1,7 +1,7 @@
 package de.maxhenkel.audioplayer.mixin;
 
-import de.maxhenkel.audioplayer.CustomSound;
-import de.maxhenkel.audioplayer.interfaces.CustomSoundHolder;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
+import de.maxhenkel.audioplayer.interfaces.AudioDataHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -38,11 +38,11 @@ public class BlockMixin {
         if (!(blockState.getBlock() instanceof SkullBlock)) {
             return;
         }
-        if (!(blockEntity instanceof CustomSoundHolder customSoundHolder)) {
+        if (!(blockEntity instanceof AudioDataHolder customSoundHolder)) {
             return;
         }
-        CustomSound customSound = customSoundHolder.audioplayer$getCustomSound();
-        if (customSound == null) {
+        AudioData data = customSoundHolder.audioplayer$getAudioData();
+        if (data == null) {
             return;
         }
 
@@ -55,7 +55,7 @@ public class BlockMixin {
             if (!(blockItem.getBlock() instanceof SkullBlock)) {
                 continue;
             }
-            customSound.saveToItem(stack);
+            data.saveToItem(stack);
         }
     }
 
