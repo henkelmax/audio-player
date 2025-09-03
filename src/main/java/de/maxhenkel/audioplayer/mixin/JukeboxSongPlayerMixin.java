@@ -2,7 +2,6 @@ package de.maxhenkel.audioplayer.mixin;
 
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
-import de.maxhenkel.audioplayer.audioplayback.AudioManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
@@ -61,7 +60,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         AudioEvents.PLAY_MUSIC_DISC.invoker().accept(event);
         UUID channel = event.getOverrideChannel();
         if (channel == null) {
-            channel = AudioManager.playStationary(level, blockPos.getCenter(), PlayerType.MUSIC_DISC, data, null);
+            channel = PlayerManager.instance().playLocational(level, blockPos.getCenter(), PlayerType.MUSIC_DISC, data, null);
             if (channel == null) {
                 return false;
             }

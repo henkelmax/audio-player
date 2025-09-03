@@ -4,7 +4,7 @@ import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
-import de.maxhenkel.audioplayer.audioplayback.AudioManager;
+import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import net.minecraft.core.component.DataComponents;
@@ -43,7 +43,7 @@ public class InstrumentItemMixin {
         AudioEvents.PLAY_GOAT_HORN.invoker().accept(event);
         UUID channel = event.getOverrideChannel();
         if (channel == null) {
-            channel = AudioManager.playStationary((ServerLevel) level, p.getEyePosition(), PlayerType.GOAT_HORN, data, player);
+            channel = PlayerManager.instance().playLocational((ServerLevel) level, p.getEyePosition(), PlayerType.GOAT_HORN, data, player);
             if (channel == null) {
                 return;
             }

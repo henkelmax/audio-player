@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
@@ -36,6 +37,23 @@ public class PlayerManager {
             thread.setDaemon(true);
             return thread;
         });
+    }
+
+    @Nullable
+    public UUID playLocational(ServerLevel level, Vec3 pos, PlayerType type, AudioData sound, @Nullable ServerPlayer player) {
+        UUID soundIdToPlay = sound.getSoundIdToPlay();
+        if (soundIdToPlay == null) {
+            return null;
+        }
+        return playLocational(
+                level,
+                pos,
+                soundIdToPlay,
+                player,
+                sound.getRange(type),
+                type.getCategory(),
+                type.getMaxDuration().get()
+        );
     }
 
     @Nullable
