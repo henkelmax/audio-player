@@ -26,4 +26,6 @@ public interface AudioPlayerApi {
 
     void invalidateCachedAudio(UUID audioID);
 
+    void clearAudioCache();
+
 }

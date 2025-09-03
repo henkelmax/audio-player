@@ -28,4 +28,8 @@ public class AudioCache {
         audioCache.remove(audioId);
     }
 
+    public void clear() {
+        audioCache.clear();
+    }
+
 }

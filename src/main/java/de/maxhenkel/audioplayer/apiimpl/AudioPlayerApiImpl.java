@@ -52,4 +52,9 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
         AudioStorageManager.audioCache().invalidate(audioID);
     }
 
+    @Override
+    public void clearAudioCache() {
+        AudioStorageManager.audioCache().clear();
+    }
+
 }
