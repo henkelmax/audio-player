@@ -79,18 +79,17 @@ public class UtilityCommands {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
-        //TODO Return the actual ID and don't call the event
-        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(data.getSoundId(), Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(data.getActualSoundId(), Component.literal("Successfully extracted sound ID.")), false);
     }
 
     @Command("name")
     public void name(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         AudioData data = getHeldData(context);
         if (data == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
-        //TODO Return the actual ID and don't call the event
-        sendSoundName(context, data.getSoundId());
+        sendSoundName(context, data.getActualSoundId());
     }
 
     public static void sendSoundName(CommandContext<CommandSourceStack> context, UUID id) {

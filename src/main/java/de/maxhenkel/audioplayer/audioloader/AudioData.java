@@ -130,11 +130,17 @@ public class AudioData {
         return Optional.ofNullable((T) module);
     }
 
-    public UUID getSoundId() {
+    @Nullable
+    public UUID getSoundIdToPlay() {
         UUID soundId = getModule(AudioPlayerModule.KEY).map(AudioPlayerModule::getSoundId).orElse(null);
         GetSoundIdEventImpl event = new GetSoundIdEventImpl(this, soundId);
         AudioEvents.GET_SOUND_ID.invoker().accept(event);
         return event.getSoundId();
+    }
+
+    @Nullable
+    public UUID getActualSoundId() {
+        return getModule(AudioPlayerModule.KEY).map(AudioPlayerModule::getSoundId).orElse(null);
     }
 
     public Optional<Float> getRange() {

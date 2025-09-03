@@ -29,7 +29,7 @@ public class VolumeCommands {
         if (data == null) {
             return;
         }
-        volumeCommand(context, data.getSoundId(), volume);
+        volumeCommand(context, data.getActualSoundId(), volume);
     }
 
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {
