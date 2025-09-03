@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerManager {
 
-    private final Map<UUID, PlayerReference> players;
+    private final Map<UUID, PlayerReference<?>> players;
     private final ExecutorService executor;
 
     public PlayerManager() {
@@ -45,7 +45,7 @@ public class PlayerManager {
         if (soundIdToPlay == null) {
             return null;
         }
-        return playLocational(
+        PlayerReference<LocationalAudioChannel> ref = playLocational(
                 level,
                 pos,
                 soundIdToPlay,
@@ -54,15 +54,19 @@ public class PlayerManager {
                 type.getCategory(),
                 type.getMaxDuration().get()
         );
+        if (ref == null) {
+            return null;
+        }
+        return ref.channel();
     }
 
     @Nullable
-    public UUID playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+    public PlayerReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
         return playLocational(level, pos, sound, p, distance, category, maxLengthSeconds, false);
     }
 
     @Nullable
-    public UUID playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
+    public PlayerReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) {
             return null;
@@ -87,31 +91,26 @@ public class PlayerManager {
             player.displayClientMessage(Component.literal("You need to enable voice chat to hear custom audio"), true);
         });
 
-        PlayerReference playerReference = playChannel(channel, sound, p, maxLengthSeconds, byCommand);
-        if (playerReference == null) {
-            return null;
-        }
-        return channelID;
+        return playChannel(channel, sound, p, maxLengthSeconds, byCommand);
     }
 
-    @Nullable
-    private PlayerReference playChannel(AudioChannel channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds, boolean byCommand) {
+    private <T extends AudioChannel> PlayerReference<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds, boolean byCommand) {
         AtomicBoolean stopped = new AtomicBoolean();
-        AtomicReference<PlayerThread> player = new AtomicReference<>();
+        AtomicReference<PlayerThread<T>> player = new AtomicReference<>();
 
-        PlayerReference playerReference = new PlayerReference(() -> {
+        PlayerReference<T> playerReference = new PlayerReference<>(channel.getId(), () -> {
             synchronized (stopped) {
                 stopped.set(true);
-                PlayerThread audioPlayer = player.get();
+                PlayerThread<T> audioPlayer = player.get();
                 if (audioPlayer != null) {
                     audioPlayer.stopPlaying();
                 }
             }
         }, player, sound, byCommand);
-        players.put(channel.getId(), playerReference);
+        players.put(playerReference.channel(), playerReference);
 
         executor.execute(() -> {
-            PlayerThread playerThread = playChannel(channel, sound, p, maxLengthSeconds);
+            PlayerThread<T> playerThread = playChannel(channel, sound, p, maxLengthSeconds);
             if (playerThread == null) {
                 players.remove(channel.getId());
                 return;
@@ -131,7 +130,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    private PlayerThread playChannel(AudioChannel channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
+    private <T extends AudioChannel> PlayerThread<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
         try {
             CachedAudio audio = AudioStorageManager.audioCache().getAudio(sound);
 
@@ -144,7 +143,7 @@ public class PlayerManager {
                 return null;
             }
 
-            PlayerThread playerThread = new PlayerThread(channel, audio);
+            PlayerThread<T> playerThread = new PlayerThread<>(channel, audio);
             playerThread.startPlaying();
             return playerThread;
         } catch (Exception e) {
@@ -157,7 +156,7 @@ public class PlayerManager {
     }
 
     public void stop(UUID channelID) {
-        PlayerReference player = players.get(channelID);
+        PlayerReference<?> player = players.get(channelID);
         if (player != null) {
             player.onStop.stop();
         }
@@ -165,11 +164,11 @@ public class PlayerManager {
     }
 
     public boolean isPlaying(UUID channelID) {
-        PlayerReference player = players.get(channelID);
+        PlayerReference<?> player = players.get(channelID);
         if (player == null) {
             return false;
         }
-        PlayerThread p = player.player.get();
+        PlayerThread<?> p = player.player.get();
         if (p == null) {
             return true;
         }
@@ -189,14 +188,15 @@ public class PlayerManager {
         void stop();
     }
 
-    public record PlayerReference(Stoppable onStop,
-                                  AtomicReference<PlayerThread> player,
-                                  UUID sound, boolean byCommand) {
+    public record PlayerReference<T extends AudioChannel>(UUID channel,
+                                                          Stoppable onStop,
+                                                          AtomicReference<PlayerThread<T>> player,
+                                                          UUID sound, boolean byCommand) {
     }
 
     @Nullable
     public UUID findChannelID(UUID sound, boolean onlyByCommand) {
-        for (Map.Entry<UUID, PlayerReference> entry : players.entrySet()) {
+        for (Map.Entry<UUID, PlayerReference<?>> entry : players.entrySet()) {
             if (entry.getValue().sound.equals(sound) && (entry.getValue().byCommand || !onlyByCommand)) {
                 return entry.getKey();
             }
