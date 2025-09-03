@@ -54,7 +54,6 @@ public class UploadCommands {
     }
 
     @RequiresPermission("audioplayer.upload")
-    @Command("upload")
     @Command("filebin")
     public void filebin(CommandContext<CommandSourceStack> context) {
         FilebinImporter.sendFilebinUploadMessage(context.getSource());
