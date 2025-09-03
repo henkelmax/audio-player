@@ -22,6 +22,12 @@ public class AudioManager {
             return null;
         }
 
+        UUID soundIdToPlay = sound.getSoundIdToPlay();
+
+        if (soundIdToPlay == null) {
+            return null;
+        }
+
         @Nullable UUID channelID;
         if (type.equals(PlayerType.GOAT_HORN)) {
             Vec3 playerPos;
@@ -34,7 +40,7 @@ public class AudioManager {
                     api,
                     level,
                     playerPos,
-                    sound.getSoundIdToPlay(),
+                    soundIdToPlay,
                     (player instanceof ServerPlayer p) ? p : null,
                     range,
                     type.getCategory(),
@@ -45,7 +51,7 @@ public class AudioManager {
                     api,
                     level,
                     new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D),
-                    sound.getSoundIdToPlay(),
+                    soundIdToPlay,
                     (player instanceof ServerPlayer p) ? p : null,
                     range,
                     type.getCategory(),

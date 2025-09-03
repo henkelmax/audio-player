@@ -79,7 +79,12 @@ public class UtilityCommands {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
-        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(data.getActualSoundId(), Component.literal("Successfully extracted sound ID.")), false);
+        UUID actualSoundId = data.getActualSoundId();
+        if (actualSoundId == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
+            return;
+        }
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(actualSoundId, Component.literal("Successfully extracted sound ID.")), false);
     }
 
     @Command("name")
@@ -89,7 +94,12 @@ public class UtilityCommands {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
-        sendSoundName(context, data.getActualSoundId());
+        UUID actualSoundId = data.getActualSoundId();
+        if (actualSoundId == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
+            return;
+        }
+        sendSoundName(context, actualSoundId);
     }
 
     public static void sendSoundName(CommandContext<CommandSourceStack> context, UUID id) {
