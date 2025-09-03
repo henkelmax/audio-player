@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.admiral.MinecraftAdmiral;
+import de.maxhenkel.audioplayer.audioloader.AudioPlayerModule;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
@@ -35,6 +36,8 @@ public class AudioPlayerMod implements ModInitializer {
                     PlayCommands.class
             ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
         });
+
+        AudioPlayerModule.onInitialize();
     }
 
     public static Path getModConfigFolder() {

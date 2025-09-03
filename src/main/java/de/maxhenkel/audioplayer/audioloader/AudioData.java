@@ -2,9 +2,11 @@ package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.PlayerType;
-import de.maxhenkel.audioplayer.api.data.DataAccessor;
+import de.maxhenkel.audioplayer.api.data.AudioDataModule;
+import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.api.events.ItemEvents;
+import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
 import de.maxhenkel.audioplayer.apiimpl.JsonData;
 import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
@@ -36,14 +38,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AudioData {
 
     public static final String AUDIOPLAYER_CUSTOM_DATA = "audioplayer";
-    public static final ResourceLocation AUDIOPLAYER_MODULE = ResourceLocation.fromNamespaceAndPath(AudioPlayerMod.MODID, "audio");
+
 
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
-    protected Map<ResourceLocation, ModuleData> modules;
+    protected Map<ModuleKey<? extends AudioDataModule>, AudioDataModule> modules;
+    protected Map<ResourceLocation, JSONObject> unknownModules;
 
     protected AudioData() {
         this.modules = new ConcurrentHashMap<>();
+        this.unknownModules = new ConcurrentHashMap<>();
     }
 
     private static AudioData fromJson(JSONObject rawData) {
@@ -59,7 +63,23 @@ public class AudioData {
                 AudioPlayerMod.LOGGER.warn("Invalid content for module: {}", key);
                 continue;
             }
-            data.modules.put(resourceLocation, new ModuleData(resourceLocation, jsonObject));
+            ModuleKey<? extends AudioDataModule> moduleKey = AudioPlayerApiImpl.INSTANCE.getModuleType(resourceLocation);
+            if (moduleKey == null) {
+                data.unknownModules.put(resourceLocation, jsonObject);
+                //TODO Debug log unknown module
+            } else {
+                AudioDataModule module = moduleKey.create();
+                try {
+                    module.load(new JsonData(jsonObject));
+                    data.modules.put(moduleKey, module);
+                } catch (Exception e) {
+                    data.unknownModules.put(resourceLocation, jsonObject);
+                    AudioPlayerMod.LOGGER.error("Failed to load module {}", resourceLocation, e);
+                }
+            }
+        }
+        if (!data.modules.containsKey(AudioPlayerModule.KEY)) {
+            //TODO Handle missing audio player module
         }
         return data;
     }
@@ -98,40 +118,24 @@ public class AudioData {
 
     public static AudioData withSoundAndRange(UUID soundId, @Nullable Float range) {
         AudioData audioData = new AudioData();
-        ModuleData moduleData = new ModuleData(AUDIOPLAYER_MODULE, new JSONObject());
-        moduleData.setString("id", soundId.toString());
-        if (range != null) {
-            moduleData.setFloat("range", range);
-        }
-        audioData.modules.put(AUDIOPLAYER_MODULE, moduleData);
+        audioData.modules.put(AudioPlayerModule.KEY, new AudioPlayerModule(soundId, range));
         return audioData;
     }
 
-    public Optional<DataAccessor> getModule(ResourceLocation id) {
-        return Optional.ofNullable(modules.get(id));
+    public <T extends AudioDataModule> Optional<T> getModule(ModuleKey<T> id) {
+        AudioDataModule module = modules.get(id);
+        return Optional.ofNullable((T) module);
     }
 
     public UUID getSoundId() {
-        UUID soundId = null;
-        DataAccessor module = getModule(AUDIOPLAYER_MODULE).orElse(null);
-        if (module != null) {
-            String id = module.getString("id");
-            if (id != null) {
-                try {
-                    soundId = UUID.fromString(id);
-                } catch (IllegalArgumentException e) {
-                    AudioPlayerMod.LOGGER.error("Failed to parse sound ID {}", id, e);
-                }
-            }
-        }
-
+        UUID soundId = getModule(AudioPlayerModule.KEY).map(AudioPlayerModule::getSoundId).orElse(null);
         GetSoundIdEventImpl event = new GetSoundIdEventImpl(this, soundId);
         AudioEvents.GET_SOUND_ID.invoker().accept(event);
         return event.getSoundId();
     }
 
     public Optional<Float> getRange() {
-        return getModule(AUDIOPLAYER_MODULE).flatMap(d -> Optional.ofNullable(d.getFloat("range")));
+        return getModule(AudioPlayerModule.KEY).flatMap(m -> Optional.ofNullable(m.getRange()));
     }
 
     public float getRange(PlayerType playerType) {
@@ -149,8 +153,18 @@ public class AudioData {
 
     private JSONObject toJson() {
         JSONObject rawData = new JSONObject();
-        for (Map.Entry<ResourceLocation, ModuleData> entry : modules.entrySet()) {
-            rawData.put(entry.getKey().toString(), entry.getValue().getRawData());
+        for (Map.Entry<ResourceLocation, JSONObject> entry : unknownModules.entrySet()) {
+            rawData.put(entry.toString(), entry.getValue());
+        }
+        for (Map.Entry<ModuleKey<? extends AudioDataModule>, AudioDataModule> entry : modules.entrySet()) {
+            AudioDataModule module = entry.getValue();
+            JsonData jsonData = new JsonData(new JSONObject());
+            try {
+                module.save(jsonData);
+                rawData.put(entry.getKey().getId().toString(), jsonData.getRawData());
+            } catch (Exception e) {
+                AudioPlayerMod.LOGGER.error("Failed to save module {}", entry.getKey().getId(), e);
+            }
         }
         return rawData;
     }
@@ -239,21 +253,6 @@ public class AudioData {
 
         ItemEvents.CLEAR.invoker().accept(new ClearEventImpl(stack));
         return true;
-    }
-
-    public static class ModuleData extends JsonData {
-
-        protected final ResourceLocation key;
-
-        public ModuleData(ResourceLocation key, JSONObject rawData) {
-            super(rawData);
-            this.key = key;
-        }
-
-        public ResourceLocation getKey() {
-            return key;
-        }
-
     }
 
 }

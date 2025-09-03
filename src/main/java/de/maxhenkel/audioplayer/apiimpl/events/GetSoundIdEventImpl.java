@@ -1,9 +1,9 @@
 package de.maxhenkel.audioplayer.apiimpl.events;
 
-import de.maxhenkel.audioplayer.api.data.DataAccessor;
+import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
-import net.minecraft.resources.ResourceLocation;
+import de.maxhenkel.audioplayer.audioloader.AudioPlayerModule;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -21,8 +21,8 @@ public class GetSoundIdEventImpl implements AudioEvents.GetSoundIdEvent {
 
     @Override
     @Nullable
-    public DataAccessor getModule(ResourceLocation id) {
-        return itemData.getModule(id).orElse(null);
+    public <T extends AudioPlayerModule> T getModule(ModuleKey<T> moduleKey) {
+        return itemData.getModule(moduleKey).orElse(null);
     }
 
     @Override

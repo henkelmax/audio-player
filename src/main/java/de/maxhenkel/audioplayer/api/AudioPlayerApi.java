@@ -1,11 +1,18 @@
 package de.maxhenkel.audioplayer.api;
 
+import de.maxhenkel.audioplayer.api.data.AudioDataModule;
+import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.function.Supplier;
 
 public interface AudioPlayerApi {
 
     static AudioPlayerApi instance() {
         return AudioPlayerApiImpl.INSTANCE;
     }
+
+    <T extends AudioDataModule> ModuleKey<T> registerModuleType(ResourceLocation id, Supplier<T> constructor);
 
 }
