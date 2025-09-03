@@ -95,7 +95,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public PlayerReference playChannel(AudioChannel channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds, boolean byCommand) {
+    private PlayerReference playChannel(AudioChannel channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds, boolean byCommand) {
         AtomicBoolean stopped = new AtomicBoolean();
         AtomicReference<PlayerThread> player = new AtomicReference<>();
 
