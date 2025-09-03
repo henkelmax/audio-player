@@ -36,17 +36,15 @@ public class PlayCommands {
 
     @RequiresPermission("audioplayer.play_command")
     @Command("stop")
-    private static int stop(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound) {
-        UUID channelID = PlayerManager.instance().findChannelID(sound);
+    private static int stop(CommandContext<CommandSourceStack> context, @Name("audioId") UUID audioId) {
+        int count = PlayerManager.instance().stopAll(audioId);
 
-        if (channelID != null) {
-            PlayerManager.instance().stop(channelID);
-            context.getSource().sendSuccess(() -> Component.literal("Successfully stopped %s".formatted(sound)), false);
-            return 1;
+        if (count > 0) {
+            context.getSource().sendSuccess(() -> Component.literal("Successfully stopped %s stream(s)".formatted(count)), false);
         } else {
-            context.getSource().sendFailure(Component.literal("Failed to stop, could not find sound with ID %s".formatted(sound)));
+            context.getSource().sendFailure(Component.literal("No audio with ID %s found".formatted(audioId)));
         }
-        return 0;
+        return count;
     }
 
 }

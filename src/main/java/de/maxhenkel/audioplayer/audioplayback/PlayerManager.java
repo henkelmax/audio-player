@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -171,14 +172,10 @@ public class PlayerManager {
         return instance;
     }
 
-    @Nullable
-    public UUID findChannelID(UUID sound) {
-        for (Map.Entry<UUID, ChannelReferenceImpl<?>> entry : players.entrySet()) {
-            if (entry.getValue().getAudioId().equals(sound)) {
-                return entry.getKey();
-            }
-        }
-        return null;
+    public int stopAll(UUID audioId) {
+        List<? extends ChannelReferenceImpl<?>> list = players.entrySet().stream().filter(entry -> entry.getValue().getAudioId().equals(audioId)).map(Map.Entry::getValue).toList();
+        list.forEach(ChannelReferenceImpl::stopPlaying);
+        return list.size();
     }
 
 }
