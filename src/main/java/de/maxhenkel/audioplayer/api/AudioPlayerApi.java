@@ -4,6 +4,8 @@ import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
+import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -31,9 +33,12 @@ public interface AudioPlayerApi {
 
     void clearAudioCache();
 
-    //TODO Modify arguments
-    ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID audioId, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds);
+    @Nullable
+    VoicechatServerApi getVoicechatServerApi();
 
-    //<T extends AudioChannel> ChannelReference<T> playChannel(T channel, UUID audioId);
+    @Nullable
+    ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID audioId, @Nullable ServerPlayer p, float distance, @Nullable String category);
+
+    <T extends AudioChannel> ChannelReference<T> playChannel(T channel, UUID audioId, @Nullable ServerPlayer p);
 
 }

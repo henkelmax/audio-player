@@ -8,14 +8,17 @@ import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
+import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
+import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,8 +66,19 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
-    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID audioId, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
-        return PlayerManager.instance().playLocational(level, pos, audioId, p, distance, category, maxLengthSeconds);
+    @Nullable
+    public VoicechatServerApi getVoicechatServerApi() {
+        return VoicechatAudioPlayerPlugin.voicechatServerApi;
+    }
+
+    @Override
+    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID audioId, @Nullable ServerPlayer p, float distance, @Nullable String category) {
+        return PlayerManager.instance().playLocational(level, pos, audioId, p, distance, category, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public <T extends AudioChannel> ChannelReference<T> playChannel(T channel, UUID audioId, @Nullable ServerPlayer p) {
+        return PlayerManager.instance().playChannel(channel, audioId, p, Integer.MAX_VALUE);//TODO maxLengthSeconds
     }
 
 }
