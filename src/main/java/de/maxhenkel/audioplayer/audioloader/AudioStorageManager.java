@@ -2,7 +2,7 @@ package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
-import de.maxhenkel.audioplayer.audioloader.importer.AudioImportInfo;
+import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
@@ -131,8 +131,8 @@ public class AudioStorageManager {
                 AudioImportInfo audioDownloadInfo = importer.onPreprocess(player);
                 byte[] bytes = importer.onProcess(player);
                 ChatUtils.checkFileSize(bytes.length);
-                UUID id = audioDownloadInfo.soundId();
-                String fileName = audioDownloadInfo.name();
+                UUID id = audioDownloadInfo.getAudioId();
+                String fileName = audioDownloadInfo.getName();
                 saveSound(id, fileName, bytes);
                 if (player != null) {
                     player.sendSystemMessage(ChatUtils.createApplyMessage(id, Component.literal("Successfully imported sound.")));

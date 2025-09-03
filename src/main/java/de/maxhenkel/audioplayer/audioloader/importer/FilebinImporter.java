@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;

@@ -1,6 +1,5 @@
 package de.maxhenkel.audioplayer.api.importer;
 
-import de.maxhenkel.audioplayer.audioloader.importer.AudioImportInfo;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
