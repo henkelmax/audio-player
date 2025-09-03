@@ -24,12 +24,7 @@ public class PlayCommands {
     @Command("play")
     public void play(CommandContext<CommandSourceStack> context, @Name("sound") UUID sound, @Name("location") Vec3 location, @Name("range") @Min("0") float range) throws CommandSyntaxException {
         @Nullable ServerPlayer player = context.getSource().getPlayer();
-        VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
-        if (api == null) {
-            return;
-        }
         PlayerManager.instance().playLocational(
-                api,
                 context.getSource().getLevel(),
                 location,
                 sound,

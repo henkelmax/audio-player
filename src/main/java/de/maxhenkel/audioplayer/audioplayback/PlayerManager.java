@@ -4,6 +4,7 @@ import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
 import de.maxhenkel.audioplayer.audioloader.player.PlayerThread;
+import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -39,12 +40,17 @@ public class PlayerManager {
     }
 
     @Nullable
-    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
-        return playLocational(api, level, pos, sound, p, distance, category, maxLengthSeconds, false);
+    public UUID playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+        return playLocational(level, pos, sound, p, distance, category, maxLengthSeconds, false);
     }
 
     @Nullable
-    public UUID playLocational(VoicechatServerApi api, ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
+    public UUID playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds, boolean byCommand) {
+        VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
+        if (api == null) {
+            return null;
+        }
+
         UUID channelID = UUID.randomUUID();
         LocationalAudioChannel channel = api.createLocationalAudioChannel(channelID, api.fromServerLevel(level), api.createPosition(pos.x, pos.y, pos.z));
         if (channel == null) {
