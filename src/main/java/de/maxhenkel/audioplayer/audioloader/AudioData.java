@@ -82,6 +82,7 @@ public class AudioData {
         }
         if (!data.modules.containsKey(AudioPlayerModule.KEY)) {
             AudioPlayerMod.LOGGER.error("Missing audio player module");
+            //TODO Do we want to allow items without an actual ID?
             return null;
         }
         return data;
