@@ -48,21 +48,21 @@ public class ServerConfig {
                 65F,
                 1F,
                 (float) Integer.MAX_VALUE,
-                "The range of music discs with custom audio in blocks"
+                "The default range of music discs with custom audio in blocks"
         );
         noteBlockRange = builder.floatEntry(
                 "note_block_range",
                 16F,
                 1F,
                 (float) Integer.MAX_VALUE,
-                "The range of note blocks with custom audio in blocks"
+                "The default range of note blocks with custom audio in blocks"
         );
         goatHornRange = builder.floatEntry(
                 "goat_horn_range",
                 256F,
                 1F,
                 (float) Integer.MAX_VALUE,
-                "The range of goat horns with custom audio in blocks"
+                "The default range of goat horns with custom audio in blocks"
         );
         maxMusicDiscRange = builder.floatEntry(
                 "max_music_disc_range",
