@@ -1,4 +1,4 @@
-package de.maxhenkel.audioplayer.audioloader.player;
+package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
