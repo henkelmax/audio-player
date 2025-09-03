@@ -12,17 +12,21 @@ import de.maxhenkel.audioplayer.apiimpl.JsonData;
 import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.GetSoundIdEventImpl;
+import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.InstrumentComponent;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.SkullBlock;
@@ -39,7 +43,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AudioData {
 
     public static final String AUDIOPLAYER_CUSTOM_DATA = "audioplayer";
-
 
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
@@ -205,6 +208,13 @@ public class AudioData {
         saveToNbt(tag);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
+        if (stack.has(DataComponents.INSTRUMENT)) {
+            stack.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
+        }
+        if (stack.has(DataComponents.JUKEBOX_PLAYABLE)) {
+            stack.set(DataComponents.JUKEBOX_PLAYABLE, ComponentUtils.CUSTOM_JUKEBOX_PLAYABLE);
+        }
+
         ItemLore l = null;
 
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock) {
@@ -241,7 +251,7 @@ public class AudioData {
         ItemEvents.APPLY.invoker().accept(new ApplyEventImpl(this, stack));
     }
 
-    public static boolean clearItem(ItemStack stack) {
+    public static boolean clearItem(MinecraftServer server, ItemStack stack) {
         AudioData audioData = AudioData.of(stack);
         if (audioData == null) {
             return false;
@@ -265,8 +275,37 @@ public class AudioData {
             }
         }
 
+        revertMinecraftData(server, stack);
+
         ItemEvents.CLEAR.invoker().accept(new ClearEventImpl(audioData, stack));
         return true;
+    }
+
+    private static void revertMinecraftData(MinecraftServer server, ItemStack stack) {
+        if (stack.has(DataComponents.INSTRUMENT)) {
+            Optional<Holder.Reference<Instrument>> holder = server.registryAccess().lookupOrThrow(Registries.INSTRUMENT).get(Instruments.PONDER_GOAT_HORN);
+            holder.ifPresent(instrumentReference -> stack.set(DataComponents.INSTRUMENT, new InstrumentComponent(instrumentReference)));
+        }
+        if (stack.has(DataComponents.JUKEBOX_PLAYABLE)) {
+            JukeboxPlayable jukeboxPlayable = stack.getItem().components().get(DataComponents.JUKEBOX_PLAYABLE);
+            if (jukeboxPlayable != null) {
+                stack.set(DataComponents.JUKEBOX_PLAYABLE, jukeboxPlayable);
+            } else {
+                stack.remove(DataComponents.JUKEBOX_PLAYABLE);
+            }
+        }
+
+        TooltipDisplay tooltipDisplay = stack.get(DataComponents.TOOLTIP_DISPLAY);
+        if (tooltipDisplay != null) {
+            LinkedHashSet<DataComponentType<?>> hiddenComponents = new LinkedHashSet<>(tooltipDisplay.hiddenComponents());
+            hiddenComponents.remove(DataComponents.JUKEBOX_PLAYABLE);
+            hiddenComponents.remove(DataComponents.INSTRUMENT);
+            stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(tooltipDisplay.hideTooltip(), hiddenComponents));
+        }
+
+        if (stack.has(DataComponents.LORE)) {
+            stack.remove(DataComponents.LORE);
+        }
     }
 
 }

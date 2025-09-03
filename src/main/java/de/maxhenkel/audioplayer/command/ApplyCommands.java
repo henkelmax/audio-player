@@ -25,15 +25,6 @@ import java.util.UUID;
 
 @Command("audioplayer")
 public class ApplyCommands {
-    @RequiresPermission("audioplayer.apply")
-    @Command("apply")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        UUID id = getId(context, fileName);
-        if (id == null) {
-            return;
-        }
-        apply(context, AudioData.withSoundAndRange(id, range), customName);
-    }
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
@@ -46,12 +37,6 @@ public class ApplyCommands {
     }
 
     // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
-
-    @RequiresPermission("audioplayer.apply")
-    @Command("apply")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("range") @Min("1") Float range, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        apply(context, AudioData.withSoundAndRange(sound, range), customName);
-    }
 
     @RequiresPermission("audioplayer.apply")
     @Command("apply")
@@ -122,14 +107,6 @@ public class ApplyCommands {
         if (!type.isValid(stack)) {
             return;
         }
-
-        if (stack.has(DataComponents.INSTRUMENT)) {
-            stack.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        }
-        if (stack.has(DataComponents.JUKEBOX_PLAYABLE)) {
-            stack.set(DataComponents.JUKEBOX_PLAYABLE, ComponentUtils.CUSTOM_JUKEBOX_PLAYABLE);
-        }
-
         data.saveToItem(stack, customName);
         context.getSource().sendSuccess(() -> Component.literal("Successfully updated ").append(stack.getHoverName()), false);
     }
