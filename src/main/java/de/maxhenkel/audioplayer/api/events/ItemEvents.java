@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.api.events;
 
+import de.maxhenkel.audioplayer.api.data.ModuleAccessor;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.item.ItemStack;
@@ -20,11 +21,11 @@ public class ItemEvents {
         }
     });
 
-    public interface ApplyEvent {
+    public interface ApplyEvent extends ModuleAccessor {
         ItemStack getItemStack();
     }
 
-    public interface ClearEvent {
+    public interface ClearEvent extends ModuleAccessor {
         ItemStack getItemStack();
     }
 

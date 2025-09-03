@@ -238,10 +238,14 @@ public class AudioData {
         hiddenComponents.add(DataComponents.INSTRUMENT);
         stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(tooltipDisplay.hideTooltip(), hiddenComponents));
 
-        ItemEvents.APPLY.invoker().accept(new ApplyEventImpl(stack));
+        ItemEvents.APPLY.invoker().accept(new ApplyEventImpl(this, stack));
     }
 
     public static boolean clearItem(ItemStack stack) {
+        AudioData audioData = AudioData.of(stack);
+        if (audioData == null) {
+            return false;
+        }
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) {
             return false;
@@ -261,7 +265,7 @@ public class AudioData {
             }
         }
 
-        ItemEvents.CLEAR.invoker().accept(new ClearEventImpl(stack));
+        ItemEvents.CLEAR.invoker().accept(new ClearEventImpl(audioData, stack));
         return true;
     }
 
