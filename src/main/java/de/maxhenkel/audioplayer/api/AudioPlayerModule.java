@@ -1,7 +1,6 @@
-package de.maxhenkel.audioplayer.audioloader;
+package de.maxhenkel.audioplayer.api;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
-import de.maxhenkel.audioplayer.api.AudioPlayerApi;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.DataAccessor;
 import de.maxhenkel.audioplayer.api.data.DataModifier;
@@ -30,6 +29,9 @@ public class AudioPlayerModule implements AudioDataModule {
     }
 
     public static void onInitialize() {
+        if (KEY != null) {
+            return;
+        }
         KEY = AudioPlayerApi.instance().registerModuleType(AudioPlayerModule.ID, AudioPlayerModule::new);
     }
 

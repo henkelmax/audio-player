@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.api.data;
 
-import de.maxhenkel.audioplayer.audioloader.AudioPlayerModule;
+import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 
 import javax.annotation.Nullable;
 

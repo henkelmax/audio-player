@@ -3,7 +3,7 @@ package de.maxhenkel.audioplayer.apiimpl.events;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
-import de.maxhenkel.audioplayer.audioloader.AudioPlayerModule;
+import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
