@@ -1,4 +1,4 @@
-package de.maxhenkel.audioplayer;
+package de.maxhenkel.audioplayer.voicechat;
 
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;

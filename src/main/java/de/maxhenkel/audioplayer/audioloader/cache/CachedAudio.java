@@ -1,6 +1,6 @@
 package de.maxhenkel.audioplayer.audioloader.cache;
 
-import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
+import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;

@@ -1,7 +1,7 @@
 package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
-import de.maxhenkel.audioplayer.VoicechatAudioPlayerPlugin;
+import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
