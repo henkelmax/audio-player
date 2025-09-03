@@ -40,12 +40,14 @@ public class AudioData {
 
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
-    protected JSONObject rawData;
     protected Map<ResourceLocation, ModuleData> modules;
 
-    protected AudioData(JSONObject rawData) {
-        this.rawData = rawData;
+    protected AudioData() {
         this.modules = new ConcurrentHashMap<>();
+    }
+
+    private static AudioData fromJson(JSONObject rawData) {
+        AudioData data = new AudioData();
         for (String key : rawData.keySet()) {
             ResourceLocation resourceLocation = ResourceLocation.tryParse(key);
             if (resourceLocation == null) {
@@ -57,8 +59,9 @@ public class AudioData {
                 AudioPlayerMod.LOGGER.warn("Invalid content for module: {}", key);
                 continue;
             }
-            modules.put(resourceLocation, new ModuleData(resourceLocation, jsonObject));
+            data.modules.put(resourceLocation, new ModuleData(resourceLocation, jsonObject));
         }
+        return data;
     }
 
     @Nullable
@@ -86,7 +89,7 @@ public class AudioData {
             return null;
         }
         try {
-            return new AudioData(new JSONObject(data));
+            return AudioData.fromJson(new JSONObject(data));
         } catch (JSONException e) {
             AudioPlayerMod.LOGGER.error("Failed to parse item data", e);
             return null;
@@ -94,7 +97,7 @@ public class AudioData {
     }
 
     public static AudioData withSoundAndRange(UUID soundId, @Nullable Float range) {
-        AudioData audioData = new AudioData(new JSONObject());
+        AudioData audioData = new AudioData();
         ModuleData moduleData = new ModuleData(AUDIOPLAYER_MODULE, new JSONObject());
         moduleData.setString("id", soundId.toString());
         if (range != null) {
@@ -144,19 +147,20 @@ public class AudioData {
         }
     }
 
-    private String save() {
+    private JSONObject toJson() {
+        JSONObject rawData = new JSONObject();
         for (Map.Entry<ResourceLocation, ModuleData> entry : modules.entrySet()) {
             rawData.put(entry.getKey().toString(), entry.getValue().getRawData());
         }
-        return rawData.toString();
+        return rawData;
     }
 
     public void saveToNbt(CompoundTag tag) {
-        tag.putString(AUDIOPLAYER_CUSTOM_DATA, save());
+        tag.putString(AUDIOPLAYER_CUSTOM_DATA, toJson().toString());
     }
 
     public void saveToValueOutput(ValueOutput valueOutput) {
-        valueOutput.putString(AUDIOPLAYER_CUSTOM_DATA, save());
+        valueOutput.putString(AUDIOPLAYER_CUSTOM_DATA, toJson().toString());
     }
 
     public void saveToItemIgnoreLore(ItemStack stack) {
