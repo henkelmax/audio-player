@@ -29,7 +29,7 @@ public class PlayCommands {
                 player,
                 range,
                 null,
-                Integer.MAX_VALUE
+                null
         );
         context.getSource().sendSuccess(() -> Component.literal("Successfully played %s".formatted(sound)), false);
     }

@@ -83,12 +83,12 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
 
     @Override
     public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID audioId, @Nullable ServerPlayer p, float distance, @Nullable String category) {
-        return PlayerManager.instance().playLocational(level, pos, audioId, p, distance, category, Integer.MAX_VALUE);
+        return PlayerManager.instance().playLocational(level, pos, audioId, p, distance, category, null);
     }
 
     @Override
     public <T extends AudioChannel> ChannelReference<T> playChannel(T channel, UUID audioId, @Nullable ServerPlayer p) {
-        return PlayerManager.instance().playChannel(channel, audioId, p, Integer.MAX_VALUE);
+        return PlayerManager.instance().playChannel(channel, audioId, p, null);
     }
 
 }

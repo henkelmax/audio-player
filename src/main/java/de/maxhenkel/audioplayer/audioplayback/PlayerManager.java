@@ -61,7 +61,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public ChannelReferenceImpl<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, int maxLengthSeconds) {
+    public ChannelReferenceImpl<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, @Nullable Integer maxLengthSeconds) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) {
             return null;
@@ -84,7 +84,7 @@ public class PlayerManager {
         return playChannel(channel, sound, p, maxLengthSeconds);
     }
 
-    public <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
+    public <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Integer maxLengthSeconds) {
         AtomicBoolean stopped = new AtomicBoolean();
         AtomicReference<PlayerThread<T>> player = new AtomicReference<>();
 
@@ -121,16 +121,15 @@ public class PlayerManager {
     }
 
     @Nullable
-    private <T extends AudioChannel> PlayerThread<T> playChannel0(T channel, UUID sound, @Nullable ServerPlayer p, int maxLengthSeconds) {
+    private <T extends AudioChannel> PlayerThread<T> playChannel0(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Integer maxLengthSeconds) {
         try {
             CachedAudio audio = AudioStorageManager.audioCache().getAudio(sound);
 
-            if (audio.getDurationSeconds() > maxLengthSeconds) {
+            if (maxLengthSeconds != null && audio.getDurationSeconds() > maxLengthSeconds) {
                 if (p != null) {
                     p.displayClientMessage(Component.literal("Audio is too long to play").withStyle(ChatFormatting.DARK_RED), true);
-                } else {
-                    AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
                 }
+                AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
                 return null;
             }
 
