@@ -2,13 +2,13 @@ package de.maxhenkel.audioplayer.apiimpl.events;
 
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
-import de.maxhenkel.audioplayer.api.events.AudioEvents;
+import de.maxhenkel.audioplayer.api.events.GetSoundIdEvent;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class GetSoundIdEventImpl implements AudioEvents.GetSoundIdEvent {
+public class GetSoundIdEventImpl implements GetSoundIdEvent {
 
     private final AudioData itemData;
     @Nullable

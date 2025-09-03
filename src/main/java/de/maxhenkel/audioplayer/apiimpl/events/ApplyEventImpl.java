@@ -2,12 +2,12 @@ package de.maxhenkel.audioplayer.apiimpl.events;
 
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
-import de.maxhenkel.audioplayer.api.events.ItemEvents;
+import de.maxhenkel.audioplayer.api.events.ApplyEvent;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class ApplyEventImpl implements ItemEvents.ApplyEvent {
+public class ApplyEventImpl implements ApplyEvent {
 
     private final AudioData audioData;
     private final ItemStack stack;

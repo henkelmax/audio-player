@@ -21,10 +21,6 @@ public class ItemEvents {
         }
     });
 
-    public interface ApplyEvent extends ModuleAccessor {
-        ItemStack getItemStack();
-    }
-
     public interface ClearEvent extends ModuleAccessor {
         ItemStack getItemStack();
     }
