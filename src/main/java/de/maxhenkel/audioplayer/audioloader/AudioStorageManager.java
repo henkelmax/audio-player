@@ -3,7 +3,7 @@ package de.maxhenkel.audioplayer.audioloader;
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.audioloader.importer.AudioImportInfo;
-import de.maxhenkel.audioplayer.audioloader.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
@@ -124,12 +124,12 @@ public class AudioStorageManager {
         return FabricLoader.getInstance().getGameDir().resolve("audioplayer_uploads");
     }
 
-    public void handleDownload(AudioImporter downloadHandler, @Nullable ServerPlayer player) {
+    public void handleImport(AudioImporter importer, @Nullable ServerPlayer player) {
         //TODO Prevent this from hanging infinitely
         executor.execute(() -> {
             try {
-                AudioImportInfo audioDownloadInfo = downloadHandler.onPreprocess(player);
-                byte[] bytes = downloadHandler.onProcess(player);
+                AudioImportInfo audioDownloadInfo = importer.onPreprocess(player);
+                byte[] bytes = importer.onProcess(player);
                 ChatUtils.checkFileSize(bytes.length);
                 UUID id = audioDownloadInfo.soundId();
                 String fileName = audioDownloadInfo.name();
@@ -137,7 +137,7 @@ public class AudioStorageManager {
                 if (player != null) {
                     player.sendSystemMessage(ChatUtils.createApplyMessage(id, Component.literal("Successfully imported sound.")));
                 }
-                downloadHandler.onPostprocess(player);
+                importer.onPostprocess(player);
             } catch (Exception e) {
                 runOnMain(() -> {
                     if (player != null) {
@@ -148,7 +148,7 @@ public class AudioStorageManager {
                         }
                     }
                 });
-                AudioPlayerMod.LOGGER.error("Failed to download audio using '{}' download handler", downloadHandler.getHandlerName(), e);
+                AudioPlayerMod.LOGGER.error("Failed to download audio using '{}' download handler", importer.getHandlerName(), e);
             }
         });
     }

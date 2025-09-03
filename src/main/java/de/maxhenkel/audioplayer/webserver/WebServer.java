@@ -274,7 +274,7 @@ public class WebServer implements AutoCloseable {
         if (player == null) {
             return;
         }
-        AudioStorageManager.instance().handleDownload(new WebServerImporter(token, audioData, null), player); //TODO File name
+        AudioStorageManager.instance().handleImport(new WebServerImporter(token, audioData, null), player); //TODO File name
     }
 
     @Nullable

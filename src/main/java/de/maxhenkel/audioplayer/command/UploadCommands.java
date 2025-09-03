@@ -64,7 +64,7 @@ public class UploadCommands {
     @Command("filebin")
     public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
         context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
-        AudioStorageManager.instance().handleDownload(new FilebinImporter(sound), context.getSource().getPlayer());
+        AudioStorageManager.instance().handleImport(new FilebinImporter(sound), context.getSource().getPlayer());
     }
 
     @RequiresPermission("audioplayer.upload")
@@ -89,7 +89,7 @@ public class UploadCommands {
     @Command("url")
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
         context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
-        AudioStorageManager.instance().handleDownload(new UrlImporter(url), context.getSource().getPlayer());
+        AudioStorageManager.instance().handleImport(new UrlImporter(url), context.getSource().getPlayer());
     }
 
     @RequiresPermission("audioplayer.upload")
@@ -152,7 +152,7 @@ public class UploadCommands {
     @RequiresPermission("audioplayer.upload")
     @Command("serverfile")
     public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") String fileName) {
-        AudioStorageManager.instance().handleDownload(new ServerfileImporter(fileName), context.getSource().getPlayer());
+        AudioStorageManager.instance().handleImport(new ServerfileImporter(fileName), context.getSource().getPlayer());
     }
 
 }
