@@ -4,18 +4,21 @@ import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
-public class PlayerThread extends Thread {
+public class PlayerThread<T extends AudioChannel> extends Thread {
 
     private static final long FRAME_DURATION_NS = 20_000_000;
 
-    private final AudioChannel audioChannel;
+    private final T audioChannel;
     private final CachedAudio audio;
     private boolean started;
     @Nullable
     private Runnable onStopped;
+    @Nullable
+    private Consumer<T> channelUpdate;
 
-    public PlayerThread(AudioChannel audioChannel, CachedAudio audio) {
+    public PlayerThread(T audioChannel, CachedAudio audio) {
         this.audioChannel = audioChannel;
         this.audio = audio;
         setDaemon(true);
@@ -28,6 +31,12 @@ public class PlayerThread extends Thread {
         }
         start();
         started = true;
+    }
+
+    private void updateChannel(T audioChannel) {
+        if (channelUpdate != null) {
+            channelUpdate.accept(audioChannel);
+        }
     }
 
     public void stopPlaying() {
@@ -46,8 +55,12 @@ public class PlayerThread extends Thread {
         return started && !isAlive();
     }
 
-    public void setOnStopped(Runnable onStopped) {
+    public void setOnStopped(@Nullable Runnable onStopped) {
         this.onStopped = onStopped;
+    }
+
+    public void setChannelUpdate(@Nullable Consumer<T> channelUpdate) {
+        this.channelUpdate = channelUpdate;
     }
 
     @Override
@@ -61,6 +74,7 @@ public class PlayerThread extends Thread {
         while ((frame = audio.getOpusFrames()[framePosition]) != null) {
             audioChannel.send(frame);
             framePosition++;
+            updateChannel(audioChannel);
             long waitTimestamp = startTime + framePosition * FRAME_DURATION_NS;
 
             long waitNanos = waitTimestamp - System.nanoTime();
