@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer;
 import com.mojang.serialization.Codec;
 import de.maxhenkel.audioplayer.api.events.ItemEvents;
 import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
+import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
@@ -206,14 +207,15 @@ public class CustomSound {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         if (stack.getItem() instanceof BlockItem) {
             CustomData blockEntityData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
-            if (blockEntityData == null) {
-                return true;
+            if (blockEntityData != null) {
+                CompoundTag blockEntityTag = blockEntityData.copyTag();
+                blockEntityTag.remove(CUSTOM_SOUND);
+                blockEntityTag.remove(CUSTOM_SOUND_RANGE);
+                stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
             }
-            CompoundTag blockEntityTag = blockEntityData.copyTag();
-            blockEntityTag.remove(CUSTOM_SOUND);
-            blockEntityTag.remove(CUSTOM_SOUND_RANGE);
-            stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
         }
+
+        ItemEvents.CLEAR.invoker().accept(new ClearEventImpl(stack));
         return true;
     }
 

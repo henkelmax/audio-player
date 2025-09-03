@@ -14,7 +14,17 @@ public class ItemEvents {
         }
     });
 
+    public static final Event<Consumer<ClearEvent>> CLEAR = EventFactory.createArrayBacked(Consumer.class, listeners -> event -> {
+        for (Consumer<ClearEvent> listener : listeners) {
+            listener.accept(event);
+        }
+    });
+
     public interface ApplyEvent {
+        ItemStack getItemStack();
+    }
+
+    public interface ClearEvent {
         ItemStack getItemStack();
     }
 
