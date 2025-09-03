@@ -50,6 +50,7 @@ public class AudioData {
         this.unknownModules = new ConcurrentHashMap<>();
     }
 
+    @Nullable
     private static AudioData fromJson(JSONObject rawData) {
         AudioData data = new AudioData();
         for (String key : rawData.keySet()) {
@@ -79,7 +80,8 @@ public class AudioData {
             }
         }
         if (!data.modules.containsKey(AudioPlayerModule.KEY)) {
-            //TODO Handle missing audio player module
+            AudioPlayerMod.LOGGER.error("Missing audio player module");
+            return null;
         }
         return data;
     }
