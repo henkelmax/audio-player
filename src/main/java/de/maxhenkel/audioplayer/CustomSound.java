@@ -1,6 +1,8 @@
 package de.maxhenkel.audioplayer;
 
 import com.mojang.serialization.Codec;
+import de.maxhenkel.audioplayer.api.events.ItemEvents;
+import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
@@ -186,6 +188,8 @@ public class CustomSound {
         hiddenComponents.add(DataComponents.JUKEBOX_PLAYABLE);
         hiddenComponents.add(DataComponents.INSTRUMENT);
         stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(tooltipDisplay.hideTooltip(), hiddenComponents));
+
+        ItemEvents.APPLY.invoker().accept(new ApplyEventImpl(stack));
     }
 
     public static boolean clearItem(ItemStack stack) {
