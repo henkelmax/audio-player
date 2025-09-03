@@ -55,7 +55,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (data == null) {
             return false;
         }
-        UUID channel = AudioManager.play(level, blockPos, PlayerType.MUSIC_DISC, data, null);
+        UUID channel = AudioManager.playStationary(level, blockPos.getCenter(), PlayerType.MUSIC_DISC, data, null);
         if (channel == null) {
             return false;
         }

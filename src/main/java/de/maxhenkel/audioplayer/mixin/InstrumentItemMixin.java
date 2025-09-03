@@ -35,7 +35,7 @@ public class InstrumentItemMixin {
             return;
         }
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        UUID channel = AudioManager.play((ServerLevel) level, p.blockPosition(), PlayerType.GOAT_HORN, data, player);
+        UUID channel = AudioManager.playStationary((ServerLevel) level, p.position(), PlayerType.GOAT_HORN, data, player);
         if (channel == null) {
             return;
         }

@@ -50,7 +50,7 @@ public class NoteBlockMixin extends Block {
             channelHolder.audioplayer$setChannelID(null);
         }
 
-        UUID channel = AudioManager.play(serverLevel, blockPos, PlayerType.NOTE_BLOCK, data, null);
+        UUID channel = AudioManager.playStationary(serverLevel, blockPos.getCenter(), PlayerType.NOTE_BLOCK, data, null);
 
         if (channel != null) {
             channelHolder.audioplayer$setChannelID(channel);
