@@ -1,5 +1,7 @@
 package de.maxhenkel.audioplayer.mixin;
 
+import de.maxhenkel.audioplayer.api.events.AudioEvents;
+import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioplayback.AudioManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
@@ -50,7 +52,12 @@ public class NoteBlockMixin extends Block {
             channelHolder.audioplayer$setChannelID(null);
         }
 
-        UUID channel = AudioManager.playStationary(serverLevel, blockPos.getCenter(), PlayerType.NOTE_BLOCK, data, null);
+        PlayEventImpl event = new PlayEventImpl(data);
+        AudioEvents.PLAY_NOTE_BLOCK.invoker().accept(event);
+        UUID channel = event.getOverrideChannel();
+        if (channel == null) {
+            channel = AudioManager.playStationary(serverLevel, blockPos.getCenter(), PlayerType.NOTE_BLOCK, data, null);
+        }
 
         if (channel != null) {
             channelHolder.audioplayer$setChannelID(channel);
