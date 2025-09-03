@@ -6,8 +6,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -158,7 +160,10 @@ public class CustomSound {
             CustomData blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
             CompoundTag blockEntityTag = blockEntityData.copyTag();
             saveToNbt(blockEntityTag);
-            blockEntityTag.putString(ID, BlockEntityType.SKULL.builtInRegistryHolder().key().location().toString());
+            ResourceLocation skullId = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(BlockEntityType.SKULL);
+            if (skullId != null) {
+                blockEntityTag.putString(ID, skullId.toString());
+            }
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
             if (loreString == null) {
                 l = new ItemLore(Collections.singletonList(Component.literal(DEFAULT_HEAD_LORE).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
