@@ -1,9 +1,9 @@
 package de.maxhenkel.audioplayer.apiimpl.events;
 
+import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
-import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -21,7 +21,7 @@ public class GetSoundIdEventImpl implements AudioEvents.GetSoundIdEvent {
 
     @Override
     @Nullable
-    public <T extends AudioPlayerModule> T getModule(ModuleKey<T> moduleKey) {
+    public <T extends AudioDataModule> T getModule(ModuleKey<T> moduleKey) {
         return itemData.getModule(moduleKey).orElse(null);
     }
 
