@@ -5,3 +5,5 @@ pluginManagement {
         maven { url = 'https://maven.maxhenkel.de/repository/public' }
     }
 }
+
+rootProject.name = 'audioplayer'
