@@ -53,6 +53,23 @@ dependencies {
     }
 }
 
+tasks.register('apiJar', Jar) {
+    group = 'build'
+    dependsOn tasks.named('classes')
+    archiveClassifier.set('api')
+    from(sourceSets.main.output) {
+        include 'de/maxhenkel/audioplayer/api/**'
+    }
+}
+
+tasks.named('assemble').configure {
+    dependsOn tasks.named('apiJar')
+}
+
+artifacts {
+    archives tasks.named('apiJar')
+}
+
 def webResourcesDir = layout.buildDirectory.dir("web-resources")
 
 processResources {
