@@ -40,7 +40,7 @@ public class InstrumentItemMixin {
             return;
         }
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        PlayEventImpl event = new PlayEventImpl(data);
+        PlayEventImpl event = new PlayEventImpl(data, player);
         AudioEvents.PLAY_GOAT_HORN.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {

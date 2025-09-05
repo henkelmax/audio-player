@@ -57,7 +57,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (data == null) {
             return false;
         }
-        PlayEventImpl event = new PlayEventImpl(data);
+        PlayEventImpl event = new PlayEventImpl(data, null);
         AudioEvents.PLAY_MUSIC_DISC.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
