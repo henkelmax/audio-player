@@ -6,6 +6,7 @@ import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
+import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -21,7 +22,7 @@ import java.util.*;
 @Command("audioplayer")
 public class UtilityCommands {
 
-    @RequiresPermission("audioplayer.apply")
+    @RequiresPermission(AudioPlayerPermissionManager.APPLY_PERMISSION_STRING)
     @Command("clear")
     public void clear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();

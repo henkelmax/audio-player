@@ -6,6 +6,7 @@ import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.VolumeOverrideManager;
+import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
@@ -14,15 +15,14 @@ import java.text.DecimalFormat;
 import java.util.UUID;
 
 @Command("audioplayer")
+@RequiresPermission(AudioPlayerPermissionManager.VOLUME_PERMISSION_STRING)
 public class VolumeCommands {
 
-    @RequiresPermission("audioplayer.volume")
     @Command("volume")
     public void volumeWithId(CommandContext<CommandSourceStack> context, @Name("id") UUID uuid, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) {
         volumeCommand(context, uuid, volume);
     }
 
-    @RequiresPermission("audioplayer.volume")
     @Command("volume")
     public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) throws CommandSyntaxException {
         AudioData data = UtilityCommands.getHeldData(context);

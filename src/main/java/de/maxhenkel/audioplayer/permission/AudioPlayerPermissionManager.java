@@ -14,10 +14,15 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
 
     public static final AudioPlayerPermissionManager INSTANCE = new AudioPlayerPermissionManager();
 
-    private static final Permission VOLUME_PERMISSION = new Permission("audioplayer.volume", PermissionType.EVERYONE);
-    private static final Permission UPLOAD_PERMISSION = new Permission("audioplayer.upload", PermissionType.EVERYONE);
-    private static final Permission APPLY_PERMISSION = new Permission("audioplayer.apply", PermissionType.EVERYONE);
-    private static final Permission PLAY_COMMAND_PERMISSION = new Permission("audioplayer.play_command", PermissionType.OPS);
+    public static final String VOLUME_PERMISSION_STRING = "audioplayer.volume";
+    public static final String UPLOAD_PERMISSION_STRING = "audioplayer.upload";
+    public static final String APPLY_PERMISSION_STRING = "audioplayer.apply";
+    public static final String PLAY_COMMAND_PERMISSION_STRING = "audioplayer.play_command";
+
+    private static final Permission VOLUME_PERMISSION = new Permission(VOLUME_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission UPLOAD_PERMISSION = new Permission(UPLOAD_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission APPLY_PERMISSION = new Permission(APPLY_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission PLAY_COMMAND_PERMISSION = new Permission(PLAY_COMMAND_PERMISSION_STRING, PermissionType.OPS);
 
     private static final List<Permission> PERMISSIONS = List.of(
             UPLOAD_PERMISSION,
@@ -86,6 +91,10 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
 
         public PermissionType getType() {
             return type;
+        }
+
+        public String getPermission() {
+            return permission;
         }
     }
 

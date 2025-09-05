@@ -9,6 +9,7 @@ import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.importer.FilebinImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.ServerfileImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.UrlImporter;
+import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.webserver.WebServer;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import net.minecraft.ChatFormatting;
@@ -19,9 +20,9 @@ import java.net.URI;
 import java.util.UUID;
 
 @Command("audioplayer")
+@RequiresPermission(AudioPlayerPermissionManager.UPLOAD_PERMISSION_STRING)
 public class UploadCommands {
 
-    @RequiresPermission("audioplayer.upload")
     @Command
     public void audioPlayer(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
@@ -53,20 +54,17 @@ public class UploadCommands {
                 , false);
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("filebin")
     public void filebin(CommandContext<CommandSourceStack> context) {
         FilebinImporter.sendFilebinUploadMessage(context.getSource());
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("filebin")
     public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
         context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
         AudioStorageManager.instance().handleImport(new FilebinImporter(sound), context.getSource().getPlayer());
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("url")
     public void url(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
@@ -84,14 +82,12 @@ public class UploadCommands {
                 , false);
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("url")
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
         context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
         AudioStorageManager.instance().handleImport(new UrlImporter(url), context.getSource().getPlayer());
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("web")
     public void web(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         WebServer webServer = WebServerEvents.getWebServer();
@@ -128,7 +124,6 @@ public class UploadCommands {
                 , false);
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("serverfile")
     public void serverFile(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
@@ -148,7 +143,6 @@ public class UploadCommands {
                 , false);
     }
 
-    @RequiresPermission("audioplayer.upload")
     @Command("serverfile")
     public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") String fileName) {
         AudioStorageManager.instance().handleImport(new ServerfileImporter(fileName), context.getSource().getPlayer());

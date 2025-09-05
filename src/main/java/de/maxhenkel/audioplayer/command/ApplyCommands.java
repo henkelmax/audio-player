@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
-import de.maxhenkel.audioplayer.utils.ComponentUtils;
+import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 @Command("audioplayer")
+@RequiresPermission(AudioPlayerPermissionManager.APPLY_PERMISSION_STRING)
 public class ApplyCommands {
 
-    @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         UUID id = getId(context, fileName);
@@ -38,7 +38,6 @@ public class ApplyCommands {
 
     // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
 
-    @RequiresPermission("audioplayer.apply")
     @Command("apply")
     public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
         apply(context, AudioData.withSoundAndRange(sound, null), customName);
