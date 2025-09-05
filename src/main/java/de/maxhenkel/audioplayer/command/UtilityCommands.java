@@ -91,13 +91,6 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
-
-        if (playerType == null) {
-            context.getSource().sendFailure(Component.literal("Invalid item"));
-            return null;
-        }
-
         AudioData data = AudioData.of(itemInHand);
         if (data == null) {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
