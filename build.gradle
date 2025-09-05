@@ -5,12 +5,18 @@ plugins {
     id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
     id 'com.modrinth.minotaur' version "${minotaur_version}"
     id 'com.github.node-gradle.node' version "${node_gradle_version}"
+    id 'java'
 }
 
 apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/mod.gradle"
 
 repositories {
 
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 dependencies {
@@ -47,7 +53,10 @@ dependencies {
     }
 }
 
+def webResourcesDir = layout.buildDirectory.dir("web-resources")
+
 processResources {
+    from(webResourcesDir)
     filesMatching('fabric.mod.json') {
         expand 'mod_version': mod_version,
                 'minecraft_dependency': minecraft_dependency,
@@ -80,15 +89,7 @@ tasks.buildWeb.dependsOn(npmInstall)
 tasks.register('copyWeb', Copy) {
     group 'web'
     from 'web/dist'
-    into 'src/main/resources/web'
+    into webResourcesDir.get().dir("web")
 }
 tasks.copyWeb.dependsOn(buildWeb)
 tasks.processResources.dependsOn(copyWeb)
-
-tasks.register('cleanWeb', Delete) {
-    group 'web'
-    delete fileTree(dir: 'src/main/resources/web', exclude: '**/.gitkeep')
-    delete 'web/dist'
-    followSymlinks = true
-}
-tasks.clean.dependsOn(cleanWeb)
