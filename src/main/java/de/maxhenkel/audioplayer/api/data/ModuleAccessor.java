@@ -1,10 +1,9 @@
 package de.maxhenkel.audioplayer.api.data;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface ModuleAccessor {
 
-    @Nullable
-    <T extends AudioDataModule> T getModule(ModuleKey<T> moduleKey);
+    <T extends AudioDataModule> Optional<T> getModule(ModuleKey<T> moduleKey);
 
 }

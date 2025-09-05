@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AudioData {
+public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
 
     public static final String AUDIOPLAYER_CUSTOM_DATA = "audioplayer";
 
@@ -129,9 +129,15 @@ public class AudioData {
         return audioData;
     }
 
+    @Override
     public <T extends AudioDataModule> Optional<T> getModule(ModuleKey<T> id) {
         AudioDataModule module = modules.get(id);
         return Optional.ofNullable((T) module);
+    }
+
+    @Override
+    public <T extends AudioDataModule> void setModule(ModuleKey<T> moduleKey, T module) {
+        modules.put(moduleKey, module);
     }
 
     @Nullable
@@ -194,15 +200,21 @@ public class AudioData {
         saveToItem(stack, null, false);
     }
 
+    @Override
     public void saveToItem(ItemStack stack) {
-        saveToItem(stack, null);
+        saveToItem(stack, (Component) null);
     }
 
     public void saveToItem(ItemStack stack, @Nullable String loreString) {
-        saveToItem(stack, loreString, true);
+        saveToItem(stack, loreString == null ? null : Component.literal(loreString), true);
     }
 
-    public void saveToItem(ItemStack stack, @Nullable String loreString, boolean applyLore) {
+    @Override
+    public void saveToItem(ItemStack stack, @Nullable Component lore) {
+        saveToItem(stack, lore, true);
+    }
+
+    public void saveToItem(ItemStack stack, @Nullable Component lore, boolean applyLore) {
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
         saveToNbt(tag);
@@ -226,12 +238,12 @@ public class AudioData {
                 blockEntityTag.putString("id", skullId.toString());
             }
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
-            if (loreString == null) {
+            if (lore == null) {
                 l = new ItemLore(Collections.singletonList(Component.literal(DEFAULT_HEAD_LORE).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
             }
         }
-        if (loreString != null) {
-            l = new ItemLore(Collections.singletonList(Component.literal(loreString).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
+        if (lore != null) {
+            l = new ItemLore(Collections.singletonList(lore.copy().withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
         }
 
         if (applyLore) {
@@ -307,5 +319,4 @@ public class AudioData {
             stack.remove(DataComponents.LORE);
         }
     }
-
 }
