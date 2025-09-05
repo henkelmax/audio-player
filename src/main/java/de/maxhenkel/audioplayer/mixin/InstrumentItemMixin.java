@@ -23,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.UUID;
-
 @Mixin(InstrumentItem.class)
 public class InstrumentItemMixin {
 
@@ -35,16 +33,16 @@ public class InstrumentItemMixin {
         if (data == null) {
             return;
         }
-        if (!(p instanceof ServerPlayer player)) {
+        if (!(p instanceof ServerPlayer player) || !(level instanceof ServerLevel serverLevel)) {
             ci.setReturnValue(InteractionResult.CONSUME);
             return;
         }
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        PlayEventImpl event = new PlayEventImpl(data, player);
+        PlayEventImpl event = new PlayEventImpl(data, serverLevel, player);
         AudioEvents.PLAY_GOAT_HORN.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
-            channel = PlayerManager.instance().playLocational((ServerLevel) level, p.getEyePosition(), PlayerType.GOAT_HORN, data, player);
+            channel = PlayerManager.instance().playLocational(serverLevel, p.getEyePosition(), PlayerType.GOAT_HORN, data, player);
             if (channel == null) {
                 return;
             }

@@ -5,6 +5,7 @@ import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.PlayEvent;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,13 +14,15 @@ import java.util.Optional;
 public class PlayEventImpl implements PlayEvent {
 
     protected final AudioData audioData;
+    protected final ServerLevel level;
+    @Nullable
+    protected final ServerPlayer player;
     @Nullable
     protected ChannelReference<?> overrideChannel;
-    @Nullable
-    protected ServerPlayer player;
 
-    public PlayEventImpl(AudioData audioData, @Nullable ServerPlayer player) {
+    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player) {
         this.audioData = audioData;
+        this.level = level;
         this.player = player;
     }
 
@@ -34,9 +37,14 @@ public class PlayEventImpl implements PlayEvent {
     }
 
     @Override
+    public ServerLevel getLevel() {
+        return level;
+    }
+
+    @Override
     @Nullable
     public ServerPlayer getPlayer() {
-        return null;
+        return player;
     }
 
     @Nullable
