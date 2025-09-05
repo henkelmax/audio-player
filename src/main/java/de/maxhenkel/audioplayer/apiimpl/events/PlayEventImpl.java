@@ -17,13 +17,15 @@ public class PlayEventImpl implements PlayEvent {
     protected final ServerLevel level;
     @Nullable
     protected final ServerPlayer player;
+    protected float defaultDistance;
     @Nullable
     protected ChannelReference<?> overrideChannel;
 
-    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player) {
+    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, float defaultDistance) {
         this.audioData = audioData;
         this.level = level;
         this.player = player;
+        this.defaultDistance = defaultDistance;
     }
 
     @Override
@@ -45,6 +47,11 @@ public class PlayEventImpl implements PlayEvent {
     @Nullable
     public ServerPlayer getPlayer() {
         return player;
+    }
+
+    @Override
+    public float getDefaultDistance() {
+        return defaultDistance;
     }
 
     @Nullable

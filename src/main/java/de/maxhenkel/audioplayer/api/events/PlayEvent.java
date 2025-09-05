@@ -18,4 +18,6 @@ public interface PlayEvent extends ModuleAccessor {
     @Nullable
     ServerPlayer getPlayer();
 
+    float getDefaultDistance();
+
 }
