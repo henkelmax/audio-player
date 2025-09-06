@@ -17,6 +17,8 @@ import java.util.function.Consumer;
 
 public class FileMetadataManager {
 
+    private static final int META_VERSION = 1;
+
     private static final ExecutorService SAVE_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable);
         thread.setName("MetadataSaver");
@@ -37,10 +39,15 @@ public class FileMetadataManager {
         if (!Files.exists(file)) {
             return;
         }
+        int metaVersion = -1;
         Map<UUID, Metadata> meta = new ConcurrentHashMap<>();
         String content = Files.readString(file);
         JSONObject jsonObject = new JSONObject(content);
         for (String key : jsonObject.keySet()) {
+            if (key.equals("version")) {
+                metaVersion = jsonObject.optInt(key, -1);
+                continue;
+            }
             UUID uuid;
             try {
                 uuid = UUID.fromString(key);
@@ -61,6 +68,7 @@ public class FileMetadataManager {
             for (Map.Entry<UUID, Metadata> entry : metadata.entrySet()) {
                 jsonObject.put(entry.getKey().toString(), entry.getValue().toJson());
             }
+            jsonObject.put("version", META_VERSION);
             Files.writeString(file, jsonObject.toString(2));
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to save metadata", e);
