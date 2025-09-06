@@ -14,3 +14,4 @@
 - Improve memory usage for cached audio files
 - Improve playback performance for cached items
 - Added`max_import_duration` config option
+- Added search command

@@ -69,11 +69,16 @@ Run `/audioplayer range <RANGE>` while holding an item or container with items t
 
 ### Getting the audio from an existing item
 
-Run `/audioplayer id` while holding a music disc, goat horn or head with custom audio in your main hand.
+Run `/audioplayer info` while holding a music disc, goat horn or head with custom audio in your main hand.
 
 ### Getting the audio file name from an existing item
 
 Run `/audioplayer name` while holding a music disc, goat horn or head with custom audio in your main hand.
+
+### Searching audio files by name
+
+Run `/audioplayer search <SEARCH_TEXT>` to get all audio files that contain the search text.
+
 
 ---
 [![](https://user-images.githubusercontent.com/13237524/179395180-05f2ec3b-2ed3-412d-8639-72c7f13a8068.png)](https://youtu.be/j8GRcYnjUp8)

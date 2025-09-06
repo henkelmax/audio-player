@@ -71,7 +71,7 @@ public class ApplyCommands {
         } catch (Exception ignored) {
         }
 
-        List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(fileName);
+        List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(fileName, true);
 
         if (metadata.isEmpty()) {
             context.getSource().sendFailure(Component.literal("No audio with name '%s' found".formatted(fileName)));

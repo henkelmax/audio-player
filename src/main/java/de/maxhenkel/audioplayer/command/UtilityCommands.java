@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
@@ -96,6 +97,22 @@ public class UtilityCommands {
             return;
         }
         context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(actualSoundId), false);
+    }
+
+    @Command("search")
+    public void search(CommandContext<CommandSourceStack> context, @Name("file_name") String name) throws CommandSyntaxException {
+        List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(name, false);
+
+        if (metadata.isEmpty()) {
+            context.getSource().sendFailure(Component.literal("No audio files with name '%s' found".formatted(name)));
+            return;
+        }
+
+        context.getSource().sendSuccess(() -> Component.literal("Found %s file(s) containing '%s'".formatted(metadata.size(), name)), false);
+
+        for (Metadata meta : metadata) {
+            context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(meta.getAudioId()), false);
+        }
     }
 
     public static AudioData getHeldData(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

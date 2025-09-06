@@ -113,14 +113,17 @@ public class FileMetadataManager {
         return getMetadata(uuid).map(Metadata::getFileName).orElse(null);
     }
 
-    public List<Metadata> getByFileName(String fileName) {
-        return metadata.values().stream().filter(metadata -> matchesName(metadata, fileName)).toList();
+    public List<Metadata> getByFileName(String fileName, boolean exact) {
+        return metadata.values().stream().filter(metadata -> matchesName(metadata, fileName, exact)).toList();
     }
 
-    private static boolean matchesName(Metadata metadata, String name) {
+    private static boolean matchesName(Metadata metadata, String name, boolean exact) {
         String fileName = metadata.getFileName();
         if (fileName == null) {
             return false;
+        }
+        if (!exact) {
+            return fileName.toLowerCase().contains(name.toLowerCase());
         }
         String withoutExt = FileUtils.fileNameWithoutExtension(fileName);
         if (withoutExt.equals(name)) {
