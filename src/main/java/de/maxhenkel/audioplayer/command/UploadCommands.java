@@ -9,6 +9,7 @@ import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.importer.FilebinImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.ServerfileImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.UrlImporter;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.webserver.WebServer;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
@@ -26,29 +27,32 @@ public class UploadCommands {
     @Command
     public void audioPlayer(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
-                        Component.literal("Upload audio via Filebin ")
-                                .append(Component.literal("here").withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_filebin")
+                                .append(" ")
+                                .append(Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.RunCommand("/audioplayer upload"))
-                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to show more")));
+                                            .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
                 , false);
         context.getSource().sendSuccess(() ->
-                        Component.literal("Upload audio with access to the servers file system ")
-                                .append(Component.literal("here").withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_serverfile")
+                                .append(" ")
+                                .append(Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.RunCommand("/audioplayer serverfile"))
-                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to show more")));
+                                            .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
                 , false);
         context.getSource().sendSuccess(() ->
-                        Component.literal("Upload audio from a URL ")
-                                .append(Component.literal("here").withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_url")
+                                .append(" ")
+                                .append(Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.RunCommand("/audioplayer url"))
-                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to show more")));
+                                            .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
                 , false);

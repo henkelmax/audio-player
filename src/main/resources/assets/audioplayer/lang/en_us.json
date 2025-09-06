@@ -7,5 +7,10 @@
   "audioplayer.item_update_successful": "Successfully updated item",
   "audioplayer.item_updates_successful": "Successfully updated %s items",
   "audioplayer.play_successful": "Successfully played %s",
-  "audioplayer.stop_streams_successful": "Successfully stopped %s stream(s)"
+  "audioplayer.stop_streams_successful": "Successfully stopped %s stream(s)",
+  "audioplayer.upload_filebin": "Upload audio via Filebin",
+  "audioplayer.here": "here",
+  "audioplayer.click_show_more": "Click to show more",
+  "audioplayer.upload_url": "Upload audio from a URL",
+  "audioplayer.upload_serverfile": "Upload audio with access to the servers file system"
 }
