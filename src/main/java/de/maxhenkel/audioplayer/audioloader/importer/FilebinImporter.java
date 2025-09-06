@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -149,30 +150,24 @@ public class FilebinImporter implements AudioImporter {
         UUID uuid = UUID.randomUUID();
         URI uploadURL = getBin(uuid);
 
-        MutableComponent msg = Component.literal("Click ")
-                .append(Component.literal("this link")
+        MutableComponent msg = Lang.translatable("audioplayer.upload_filebin_instructions",
+                Component.literal("this link")
                         .withStyle(style -> {
                             return style
                                     .withClickEvent(new ClickEvent.OpenUrl(uploadURL))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open")));
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("\"audioplayer.click_open")));
                         })
-                        .withStyle(ChatFormatting.GREEN)
-                )
-                .append(" and upload your sound as ")
-                .append(Component.literal("mp3").withStyle(ChatFormatting.GRAY))
-                .append(" or ")
-                .append(Component.literal("wav").withStyle(ChatFormatting.GRAY))
-                .append(".\n")
-                .append("Once you have uploaded the file, click ")
-                .append(Component.literal("here")
+                        .withStyle(ChatFormatting.GREEN),
+                Component.literal("mp3").withStyle(ChatFormatting.GRAY),
+                Component.literal("wav").withStyle(ChatFormatting.GRAY),
+                Lang.translatable("audioplayer.here")
                         .withStyle(style -> {
                             return style
                                     .withClickEvent(new ClickEvent.RunCommand("/audioplayer filebin " + uuid))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to confirm upload")));
+                                    .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_confirm_upload")));
                         })
                         .withStyle(ChatFormatting.GREEN)
-                )
-                .append(".");
+        );
 
         stack.sendSuccess(() -> msg, false);
     }

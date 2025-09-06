@@ -17,6 +17,7 @@
   "audioplayer.click_upload": "Click %s to upload your audio.",
   "audioplayer.click_open": "Click to open",
   "audioplayer.click_copy": "Click to copy",
+  "audioplayer.click_confirm_upload": "Click to confirm upload",
   "audioplayer.upload_url": "Upload audio from a URL",
   "audioplayer.upload_serverfile": "Upload audio with access to the servers file system",
   "audioplayer.downloading_sound": "Downloading sound, please wait...",
@@ -41,5 +42,6 @@
   "audioplayer.creation_date": "created %s",
   "audioplayer.enable_voicechat": "You need to enable voice chat to hear custom audio",
   "audioplayer.import_successful": "Successfully imported sound.",
-  "audioplayer.error": "Error: %s"
+  "audioplayer.error": "Error: %s",
+  "audioplayer.upload_filebin_instructions": "Click %s and upload your sound as %s or %s.\nOnce you have uploaded the file, click %s."
 }
