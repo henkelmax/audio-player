@@ -19,12 +19,12 @@ public class VolumeCommands {
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("#.00");
 
     @Command("volume")
-    public void volumeWithId(CommandContext<CommandSourceStack> context, @Name("id") UUID uuid, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) {
+    public void volumeWithId(CommandContext<CommandSourceStack> context, @Name("id") UUID uuid, @OptionalArgument @Name("volume_percent") @Min("0.01") @Max("100") Float volume) {
         volumeCommand(context, uuid, volume);
     }
 
     @Command("volume")
-    public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) throws CommandSyntaxException {
+    public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume_percent") @Min("0.01") @Max("100") Float volume) throws CommandSyntaxException {
         UUID id = UtilityCommands.getHeldItemId(context);
         if (id == null) {
             return;
