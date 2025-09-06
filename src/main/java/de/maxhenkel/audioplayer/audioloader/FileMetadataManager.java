@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.utils.FileUtils;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
@@ -125,19 +126,12 @@ public class FileMetadataManager {
         if (fileName == null) {
             return false;
         }
-        String withoutExt = fileNameWithoutExtension(fileName);
+        String withoutExt = FileUtils.fileNameWithoutExtension(fileName);
         if (withoutExt.equals(name)) {
             return true;
         }
         return fileName.equals(name);
     }
 
-    private static String fileNameWithoutExtension(String name) {
-        int dotIndex = name.lastIndexOf('.');
-        if (dotIndex < 0) {
-            return name;
-        }
-        return name.substring(0, dotIndex);
-    }
 
 }

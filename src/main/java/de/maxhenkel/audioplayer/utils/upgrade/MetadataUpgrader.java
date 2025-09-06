@@ -4,18 +4,42 @@ import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.FileMetadataManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
+import de.maxhenkel.audioplayer.utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class MetadataUpgrader {
 
-    public static void upgrade(AudioStorageManager audioStorageManager) {
+    public static void upgrade(AudioStorageManager audioStorageManager, boolean initial) {
+        if (initial) {
+            upgradeCreationDates(audioStorageManager);
+        }
         upgradeFileNameManager(audioStorageManager);
         upgradeVolumeOverrideManager(audioStorageManager);
+    }
+
+    private static void upgradeCreationDates(AudioStorageManager audioStorageManager) {
+        AudioPlayerMod.LOGGER.info("Upgrading creation dates");
+        try (Stream<Path> paths = Files.list(audioStorageManager.getAudioDataFolder())) {
+            FileMetadataManager metadataManager = audioStorageManager.getFileMetadataManager();
+            paths.forEach(path -> {
+                String name = FileUtils.fileNameWithoutExtension(path.getFileName().toString());
+                UUID uuid;
+                try {
+                    uuid = UUID.fromString(name);
+                } catch (IllegalArgumentException ignored) {
+                    return;
+                }
+                metadataManager.modifyMetadata(uuid, metadata -> metadata.setCreated(path.toFile().lastModified()));
+            });
+        } catch (IOException e) {
+            AudioPlayerMod.LOGGER.error("Failed to upgrade creation dates", e);
+        }
     }
 
     private static void upgradeFileNameManager(AudioStorageManager audioStorageManager) {

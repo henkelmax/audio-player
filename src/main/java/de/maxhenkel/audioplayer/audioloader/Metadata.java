@@ -59,6 +59,10 @@ public class Metadata {
         } else {
             metadata.volume = Math.min(volume, 1F);
         }
+        long created = json.optLong("created", -1L);
+        if (created < 0L) {
+            metadata.created = null;
+        }
         return metadata;
     }
 
@@ -69,6 +73,9 @@ public class Metadata {
         }
         if (volume != null) {
             json.put("volume", volume);
+        }
+        if (created != null) {
+            json.put("created", created);
         }
         return json;
     }

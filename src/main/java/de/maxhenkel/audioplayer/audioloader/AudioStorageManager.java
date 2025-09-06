@@ -45,9 +45,11 @@ public class AudioStorageManager {
             thread.setDaemon(true);
             return thread;
         });
-        fileMetadataManager = new FileMetadataManager(getAudioDataFolder().resolve("meta.json"));
+        Path metaPath = getAudioDataFolder().resolve("meta.json");
+        boolean initial = !Files.exists(metaPath);
+        fileMetadataManager = new FileMetadataManager(metaPath);
         audioCache = new AudioCache();
-        MetadataUpgrader.upgrade(this);
+        MetadataUpgrader.upgrade(this, initial);
     }
 
     public static void onInitialize() {
