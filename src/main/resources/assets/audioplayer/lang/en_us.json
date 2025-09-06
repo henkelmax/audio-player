@@ -12,8 +12,14 @@
   "audioplayer.here": "here",
   "audioplayer.click_show_more": "Click to show more",
   "audioplayer.click_fill_command": "Click to fill in the command",
+  "audioplayer.click_upload": "Click %s to upload your audio.",
+  "audioplayer.click_open": "Click to open",
+  "audioplayer.click_copy": "Click to copy",
   "audioplayer.upload_url": "Upload audio from a URL",
   "audioplayer.upload_serverfile": "Upload audio with access to the servers file system",
   "audioplayer.downloading_sound": "Downloading sound, please wait...",
-  "audioplayer.url_command": "If you have a direct link to a %s or %s file, enter the following command: %s."
+  "audioplayer.url_command": "If you have a direct link to a %s or %s file, enter the following command: %s.",
+  "audioplayer.webserver_not_running": "Web server is not running",
+  "audioplayer.visit_website": "Visit the website and use %s.",
+  "audioplayer.this_token": "this token"
 }

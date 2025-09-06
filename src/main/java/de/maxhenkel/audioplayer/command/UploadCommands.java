@@ -86,7 +86,7 @@ public class UploadCommands {
 
     @Command("url")
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
-        context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
         AudioStorageManager.instance().handleImport(new UrlImporter(url), context.getSource().getPlayer());
     }
 
@@ -94,7 +94,7 @@ public class UploadCommands {
     public void web(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         WebServer webServer = WebServerEvents.getWebServer();
         if (webServer == null) {
-            context.getSource().sendFailure(Component.literal("Web server is not running"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.webserver_not_running"));
             return;
         }
 
@@ -104,25 +104,25 @@ public class UploadCommands {
 
         if (uploadUrl != null) {
             context.getSource().sendSuccess(() ->
-                            Component.literal("Click ")
-                                    .append(Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
+                            Lang.translatable("audioplayer.click_upload",
+                                    Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
                                         return style
                                                 .withClickEvent(new ClickEvent.OpenUrl(uploadUrl))
-                                                .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to open")));
-                                    }))
-                                    .append(" to upload your sound.")
+                                                .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_open")));
+                                    })
+                            )
                     , false);
             return;
         }
 
         context.getSource().sendSuccess(() ->
-                        Component.literal("Visit the website and use ")
-                                .append(Component.literal("this token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
+                        Lang.translatable("audioplayer.visit_website",
+                                Lang.translatable("audioplayer.this_token").withStyle(ChatFormatting.GREEN).withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.CopyToClipboard(token.toString()))
-                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to copy")));
-                                }))
-                                .append(".")
+                                            .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_copy")));
+                                })
+                        )
                 , false);
     }
 
