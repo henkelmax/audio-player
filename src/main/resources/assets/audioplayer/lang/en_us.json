@@ -1,0 +1,8 @@
+{
+  "audioplayer.no_audio_file_found": "No audio with name '%s' found",
+  "audioplayer.multiple_audio_files_found": "Multiple files with name '%s' found:",
+  "audioplayer.no_valid_item_in_hand": "You don't have a valid item in your main hand",
+  "audioplayer.no_valid_items_found": "No valid items found",
+  "audioplayer.item_update_successful": "Successfully updated item",
+  "audioplayer.item_updates_successful": "Successfully updated %s items"
+}

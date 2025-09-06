@@ -7,6 +7,7 @@ import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
@@ -14,7 +15,6 @@ import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -74,7 +74,7 @@ public class ApplyCommands {
         List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(fileName, true);
 
         if (metadata.isEmpty()) {
-            context.getSource().sendFailure(Component.literal("No audio with name '%s' found".formatted(fileName)));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_found", fileName));
             return null;
         }
 
@@ -82,7 +82,7 @@ public class ApplyCommands {
             return metadata.getFirst().getAudioId();
         }
 
-        context.getSource().sendSuccess(() -> Component.literal("Multiple files with name '%s' found:".formatted(fileName)), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.multiple_audio_files_found", fileName), false);
         for (Metadata meta : metadata) {
             context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(meta.getAudioId()), false);
         }
@@ -145,13 +145,13 @@ public class ApplyCommands {
 
     private static void sendUpdateFeedBack(CommandContext<CommandSourceStack> context, int amount) {
         if (amount < 0) {
-            context.getSource().sendFailure(Component.literal("You don't have a valid item in your main hand"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_valid_item_in_hand"));
         } else if (amount == 0) {
-            context.getSource().sendFailure(Component.literal("No valid items found"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_valid_items_found"));
         } else if (amount == 1) {
-            context.getSource().sendSuccess(() -> Component.literal("Successfully updated item"), false);
+            context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_update_successful"), false);
         } else {
-            context.getSource().sendSuccess(() -> Component.literal("Successfully updated %s items".formatted(amount)), false);
+            context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_updates_successful", amount), false);
         }
     }
 

@@ -5,6 +5,7 @@ import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import de.maxhenkel.configbuilder.ConfigBuilder;
@@ -25,6 +26,7 @@ public class AudioPlayerMod implements ModInitializer {
     @Override
     public void onInitialize() {
         SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(getModConfigFolder().resolve("audioplayer-server.properties")).build();
+        Lang.onInitialize();
 
         WebServerEvents.onInitialize();
         AudioStorageManager.onInitialize();
