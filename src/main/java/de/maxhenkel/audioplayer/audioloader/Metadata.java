@@ -52,14 +52,19 @@ public class Metadata {
 
     public static Metadata fromJson(UUID audioId, JSONObject json) {
         Metadata metadata = new Metadata(audioId);
-        metadata.fileName = json.optString("fileName");
-        metadata.volume = json.optFloat("volume");
+        metadata.fileName = json.optString("fileName", null);
+        float volume = json.optFloat("volume", -1F);
+        if (volume < 0F) {
+            metadata.volume = null;
+        } else {
+            metadata.volume = Math.min(volume, 1F);
+        }
         return metadata;
     }
 
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        if (fileName != null) {
+        if (fileName != null && !fileName.isBlank()) {
             json.put("fileName", fileName);
         }
         if (volume != null) {
