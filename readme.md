@@ -39,21 +39,20 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 
 Run `/audioplayer` to get general information on how to upload files.
 
-**Uploading audio files via URL**
+### Uploading audio files via URL
 
-Run `/audioplayer url "https://example.com/myaudio.mp3"` where `https://example.com/myaudio.mp3` is the link to
-your `.mp3` or `.wav` file.
+Run `/audioplayer url "https://example.com/myaudio.mp3"` where `https://example.com/myaudio.mp3` is the link to your `.mp3` or `.wav` file.
 
-**Uploading audio files directly to the server**
+### Uploading audio files directly to the server
 
 Copy your `.mp3` or `.wav` file to the `audioplayer_uploads` folder in your server.
 Run `/audioplayer serverfile "yourfile.mp3"` where `yourfile.mp3` is the name of the file you put on the server.
 
-**Uploading audio files via Filebin**
+### Uploading audio files via Filebin
 
 Run `/audioplayer filebin` and follow the instructions.
 
-**Putting custom audio on a music disc or goat horn**
+### Putting custom audio on a music disc or goat horn
 
 Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
 
@@ -64,15 +63,15 @@ You can also apply custom audio by its original file name:
 This command works with and without the file extension (like `.mp3` or `.wav`).
 Note that the file name must be unique for this to work.
 
-**Adjusting the range of an item**
+### Adjusting the range of an item
 
 Run `/audioplayer range <RANGE>` while holding an item or container with items that have custom audio in your main hand.
 
-**Getting the audio from an existing item**
+### Getting the audio from an existing item
 
 Run `/audioplayer id` while holding a music disc, goat horn or head with custom audio in your main hand.
 
-**Getting the audio file name from an existing item**
+### Getting the audio file name from an existing item
 
 Run `/audioplayer name` while holding a music disc, goat horn or head with custom audio in your main hand.
 
