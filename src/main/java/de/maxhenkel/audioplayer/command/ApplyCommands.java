@@ -16,10 +16,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -79,6 +81,24 @@ public class ApplyCommands {
     private static <T> int forEachHeldAudioItem(CommandContext<CommandSourceStack> context, Function<ItemStack, T> shouldProcess, ApplyFunction<T> process) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+        BundleContents bundle = itemInHand.get(DataComponents.BUNDLE_CONTENTS);
+        if (bundle != null) {
+            List<ItemStack> bundleContents = bundle.itemCopyStream().toList();
+            int amount = 0;
+            for (ItemStack itemStack : bundleContents) {
+                T value = shouldProcess.apply(itemStack);
+                if (value == null) {
+                    continue;
+                }
+                if (!process.apply(itemStack, value)) {
+                    continue;
+                }
+                amount++;
+            }
+            itemInHand.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(bundleContents));
+            return amount;
+        }
 
         ItemContainerContents contents = itemInHand.get(DataComponents.CONTAINER);
         if (contents != null) {
