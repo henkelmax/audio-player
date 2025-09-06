@@ -46,5 +46,7 @@
   "audioplayer.error": "Error: %s",
   "audioplayer.upload_filebin_instructions": "Click %s and upload your sound as %s or %s.\nOnce you have uploaded the file, click %s.",
   "audioplayer.invalid_file_name": "Invalid file name!",
-  "audioplayer.deleted_temp_file": "Deleted temporary file %s."
+  "audioplayer.deleted_temp_file": "Deleted temporary file %s.",
+  "audioplayer.audio_too_long": "Audio is too long to play",
+  "audioplayer.play_audio_failed": "Failed to play audio: %s"
 }

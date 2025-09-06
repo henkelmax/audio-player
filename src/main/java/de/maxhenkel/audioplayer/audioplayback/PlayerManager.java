@@ -6,6 +6,7 @@ import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.Player;
@@ -14,7 +15,6 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -127,7 +127,8 @@ public class PlayerManager {
 
             if (maxLengthSeconds != null && audio.getDurationSeconds() > maxLengthSeconds) {
                 if (p != null) {
-                    p.displayClientMessage(Component.literal("Audio is too long to play").withStyle(ChatFormatting.DARK_RED), true);
+                    //TODO Rework this
+                    p.displayClientMessage(Lang.translatable("audioplayer.audio_too_long").withStyle(ChatFormatting.DARK_RED), true);
                 }
                 AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
                 return null;
@@ -139,7 +140,7 @@ public class PlayerManager {
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to play audio", e);
             if (p != null) {
-                p.displayClientMessage(Component.literal("Failed to play audio: %s".formatted(e.getMessage())).withStyle(ChatFormatting.DARK_RED), true);
+                p.displayClientMessage(Lang.translatable("audioplayer.play_audio_failed", e.getMessage()).withStyle(ChatFormatting.DARK_RED), true);
             }
             return null;
         }
