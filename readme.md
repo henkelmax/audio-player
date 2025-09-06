@@ -67,13 +67,9 @@ Note that the file name must be unique for this to work.
 
 Run `/audioplayer range <RANGE>` while holding an item or container with items that have custom audio in your main hand.
 
-### Getting the audio from an existing item
+### Getting the audio info of an existing item
 
 Run `/audioplayer info` while holding a music disc, goat horn or head with custom audio in your main hand.
-
-### Getting the audio file name from an existing item
-
-Run `/audioplayer name` while holding a music disc, goat horn or head with custom audio in your main hand.
 
 ### Searching audio files by name
 
