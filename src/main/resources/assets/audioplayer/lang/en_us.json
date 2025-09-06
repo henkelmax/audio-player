@@ -1,8 +1,11 @@
 {
-  "audioplayer.no_audio_file_found": "No audio with name '%s' found",
-  "audioplayer.multiple_audio_files_found": "Multiple files with name '%s' found:",
+  "audioplayer.no_audio_file_name_found": "No audio with name '%s' found",
+  "audioplayer.multiple_audio_files_name_found": "Multiple files with name '%s' found:",
+  "audioplayer.no_audio_file_id_found": "No audio with ID '%s' found",
   "audioplayer.no_valid_item_in_hand": "You don't have a valid item in your main hand",
   "audioplayer.no_valid_items_found": "No valid items found",
   "audioplayer.item_update_successful": "Successfully updated item",
-  "audioplayer.item_updates_successful": "Successfully updated %s items"
+  "audioplayer.item_updates_successful": "Successfully updated %s items",
+  "audioplayer.play_successful": "Successfully played %s",
+  "audioplayer.stop_streams_successful": "Successfully stopped %s stream(s)"
 }

@@ -7,9 +7,9 @@ import de.maxhenkel.admiral.annotations.Min;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ public class PlayCommands {
                 null,
                 null
         );
-        context.getSource().sendSuccess(() -> Component.literal("Successfully played %s".formatted(sound)), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.play_successful", sound), false);
     }
 
     @Command("stop")
@@ -40,9 +40,9 @@ public class PlayCommands {
         int count = PlayerManager.instance().stopAll(audioId);
 
         if (count > 0) {
-            context.getSource().sendSuccess(() -> Component.literal("Successfully stopped %s stream(s)".formatted(count)), false);
+            context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.stop_streams_successful", count), false);
         } else {
-            context.getSource().sendFailure(Component.literal("No audio with ID %s found".formatted(audioId)));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_id_found", audioId));
         }
         return count;
     }

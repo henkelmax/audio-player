@@ -74,7 +74,7 @@ public class ApplyCommands {
         List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(fileName, true);
 
         if (metadata.isEmpty()) {
-            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_found", fileName));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_name_found", fileName));
             return null;
         }
 
@@ -82,7 +82,7 @@ public class ApplyCommands {
             return metadata.getFirst().getAudioId();
         }
 
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.multiple_audio_files_found", fileName), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.multiple_audio_files_name_found", fileName), false);
         for (Metadata meta : metadata) {
             context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(meta.getAudioId()), false);
         }
