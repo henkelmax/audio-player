@@ -83,11 +83,8 @@ public class ApplyCommands {
         }
 
         context.getSource().sendSuccess(() -> Component.literal("Multiple files with name '%s' found:".formatted(fileName)), false);
-        for (int i = 0; i < metadata.size(); i++) {
-            Metadata meta = metadata.get(i);
-            int number = i + 1;
-            //TODO Rework
-            context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(meta.getAudioId(), Component.literal("  %s (%s)".formatted(fileName, number))), false);
+        for (Metadata meta : metadata) {
+            context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(meta.getAudioId()), false);
         }
         return null;
     }

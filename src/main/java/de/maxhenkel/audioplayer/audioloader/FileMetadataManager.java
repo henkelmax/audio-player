@@ -7,10 +7,7 @@ import org.json.JSONObject;
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -114,7 +111,7 @@ public class FileMetadataManager {
     }
 
     public List<Metadata> getByFileName(String fileName, boolean exact) {
-        return metadata.values().stream().filter(metadata -> matchesName(metadata, fileName, exact)).toList();
+        return metadata.values().stream().filter(metadata -> matchesName(metadata, fileName, exact)).sorted(Comparator.comparingLong(o -> o.getCreated() == null ? 0L : o.getCreated())).toList();
     }
 
     private static boolean matchesName(Metadata metadata, String name, boolean exact) {
