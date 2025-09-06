@@ -4,6 +4,7 @@ import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
@@ -11,7 +12,6 @@ import de.maxhenkel.audioplayer.utils.upgrade.MetadataUpgrader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
@@ -142,16 +142,16 @@ public class AudioStorageManager {
                 String fileName = audioDownloadInfo.getName();
                 saveSound(id, fileName, bytes);
                 if (player != null) {
-                    player.sendSystemMessage(ChatUtils.createApplyMessage(id, Component.literal("Successfully imported sound.")));
+                    player.sendSystemMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
                 }
                 importer.onPostprocess(player);
             } catch (Exception e) {
                 runOnMain(() -> {
                     if (player != null) {
                         if (e instanceof ComponentException c) {
-                            player.sendSystemMessage(Component.literal("Error: ").append(c.getComponent()).withStyle(ChatFormatting.RED));
+                            player.sendSystemMessage(Lang.translatable("audioplayer.error", c.getComponent()).withStyle(ChatFormatting.RED));
                         } else {
-                            player.sendSystemMessage(Component.literal("Error: %s".formatted(e.getMessage())).withStyle(ChatFormatting.RED));
+                            player.sendSystemMessage(Lang.translatable("audioplayer.error", e.getMessage()).withStyle(ChatFormatting.RED));
                         }
                     }
                 });

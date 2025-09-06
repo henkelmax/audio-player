@@ -39,5 +39,7 @@
   "audioplayer.put_on_item_tooltip": "Put the audio on an item",
   "audioplayer.unnamed": "Unnamed",
   "audioplayer.creation_date": "created %s",
-  "audioplayer.enable_voicechat": "You need to enable voice chat to hear custom audio"
+  "audioplayer.enable_voicechat": "You need to enable voice chat to hear custom audio",
+  "audioplayer.import_successful": "Successfully imported sound.",
+  "audioplayer.error": "Error: %s"
 }
