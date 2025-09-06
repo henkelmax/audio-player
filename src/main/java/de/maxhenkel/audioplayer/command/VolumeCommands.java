@@ -3,7 +3,6 @@ package de.maxhenkel.audioplayer.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
-import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import net.minecraft.commands.CommandSourceStack;
@@ -26,16 +25,11 @@ public class VolumeCommands {
 
     @Command("volume")
     public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) throws CommandSyntaxException {
-        AudioData data = UtilityCommands.getHeldData(context);
-        if (data == null) {
+        UUID id = UtilityCommands.getHeldItemId(context);
+        if (id == null) {
             return;
         }
-        UUID actualSoundId = data.getActualSoundId();
-        if (actualSoundId == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
-            return;
-        }
-        volumeCommand(context, actualSoundId, volume);
+        volumeCommand(context, id, volume);
     }
 
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {

@@ -42,32 +42,20 @@ public class UtilityCommands {
 
     @Command("id")
     public void id(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        AudioData data = getHeldData(context);
-        if (data == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+        UUID id = getHeldItemId(context);
+        if (id == null) {
             return;
         }
-        UUID actualSoundId = data.getActualSoundId();
-        if (actualSoundId == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
-            return;
-        }
-        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(actualSoundId, Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(id, Component.literal("Successfully extracted sound ID.")), false);
     }
 
     @Command("info")
     public void info(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        AudioData data = getHeldData(context);
-        if (data == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+        UUID id = getHeldItemId(context);
+        if (id == null) {
             return;
         }
-        UUID actualSoundId = data.getActualSoundId();
-        if (actualSoundId == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
-            return;
-        }
-        context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(actualSoundId), false);
+        context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(id), false);
     }
 
     @Command("search")
@@ -86,7 +74,7 @@ public class UtilityCommands {
         }
     }
 
-    public static AudioData getHeldData(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public static UUID getHeldItemId(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
@@ -95,8 +83,13 @@ public class UtilityCommands {
             context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return null;
         }
+        UUID actualSoundId = data.getActualSoundId();
+        if (actualSoundId == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
+            return null;
+        }
 
-        return data;
+        return actualSoundId;
     }
 
 }
