@@ -1,1 +1,16 @@
-- Updated to 1.21.8
+- Removed file name restrictions for serverfile import
+- Added suggestions for serverfile command
+- Save import date of audio files
+- Allow bulk applying to bundles and other container items
+- Cleaned up commands
+- Removed randomized sounds
+- Removed static sounds
+- Added audio player API
+- Change versioning to <modversion>+<minecraftversion>
+- Removed musicdisc and goathorn commands
+- Improved threading
+- Added info command
+- Added separate range command
+- Improve memory usage for cached audio files
+- Improve playback performance for cached items
+- Added`max_import_duration` config option
