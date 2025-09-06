@@ -32,7 +32,7 @@ This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mo
 - Configurable command permissions
 - Configurable audio range
 - Per-item custom audio range
-- Bulk applying audio to all items in a shulker box
+- Bulk applying audio to all items in shulker boxes, bundles and other container items
 - Configurable goat horn cooldown
 
 ## Commands
@@ -56,7 +56,7 @@ Run `/audioplayer filebin` and follow the instructions.
 
 Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
 
-It's also possible to bulk apply audio to more than one item at a time by holding a shulker box in your hand.
+It's also possible to bulk apply audio to more than one item at a time by holding a shulker box, bundle or other container item in your hand.
 
 You can also apply custom audio by its original file name:
 `/audioplayer apply "<FILE_NAME>"`.
