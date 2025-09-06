@@ -16,3 +16,4 @@
 - Added`max_import_duration` config option
 - Added search command
 - Removed name command
+- Renamed `cache_size` config option to `audio_cache_size` and increased default value to 128
