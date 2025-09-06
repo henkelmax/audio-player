@@ -155,7 +155,7 @@ public class FilebinImporter implements AudioImporter {
                         .withStyle(style -> {
                             return style
                                     .withClickEvent(new ClickEvent.OpenUrl(uploadURL))
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("\"audioplayer.click_open")));
+                                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("audioplayer.click_open")));
                         })
                         .withStyle(ChatFormatting.GREEN),
                 Component.literal("mp3").withStyle(ChatFormatting.GRAY),
