@@ -183,7 +183,10 @@ public class AudioStorageManager {
             IOUtils.write(data, outputStream);
         }
 
-        fileMetadataManager.setFileName(id, fileName);
+        fileMetadataManager.modifyMetadata(id, metadata -> {
+            metadata.setFileName(fileName);
+            metadata.setCreated(System.currentTimeMillis());
+        });
     }
 
     private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioFileException {

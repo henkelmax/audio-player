@@ -108,10 +108,6 @@ public class FileMetadataManager {
         return getMetadata(uuid).map(Metadata::getVolume);
     }
 
-    public void setFileName(UUID uuid, @Nullable String fileName) {
-        modifyMetadata(uuid, metadata -> metadata.setFileName(fileName));
-    }
-
     @Nullable
     public String getFileName(UUID uuid) {
         return getMetadata(uuid).map(Metadata::getFileName).orElse(null);
