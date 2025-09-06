@@ -90,11 +90,15 @@ public class FileNameManager {
         return id;
     }
 
-    private static boolean isNameEqualsWithoutExtension(String name1, String name2) {
-        if (name1 == null || name2 == null) {
+    public List<UUID> getAudioIds(String fileName) {
+        return fileNames.entrySet().stream().filter(entry -> isNameEqualsWithoutExtension(entry.getValue(), fileName)).map(Map.Entry::getKey).toList();
+    }
+
+    private static boolean isNameEqualsWithoutExtension(String actualName, String searchName) {
+        if (searchName == null || actualName == null) {
             return false;
         }
-        return fileNameWithoutExtension(name1).equals(fileNameWithoutExtension(name2));
+        return fileNameWithoutExtension(searchName).equals(fileNameWithoutExtension(actualName));
     }
 
     private static String fileNameWithoutExtension(String name) {

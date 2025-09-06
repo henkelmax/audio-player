@@ -8,6 +8,7 @@ import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
+import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.NonNullList;
@@ -69,13 +70,25 @@ public class ApplyCommands {
         } catch (Exception ignored) {
         }
 
-        UUID audioId = AudioStorageManager.fileNameManager().getAudioId(fileName);
+        List<UUID> audioIds = AudioStorageManager.fileNameManager().getAudioIds(fileName);
 
-        if (audioId == null) {
-            context.getSource().sendFailure(Component.literal("No audio with name '%s' found or more than one found".formatted(fileName)));
+        if (audioIds.isEmpty()) {
+            context.getSource().sendFailure(Component.literal("No audio with name '%s' found".formatted(fileName)));
             return null;
         }
-        return audioId;
+
+        if (audioIds.size() == 1) {
+            return audioIds.getFirst();
+        }
+
+        context.getSource().sendSuccess(() -> Component.literal("Multiple files with name '%s' found:".formatted(fileName)), false);
+        for (int i = 0; i < audioIds.size(); i++) {
+            UUID audioId = audioIds.get(i);
+            int number = i + 1;
+            //TODO Rework
+            context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(audioId, Component.literal("  %s (%s)".formatted(fileName, number))), false);
+        }
+        return null;
     }
 
     private static <T> int forEachHeldAudioItem(CommandContext<CommandSourceStack> context, Function<ItemStack, T> shouldProcess, ApplyFunction<T> process) throws CommandSyntaxException {
