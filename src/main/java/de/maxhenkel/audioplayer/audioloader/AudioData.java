@@ -13,6 +13,7 @@ import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.GetSoundIdEventImpl;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
+import de.maxhenkel.audioplayer.utils.ItemUpgrader;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -93,20 +94,24 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
 
     @Nullable
     public static AudioData of(ItemStack item) {
+        if (ItemUpgrader.upgradeItem(item)) {
+            AudioPlayerMod.LOGGER.info("Upgraded audio player data of item {}", item.getHoverName().getString());
+        }
         CustomData customData = item.get(DataComponents.CUSTOM_DATA);
         if (customData == null) {
             return null;
         }
-        return of(customData.copyTag());
-    }
-
-    @Nullable
-    public static AudioData of(CompoundTag tag) {
-        return of(tag.getStringOr(AUDIOPLAYER_CUSTOM_DATA, null));
+        return of(customData.copyTag().getStringOr(AUDIOPLAYER_CUSTOM_DATA, null));
     }
 
     @Nullable
     public static AudioData of(ValueInput valueInput) {
+        AudioData upgradeData = ItemUpgrader.upgradeBlockEntity(valueInput);
+        if (upgradeData != null) {
+            AudioPlayerMod.LOGGER.info("Upgraded audio player data {}", upgradeData.getActualSoundId());
+            return upgradeData;
+        }
+
         return of(valueInput.getStringOr(AUDIOPLAYER_CUSTOM_DATA, null));
     }
 
