@@ -29,5 +29,8 @@
   "audioplayer.item_no_audio": "Item does not have custom audio",
   "audioplayer.item_no_audio_id": "Item does not have a custom audio ID",
   "audioplayer.item_clear_successful": "Successfully cleared item",
-  "audioplayer.extract_sound_id_successful": "Successfully extracted sound ID."
+  "audioplayer.extract_sound_id_successful": "Successfully extracted sound ID.",
+  "audioplayer.audio_file_not_found": "Audio file does not exist",
+  "audioplayer.current_volume": "Current volume is %s%%",
+  "audioplayer.set_volume_successful": "Successfully set sound volume to %s%%, this will apply next time the sound plays"
 }

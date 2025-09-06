@@ -4,9 +4,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -34,12 +34,12 @@ public class VolumeCommands {
 
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {
         if (!AudioStorageManager.instance().checkSoundExists(id)) {
-            context.getSource().sendFailure(Component.literal("Audio does not exist"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.audio_file_not_found"));
             return;
         }
         if (volume == null) {
             float currentVolume = AudioStorageManager.metadataManager().getVolumeOverride(id).orElse(1F);
-            context.getSource().sendSuccess(() -> Component.literal("Current volume is %s%%".formatted(PERCENT_FORMAT.format(currentVolume * 100F))), false);
+            context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.current_volume", PERCENT_FORMAT.format(currentVolume * 100F)), false);
             return;
         }
         if (volume >= 100F) {
@@ -48,7 +48,7 @@ public class VolumeCommands {
         }
         AudioStorageManager.metadataManager().setVolumeOverride(id, volume / 100F);
         AudioStorageManager.audioCache().invalidate(id);
-        context.getSource().sendSuccess(() -> Component.literal("Successfully set sound volume to %s%%, this will apply next time the sound plays".formatted(PERCENT_FORMAT.format(volume))), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.set_volume_successful", PERCENT_FORMAT.format(volume)), false);
     }
 
 }
