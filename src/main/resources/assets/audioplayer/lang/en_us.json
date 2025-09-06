@@ -44,5 +44,7 @@
   "audioplayer.enable_voicechat": "You need to enable voice chat to hear custom audio",
   "audioplayer.import_successful": "Successfully imported sound.",
   "audioplayer.error": "Error: %s",
-  "audioplayer.upload_filebin_instructions": "Click %s and upload your sound as %s or %s.\nOnce you have uploaded the file, click %s."
+  "audioplayer.upload_filebin_instructions": "Click %s and upload your sound as %s or %s.\nOnce you have uploaded the file, click %s.",
+  "audioplayer.invalid_file_name": "Invalid file name!",
+  "audioplayer.deleted_temp_file": "Deleted temporary file %s."
 }

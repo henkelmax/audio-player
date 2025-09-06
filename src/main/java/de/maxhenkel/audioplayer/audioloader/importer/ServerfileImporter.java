@@ -4,6 +4,7 @@ import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
 import net.minecraft.ChatFormatting;
@@ -34,7 +35,7 @@ public class ServerfileImporter implements AudioImporter {
         file = uploadFolder.resolve(fileName);
 
         if (!uploadFolder.equals(file.getParent())) {
-            throw new ComponentException(Component.literal("Invalid file name!"));
+            throw new ComponentException(Lang.translatable("audioplayer.invalid_file_name"));
         }
 
         if (!Files.exists(file) || !Files.isRegularFile(file)) {
@@ -67,7 +68,7 @@ public class ServerfileImporter implements AudioImporter {
         try {
             Files.delete(file);
             if (player != null) {
-                player.sendSystemMessage(Component.literal("Deleted temporary file ").append(Component.literal(fileName).withStyle(ChatFormatting.GRAY)).append("."));
+                player.sendSystemMessage(Lang.translatable("audioplayer.deleted_temp_file", Component.literal(fileName).withStyle(ChatFormatting.GRAY)));
             }
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to delete file {}", file, e);
