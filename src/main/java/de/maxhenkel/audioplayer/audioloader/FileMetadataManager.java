@@ -1,0 +1,129 @@
+package de.maxhenkel.audioplayer.audioloader;
+
+import de.maxhenkel.audioplayer.AudioPlayerMod;
+import org.json.JSONObject;
+
+import javax.annotation.Nullable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
+public class FileMetadataManager {
+
+    private static final ExecutorService SAVE_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("MetadataSaver");
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    private final Path file;
+    private Map<UUID, Metadata> metadata;
+
+    public FileMetadataManager(Path file) throws Exception {
+        this.file = file;
+        this.metadata = new ConcurrentHashMap<>();
+        load();
+    }
+
+    private void load() throws Exception {
+        if (!Files.exists(file)) {
+            return;
+        }
+        Map<UUID, Metadata> meta = new ConcurrentHashMap<>();
+        String content = Files.readString(file);
+        JSONObject jsonObject = new JSONObject(content);
+        for (String key : jsonObject.keySet()) {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(key);
+            } catch (IllegalArgumentException e) {
+                AudioPlayerMod.LOGGER.warn("Invalid UUID in metadata: {}", key);
+                continue;
+            }
+            meta.put(uuid, Metadata.fromJson(uuid, jsonObject.getJSONObject(key)));
+        }
+        metadata = meta;
+        saveSync();
+    }
+
+    private void saveSync() {
+        try {
+            Files.createDirectories(file.getParent());
+            JSONObject jsonObject = new JSONObject();
+            for (Map.Entry<UUID, Metadata> entry : metadata.entrySet()) {
+                jsonObject.put(entry.getKey().toString(), entry.getValue().toJson());
+            }
+            Files.writeString(file, jsonObject.toString(2));
+        } catch (Exception e) {
+            AudioPlayerMod.LOGGER.error("Failed to save metadata", e);
+        }
+    }
+
+    public void saveAsync() {
+        SAVE_EXECUTOR_SERVICE.execute(this::saveSync);
+    }
+
+    private Optional<Metadata> getMetadata(UUID uuid) {
+        return Optional.ofNullable(metadata.get(uuid));
+    }
+
+    public Metadata getOrCreateMetadata(UUID uuid) {
+        return metadata.computeIfAbsent(uuid, Metadata::new);
+    }
+
+    public void modifyMetadata(UUID uuid, Consumer<Metadata> metadataConsumer) {
+        Metadata metadata = this.metadata.computeIfAbsent(uuid, Metadata::new);
+        metadataConsumer.accept(metadata);
+        saveAsync();
+    }
+
+    public void setVolumeOverride(UUID uuid, @Nullable Float volume) {
+        modifyMetadata(uuid, metadata -> metadata.setVolume(volume));
+    }
+
+    public Optional<Float> getVolumeOverride(UUID uuid) {
+        return getMetadata(uuid).map(Metadata::getVolume);
+    }
+
+    public void setFileName(UUID uuid, @Nullable String fileName) {
+        modifyMetadata(uuid, metadata -> metadata.setFileName(fileName));
+    }
+
+    @Nullable
+    public String getFileName(UUID uuid) {
+        return getMetadata(uuid).map(Metadata::getFileName).orElse(null);
+    }
+
+    public List<Metadata> getByFileName(String fileName) {
+        return metadata.values().stream().filter(metadata -> matchesName(metadata, fileName)).toList();
+    }
+
+    private static boolean matchesName(Metadata metadata, String name) {
+        String fileName = metadata.getFileName();
+        if (fileName == null) {
+            return false;
+        }
+        String withoutExt = fileNameWithoutExtension(fileName);
+        if (withoutExt.equals(name)) {
+            return true;
+        }
+        return fileName.equals(name);
+    }
+
+    private static String fileNameWithoutExtension(String name) {
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex < 0) {
+            return name;
+        }
+        return name.substring(0, dotIndex);
+    }
+
+}

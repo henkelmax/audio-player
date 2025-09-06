@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
-import de.maxhenkel.audioplayer.audioloader.VolumeOverrideManager;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -17,6 +16,8 @@ import java.util.UUID;
 @Command("audioplayer")
 @RequiresPermission(AudioPlayerPermissionManager.VOLUME_PERMISSION_STRING)
 public class VolumeCommands {
+
+    public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("#.00");
 
     @Command("volume")
     public void volumeWithId(CommandContext<CommandSourceStack> context, @Name("id") UUID uuid, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) {
@@ -38,28 +39,24 @@ public class VolumeCommands {
         volumeCommand(context, actualSoundId, volume);
     }
 
+    //TODO Rework
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {
         if (!AudioStorageManager.instance().checkSoundExists(id)) {
             context.getSource().sendFailure(Component.literal("Sound does not exist"));
             return;
         }
-        VolumeOverrideManager mgr = AudioStorageManager.volumeOverrideManager();
-        DecimalFormat percentFormat = new DecimalFormat("#.00");
         if (volume == null) {
-            float currentVolumeLog = mgr.getAudioVolume(id);
-            float currentVolume = VolumeOverrideManager.convertToLinearScaleFactor(currentVolumeLog);
-
-            context.getSource().sendSuccess(() -> Component.literal("Current volume is %s%%".formatted(percentFormat.format(currentVolume * 100F))), false);
+            float currentVolume = AudioStorageManager.metadataManager().getVolumeOverride(id).orElse(1F);
+            context.getSource().sendSuccess(() -> Component.literal("Current volume is %s%%".formatted(PERCENT_FORMAT.format(currentVolume * 100F))), false);
             return;
         }
-        if (volume == 100F) {
-            // Will remove volume from json, to keep json file smaller
-            mgr.setAudioVolume(id, null);
+        if (volume >= 100F) {
+            // Will remove volume from metadata, to keep meta file smaller
+            AudioStorageManager.metadataManager().setVolumeOverride(id, null);
         }
-        float volumeLinear = volume / 100F;
-        mgr.setAudioVolume(id, VolumeOverrideManager.convertToLogarithmicScaleFactor(volumeLinear));
+        AudioStorageManager.metadataManager().setVolumeOverride(id, volume / 100F);
         AudioStorageManager.audioCache().invalidate(id);
-        context.getSource().sendSuccess(() -> Component.literal("Successfully set sound volume to %s%%, this will apply next time the sound plays".formatted(percentFormat.format(volume))), false);
+        context.getSource().sendSuccess(() -> Component.literal("Successfully set sound volume to %s%%, this will apply next time the sound plays".formatted(PERCENT_FORMAT.format(volume))), false);
     }
 
 }

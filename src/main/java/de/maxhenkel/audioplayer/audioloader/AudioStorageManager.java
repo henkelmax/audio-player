@@ -7,6 +7,7 @@ import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
+import de.maxhenkel.audioplayer.utils.upgrade.MetadataUpgrader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
@@ -34,20 +35,19 @@ public class AudioStorageManager {
 
     private final MinecraftServer server;
     private final ExecutorService executor;
-    private final FileNameManager fileNameManager;
-    private final VolumeOverrideManager volumeOverrideManager;
+    private final FileMetadataManager fileMetadataManager;
     private final AudioCache audioCache;
 
-    public AudioStorageManager(MinecraftServer server) {
+    public AudioStorageManager(MinecraftServer server) throws Exception {
         this.server = server;
         this.executor = Executors.newSingleThreadExecutor(r -> {
             Thread thread = new Thread(r, "AudioPlayerStorageManagerExecutor");
             thread.setDaemon(true);
             return thread;
         });
-        fileNameManager = new FileNameManager(getAudioDataFolder().resolve("file-name-mappings.json"));
-        volumeOverrideManager = new VolumeOverrideManager(getAudioDataFolder().resolve("volume-overrides.json"));
+        fileMetadataManager = new FileMetadataManager(getAudioDataFolder().resolve("meta.json"));
         audioCache = new AudioCache();
+        MetadataUpgrader.upgrade(this);
     }
 
     public static void onInitialize() {
@@ -61,7 +61,12 @@ public class AudioStorageManager {
     }
 
     private static void onServerStarted(MinecraftServer server) {
-        instance = new AudioStorageManager(server);
+        try {
+            instance = new AudioStorageManager(server);
+        } catch (Exception e) {
+            AudioPlayerMod.LOGGER.error("Failed to initialize audio storage manager");
+            throw new RuntimeException(e);
+        }
     }
 
     private static void onServerStopped(MinecraftServer server) {
@@ -75,16 +80,16 @@ public class AudioStorageManager {
         executor.shutdown();
     }
 
+    public FileMetadataManager getFileMetadataManager() {
+        return fileMetadataManager;
+    }
+
     public static AudioStorageManager instance() {
         return instance;
     }
 
-    public static FileNameManager fileNameManager() {
-        return instance().fileNameManager;
-    }
-
-    public static VolumeOverrideManager volumeOverrideManager() {
-        return instance().volumeOverrideManager;
+    public static FileMetadataManager metadataManager() {
+        return instance().fileMetadataManager;
     }
 
     public static AudioCache audioCache() {
@@ -176,7 +181,7 @@ public class AudioStorageManager {
             IOUtils.write(data, outputStream);
         }
 
-        fileNameManager.addFileName(id, fileName);
+        fileMetadataManager.setFileName(id, fileName);
     }
 
     private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioFileException {

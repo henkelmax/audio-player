@@ -28,7 +28,7 @@ public class CachedAudio {
     public static CachedAudio load(UUID audioId) throws Exception {
         AudioStorageManager instance = AudioStorageManager.instance();
         Path existingSoundFile = instance.getExistingSoundFile(audioId);
-        short[] audio = AudioUtils.convert(existingSoundFile, AudioStorageManager.volumeOverrideManager().getAudioVolume(audioId));
+        short[] audio = AudioUtils.convert(existingSoundFile, AudioStorageManager.metadataManager().getVolumeOverride(audioId).orElse(null));
 
         OpusEncoder encoder = VoicechatAudioPlayerPlugin.voicechatApi.createEncoder();
         int frameCount = (audio.length + FRAME_SIZE - 1) / FRAME_SIZE;

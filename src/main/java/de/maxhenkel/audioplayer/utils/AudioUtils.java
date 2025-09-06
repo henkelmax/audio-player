@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class AudioUtils {
 
@@ -69,9 +70,11 @@ public class AudioUtils {
         return getLengthSeconds(convert(file));
     }
 
-    public static void adjustVolume(short[] audioSamples, float volume) {
-        for (int i = 0; i < audioSamples.length; i++) {
-            audioSamples[i] = (short) (audioSamples[i] * volume);
+    public static void adjustVolume(short[] samples, float volume) {
+        float gain = (float) Math.pow(10, (volume - 1F));
+        for (int i = 0; i < samples.length; i++) {
+            int out = Math.round(samples[i] * gain);
+            samples[i] = (short) Math.max(Math.min(out, Short.MAX_VALUE), Short.MIN_VALUE);
         }
     }
 
@@ -83,9 +86,11 @@ public class AudioUtils {
         return convert(() -> new ByteArrayInputStream(file), getAudioType(file));
     }
 
-    public static short[] convert(Path file, float volume) throws IOException, UnsupportedAudioFileException {
+    public static short[] convert(Path file, @Nullable Float volume) throws IOException, UnsupportedAudioFileException {
         short[] converted = convert(file);
-        adjustVolume(converted, volume);
+        if (volume != null) {
+            adjustVolume(converted, volume);
+        }
         return converted;
     }
 

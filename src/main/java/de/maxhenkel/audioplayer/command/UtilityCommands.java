@@ -73,7 +73,7 @@ public class UtilityCommands {
     }
 
     public static void sendSoundName(CommandContext<CommandSourceStack> context, UUID id) {
-        String fileName = AudioStorageManager.fileNameManager().getFileName(id);
+        String fileName = AudioStorageManager.metadataManager().getFileName(id);
         if (fileName == null) {
             context.getSource().sendFailure(Component.literal("Custom audio does not have an associated file name"));
             return;
