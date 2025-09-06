@@ -1,5 +1,7 @@
 {
-  "audioplayer.no_audio_file_name_found": "No audio with name '%s' found",
+  "audioplayer.no_audio_file_name_found": "No audio file with name '%s' found",
+  "audioplayer.no_audio_files_name_found": "No audio files with name '%s' found",
+  "audioplayer.search_results": "Found %s file(s) containing '%s'",
   "audioplayer.multiple_audio_files_name_found": "Multiple files with name '%s' found:",
   "audioplayer.no_audio_file_id_found": "No audio with ID '%s' found",
   "audioplayer.no_valid_item_in_hand": "You don't have a valid item in your main hand",
@@ -22,5 +24,10 @@
   "audioplayer.webserver_not_running": "Web server is not running",
   "audioplayer.visit_website": "Visit the website and use %s.",
   "audioplayer.this_token": "this token",
-  "audioplayer.upload_serverfile_instructions": "Upload a %s or %s file to %s on the server and run the command %s."
+  "audioplayer.upload_serverfile_instructions": "Upload a %s or %s file to %s on the server and run the command %s.",
+  "audioplayer.invalid_item": "Invalid item",
+  "audioplayer.item_no_audio": "Item does not have custom audio",
+  "audioplayer.item_no_audio_id": "Item does not have a custom audio ID",
+  "audioplayer.item_clear_successful": "Successfully cleared item",
+  "audioplayer.extract_sound_id_successful": "Successfully extracted sound ID."
 }

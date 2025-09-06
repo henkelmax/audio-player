@@ -7,6 +7,7 @@ import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.commands.CommandSourceStack;
@@ -28,16 +29,16 @@ public class UtilityCommands {
 
         PlayerType playerType = PlayerType.fromItemStack(itemInHand);
         if (playerType == null) {
-            context.getSource().sendFailure(Component.literal("Invalid item"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.invalid_item"));
             return;
         }
 
         if (!AudioData.clearItem(context.getSource().getServer(), itemInHand)) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
             return;
         }
 
-        context.getSource().sendSuccess(() -> Component.literal("Successfully cleared item"), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_clear_successful"), false);
     }
 
     @Command("id")
@@ -46,7 +47,7 @@ public class UtilityCommands {
         if (id == null) {
             return;
         }
-        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(id, Component.literal("Successfully extracted sound ID.")), false);
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.extract_sound_id_successful")), false);
     }
 
     @Command("info")
@@ -63,11 +64,11 @@ public class UtilityCommands {
         List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(name, false);
 
         if (metadata.isEmpty()) {
-            context.getSource().sendFailure(Component.literal("No audio files with name '%s' found".formatted(name)));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_files_name_found", name));
             return;
         }
 
-        context.getSource().sendSuccess(() -> Component.literal("Found %s file(s) containing '%s'".formatted(metadata.size(), name)), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.search_results", metadata.size(), name), false);
 
         for (Metadata meta : metadata) {
             context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(meta.getAudioId()), false);
@@ -80,12 +81,12 @@ public class UtilityCommands {
 
         AudioData data = AudioData.of(itemInHand);
         if (data == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
             return null;
         }
         UUID actualSoundId = data.getActualSoundId();
         if (actualSoundId == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio_id"));
             return null;
         }
 
