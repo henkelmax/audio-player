@@ -14,8 +14,7 @@
 
 This server side Fabric mod enables uploading custom audio for music discs, goat horns and note blocks with heads.
 
-This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and
-server.
+This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
 
 ## Features
 
@@ -24,6 +23,7 @@ server.
 - Upload audio via a URL
 - Upload audio directly to your server
 - Upload audio via [Filebin](https://github.com/espebra/filebin2/)
+- Upload using a website
 - Server side only
 - No server restart needed
 - No resource pack needed
@@ -60,7 +60,7 @@ Additionally, you can add a custom name and range to the item `/audioplayer appl
 
 It's also possible to bulk apply audio to more than one item at a time by holding a shulker box in your hand.
 
-Starting with version `1.9.1`, you can also apply custom audio by its original file name:
+You can also apply custom audio by its original file name:
 `/audioplayer apply "<FILE_NAME>"`.
 This command works with and without the file extension (like `.mp3` or `.wav`).
 Note that the file name must be unique for this to work.
