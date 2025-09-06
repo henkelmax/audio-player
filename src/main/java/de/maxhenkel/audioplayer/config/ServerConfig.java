@@ -128,8 +128,8 @@ public class ServerConfig {
                 "The maximum allowed duration of a custom goat horn in seconds"
         );
         cacheSize = builder.integerEntry(
-                "cache_size",
-                16,
+                "audio_cache_size",
+                128,
                 0,
                 Integer.MAX_VALUE,
                 "The maximum amount of audio files that are cached in memory",
