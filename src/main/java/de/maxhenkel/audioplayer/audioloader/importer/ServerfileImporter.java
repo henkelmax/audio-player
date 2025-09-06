@@ -16,12 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ServerfileImporter implements AudioImporter {
-
-    public static final Pattern SOUND_FILE_PATTERN = Pattern.compile("^[a-z0-9_ -]+.((wav)|(mp3))$", Pattern.CASE_INSENSITIVE);
 
     private final UUID soundId;
     private final String fileName;
@@ -34,23 +30,13 @@ public class ServerfileImporter implements AudioImporter {
 
     @Override
     public AudioImportInfo onPreprocess(@Nullable ServerPlayer player) throws Exception {
-        Matcher matcher = SOUND_FILE_PATTERN.matcher(fileName);
-        if (!matcher.matches()) {
-            throw new ComponentException(Component.literal("Invalid file name! Valid characters are ")
-                    .append(Component.literal("A-Z").withStyle(ChatFormatting.GRAY))
-                    .append(", ")
-                    .append(Component.literal("0-9").withStyle(ChatFormatting.GRAY))
-                    .append(", ")
-                    .append(Component.literal("_").withStyle(ChatFormatting.GRAY))
-                    .append(" and ")
-                    .append(Component.literal("-").withStyle(ChatFormatting.GRAY))
-                    .append(". The name must also end in ")
-                    .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
-                    .append(" or ")
-                    .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
-                    .append("."));
+        Path uploadFolder = AudioStorageManager.getUploadFolder();
+        file = uploadFolder.resolve(fileName);
+
+        if (!uploadFolder.equals(file.getParent())) {
+            throw new ComponentException(Component.literal("Invalid file name!"));
         }
-        file = AudioStorageManager.getUploadFolder().resolve(fileName);
+
         if (!Files.exists(file) || !Files.isRegularFile(file)) {
             throw new NoSuchFileException("The file %s does not exist".formatted(file.toString()));
         }
