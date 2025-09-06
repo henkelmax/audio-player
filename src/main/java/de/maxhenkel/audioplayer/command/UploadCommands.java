@@ -31,7 +31,7 @@ public class UploadCommands {
                                 .append(" ")
                                 .append(Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
-                                            .withClickEvent(new ClickEvent.RunCommand("/audioplayer upload"))
+                                            .withClickEvent(new ClickEvent.RunCommand("/audioplayer filebin"))
                                             .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
                                 }).withStyle(ChatFormatting.GREEN))
                                 .append(".")
