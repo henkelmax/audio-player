@@ -11,6 +11,9 @@
   "audioplayer.upload_filebin": "Upload audio via Filebin",
   "audioplayer.here": "here",
   "audioplayer.click_show_more": "Click to show more",
+  "audioplayer.click_fill_command": "Click to fill in the command",
   "audioplayer.upload_url": "Upload audio from a URL",
-  "audioplayer.upload_serverfile": "Upload audio with access to the servers file system"
+  "audioplayer.upload_serverfile": "Upload audio with access to the servers file system",
+  "audioplayer.downloading_sound": "Downloading sound, please wait...",
+  "audioplayer.url_command": "If you have a direct link to a %s or %s file, enter the following command: %s."
 }

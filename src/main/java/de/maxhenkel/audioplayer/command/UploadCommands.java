@@ -65,24 +65,22 @@ public class UploadCommands {
 
     @Command("filebin")
     public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
-        context.getSource().sendSuccess(() -> Component.literal("Downloading sound, please wait..."), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
         AudioStorageManager.instance().handleImport(new FilebinImporter(sound), context.getSource().getPlayer());
     }
 
     @Command("url")
     public void url(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
-                        Component.literal("If you have a direct link to a ")
-                                .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
-                                .append(" or ")
-                                .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
-                                .append(" file, enter the following command: ")
-                                .append(Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
+                        Lang.translatable("audioplayer.url_command",
+                                Component.literal(".mp3").withStyle(ChatFormatting.GRAY),
+                                Component.literal(".wav").withStyle(ChatFormatting.GRAY),
+                                Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer url "))
-                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to fill in the command")));
-                                }))
-                                .append(".")
+                                            .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_fill_command")));
+                                })
+                        )
                 , false);
     }
 
