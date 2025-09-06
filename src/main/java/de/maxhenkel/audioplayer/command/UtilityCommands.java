@@ -69,11 +69,7 @@ public class UtilityCommands {
             context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
             return;
         }
-        sendSoundName(context, actualSoundId);
-    }
-
-    public static void sendSoundName(CommandContext<CommandSourceStack> context, UUID id) {
-        String fileName = AudioStorageManager.metadataManager().getFileName(id);
+        String fileName = AudioStorageManager.metadataManager().getFileName(actualSoundId);
         if (fileName == null) {
             context.getSource().sendFailure(Component.literal("Custom audio does not have an associated file name"));
             return;
@@ -81,10 +77,25 @@ public class UtilityCommands {
 
         context.getSource().sendSuccess(() -> Component.literal("Audio file name: ").append(Component.literal(fileName).withStyle(style -> {
             return style
-                    .withColor(ChatFormatting.GREEN)
+                    .withColor(ChatFormatting.BLUE)
                     .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to copy")))
                     .withClickEvent(new ClickEvent.CopyToClipboard(fileName));
         })), false);
+    }
+
+    @Command("info")
+    public void info(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        AudioData data = getHeldData(context);
+        if (data == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
+            return;
+        }
+        UUID actualSoundId = data.getActualSoundId();
+        if (actualSoundId == null) {
+            context.getSource().sendFailure(Component.literal("Item does not have an audio ID"));
+            return;
+        }
+        context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(actualSoundId), false);
     }
 
     public static AudioData getHeldData(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

@@ -86,7 +86,7 @@ public class FileMetadataManager {
         SAVE_EXECUTOR_SERVICE.execute(this::saveSync);
     }
 
-    private Optional<Metadata> getMetadata(UUID uuid) {
+    public Optional<Metadata> getMetadata(UUID uuid) {
         return Optional.ofNullable(metadata.get(uuid));
     }
 
