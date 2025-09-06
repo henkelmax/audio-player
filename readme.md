@@ -56,7 +56,6 @@ Run `/audioplayer filebin` and follow the instructions.
 **Putting custom audio on a music disc or goat horn**
 
 Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
-Additionally, you can add a custom name and range to the item `/audioplayer apply <ID> <RANGE> "<CUSTOM-TEXT>"`.
 
 It's also possible to bulk apply audio to more than one item at a time by holding a shulker box in your hand.
 
@@ -64,6 +63,10 @@ You can also apply custom audio by its original file name:
 `/audioplayer apply "<FILE_NAME>"`.
 This command works with and without the file extension (like `.mp3` or `.wav`).
 Note that the file name must be unique for this to work.
+
+**Adjusting the range of an item**
+
+Run `/audioplayer range <RANGE>` while holding an item or container with items that have custom audio in your main hand.
 
 **Getting the audio from an existing item**
 
