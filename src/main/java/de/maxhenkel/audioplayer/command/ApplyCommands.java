@@ -49,7 +49,7 @@ public class ApplyCommands {
     }
 
     @Command("range")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("range") @Min("0") float range) throws CommandSyntaxException {
+    public void range(CommandContext<CommandSourceStack> context, @Name("range") @Min("0") float range) throws CommandSyntaxException {
         int amount = forEachHeldAudioItem(context, AudioData::of, (itemStack, data) -> {
             Optional<AudioPlayerModule> module = data.getModule(AudioPlayerModule.KEY);
             if (module.isEmpty()) {
