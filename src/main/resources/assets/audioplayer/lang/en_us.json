@@ -32,5 +32,12 @@
   "audioplayer.extract_sound_id_successful": "Successfully extracted sound ID.",
   "audioplayer.audio_file_not_found": "Audio file does not exist",
   "audioplayer.current_volume": "Current volume is %s%%",
-  "audioplayer.set_volume_successful": "Successfully set sound volume to %s%%, this will apply next time the sound plays"
+  "audioplayer.set_volume_successful": "Successfully set sound volume to %s%%, this will apply next time the sound plays",
+  "audioplayer.copy_id": "Copy ID",
+  "audioplayer.copy_id_tooltip": "Copy audio ID",
+  "audioplayer.put_on_item": "Put on item",
+  "audioplayer.put_on_item_tooltip": "Put the audio on an item",
+  "audioplayer.unnamed": "Unnamed",
+  "audioplayer.creation_date": "created %s",
+  "audioplayer.enable_voicechat": "You need to enable voice chat to hear custom audio"
 }
