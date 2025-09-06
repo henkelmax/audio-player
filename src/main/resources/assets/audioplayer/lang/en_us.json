@@ -25,6 +25,7 @@
   "audioplayer.webserver_not_running": "Web server is not running",
   "audioplayer.visit_website": "Visit the website and use %s.",
   "audioplayer.this_token": "this token",
+  "audioplayer.this_link": "this link",
   "audioplayer.upload_serverfile_instructions": "Upload a %s or %s file to %s on the server and run the command %s.",
   "audioplayer.invalid_item": "Invalid item",
   "audioplayer.item_no_audio": "Item does not have custom audio",
