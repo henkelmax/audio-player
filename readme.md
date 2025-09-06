@@ -52,7 +52,7 @@ Run `/audioplayer serverfile "yourfile.mp3"` where `yourfile.mp3` is the name of
 
 Run `/audioplayer filebin` and follow the instructions.
 
-### Putting custom audio on a music disc or goat horn
+### Putting custom audio on an item
 
 Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
 
