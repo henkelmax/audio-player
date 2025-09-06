@@ -30,12 +30,16 @@ public class AudioPlayerMod implements ModInitializer {
         AudioStorageManager.onInitialize();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             MinecraftAdmiral.builder(dispatcher, registryAccess).addCommandClasses(
-                    UploadCommands.class,
-                    ApplyCommands.class,
-                    UtilityCommands.class,
-                    VolumeCommands.class,
-                    PlayCommands.class
-            ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE).build();
+                            UploadCommands.class,
+                            ApplyCommands.class,
+                            UtilityCommands.class,
+                            VolumeCommands.class,
+                            PlayCommands.class
+                    ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE)
+                    .addArgumentTypes(registry -> {
+                        registry.register(ServerFileArgument.class, new ServerFileArgument.ServerFileArgumentSupplier(), new ServerFileArgument.ServerFileArgumentTypeConverter());
+                    })
+                    .build();
         });
 
         AudioPlayerModule.onInitialize();

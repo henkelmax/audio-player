@@ -144,8 +144,8 @@ public class UploadCommands {
     }
 
     @Command("serverfile")
-    public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") String fileName) {
-        AudioStorageManager.instance().handleImport(new ServerfileImporter(fileName), context.getSource().getPlayer());
+    public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") ServerFileArgument serverFile) {
+        AudioStorageManager.instance().handleImport(new ServerfileImporter(serverFile.getFileName()), context.getSource().getPlayer());
     }
 
 }
