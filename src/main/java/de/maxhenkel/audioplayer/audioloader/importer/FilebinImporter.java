@@ -151,7 +151,7 @@ public class FilebinImporter implements AudioImporter {
         URI uploadURL = getBin(uuid);
 
         MutableComponent msg = Lang.translatable("audioplayer.upload_filebin_instructions",
-                Lang.translatable("taudioplayer.this_link")
+                Lang.translatable("audioplayer.this_link")
                         .withStyle(style -> {
                             return style
                                     .withClickEvent(new ClickEvent.OpenUrl(uploadURL))
