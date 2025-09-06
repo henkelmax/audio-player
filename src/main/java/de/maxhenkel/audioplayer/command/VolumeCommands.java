@@ -38,7 +38,6 @@ public class VolumeCommands {
         volumeCommand(context, actualSoundId, volume);
     }
 
-    //TODO Rework
     private void volumeCommand(CommandContext<CommandSourceStack> context, UUID id, @Nullable Float volume) {
         if (!AudioStorageManager.instance().checkSoundExists(id)) {
             context.getSource().sendFailure(Component.literal("Audio does not exist"));
