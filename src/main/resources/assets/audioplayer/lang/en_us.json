@@ -48,5 +48,7 @@
   "audioplayer.invalid_file_name": "Invalid file name!",
   "audioplayer.deleted_temp_file": "Deleted temporary file %s.",
   "audioplayer.audio_too_long": "Audio is too long to play",
-  "audioplayer.play_audio_failed": "Failed to play audio: %s"
+  "audioplayer.play_audio_failed": "Failed to play audio: %s",
+  "audioplayer.no_files_uploaded": "No files uploaded",
+  "audioplayer.no_valid_audio_files_uploaded": "No valid audio files uploaded"
 }

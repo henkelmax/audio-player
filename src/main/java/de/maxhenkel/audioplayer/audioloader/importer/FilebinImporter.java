@@ -9,6 +9,7 @@ import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
+import de.maxhenkel.audioplayer.utils.ComponentException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
@@ -65,11 +66,11 @@ public class FilebinImporter implements AudioImporter {
             JsonElement filesElement = object.get("files");
 
             if (filesElement == null) {
-                throw new IOException("No files uploaded");
+                throw new ComponentException(Lang.translatable("audioplayer.no_files_uploaded"));
             }
 
             if (!(filesElement instanceof JsonArray files)) {
-                throw new IOException("No files uploaded");
+                throw new ComponentException(Lang.translatable("audioplayer.no_files_uploaded"));
             }
 
             for (JsonElement element : files) {
@@ -89,7 +90,7 @@ public class FilebinImporter implements AudioImporter {
                     return new AudioImportInfo(soundId, filename);
                 }
             }
-            throw new IOException("No mp3 or wav files uploaded");
+            throw new ComponentException(Lang.translatable("audioplayer.no_valid_audio_files_uploaded"));
         }
     }
 
