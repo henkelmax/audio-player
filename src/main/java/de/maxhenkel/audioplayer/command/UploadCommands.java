@@ -105,7 +105,7 @@ public class UploadCommands {
         if (uploadUrl != null) {
             context.getSource().sendSuccess(() ->
                             Lang.translatable("audioplayer.click_upload",
-                                    Component.literal("here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
+                                    Lang.translatable("audioplayer.here").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE).withStyle(style -> {
                                         return style
                                                 .withClickEvent(new ClickEvent.OpenUrl(uploadUrl))
                                                 .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_open")));
@@ -129,19 +129,16 @@ public class UploadCommands {
     @Command("serverfile")
     public void serverFile(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
-                        Component.literal("Upload a ")
-                                .append(Component.literal(".mp3").withStyle(ChatFormatting.GRAY))
-                                .append(" or ")
-                                .append(Component.literal(".wav").withStyle(ChatFormatting.GRAY))
-                                .append(" file to ")
-                                .append(Component.literal(AudioStorageManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY))
-                                .append(" on the server and run the command ")
-                                .append(Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_serverfile_instructions",
+                                Component.literal(".mp3").withStyle(ChatFormatting.GRAY),
+                                Component.literal(".wav").withStyle(ChatFormatting.GRAY),
+                                Component.literal(AudioStorageManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY),
+                                Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer serverfile "))
-                                            .withHoverEvent(new HoverEvent.ShowText(Component.literal("Click to fill in the command")));
-                                }))
-                                .append(".")
+                                            .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_fill_command")));
+                                })
+                        )
                 , false);
     }
 
