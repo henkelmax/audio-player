@@ -62,6 +62,8 @@ public class Metadata {
         long created = json.optLong("created", -1L);
         if (created < 0L) {
             metadata.created = null;
+        } else {
+            metadata.created = created;
         }
         return metadata;
     }
