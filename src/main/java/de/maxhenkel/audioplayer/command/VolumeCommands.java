@@ -28,7 +28,6 @@ public class VolumeCommands {
     public void volumeHeldItem(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("volume") @Min("0.01") @Max("100") Float volume) throws CommandSyntaxException {
         AudioData data = UtilityCommands.getHeldData(context);
         if (data == null) {
-            context.getSource().sendFailure(Component.literal("Item does not have custom audio"));
             return;
         }
         UUID actualSoundId = data.getActualSoundId();
