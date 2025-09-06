@@ -39,15 +39,15 @@ public class FileMetadataManager {
         if (!Files.exists(file)) {
             return;
         }
-        int metaVersion = -1;
         Map<UUID, Metadata> meta = new ConcurrentHashMap<>();
         String content = Files.readString(file);
-        JSONObject jsonObject = new JSONObject(content);
-        for (String key : jsonObject.keySet()) {
-            if (key.equals("version")) {
-                metaVersion = jsonObject.optInt(key, -1);
-                continue;
-            }
+        JSONObject root = new JSONObject(content);
+
+        int metaVersion = root.optInt("version", -1);
+        //TODO Check meta version
+
+        JSONObject files = root.optJSONObject("files", new JSONObject());
+        for (String key : files.keySet()) {
             UUID uuid;
             try {
                 uuid = UUID.fromString(key);
@@ -55,7 +55,7 @@ public class FileMetadataManager {
                 AudioPlayerMod.LOGGER.warn("Invalid UUID in metadata: {}", key);
                 continue;
             }
-            meta.put(uuid, Metadata.fromJson(uuid, jsonObject.getJSONObject(key)));
+            meta.put(uuid, Metadata.fromJson(uuid, files.getJSONObject(key)));
         }
         metadata = meta;
         saveSync();
@@ -64,12 +64,18 @@ public class FileMetadataManager {
     private void saveSync() {
         try {
             Files.createDirectories(file.getParent());
-            JSONObject jsonObject = new JSONObject();
+            JSONObject root = new JSONObject();
+            root.put("version", META_VERSION);
+            JSONObject files = new JSONObject();
             for (Map.Entry<UUID, Metadata> entry : metadata.entrySet()) {
-                jsonObject.put(entry.getKey().toString(), entry.getValue().toJson());
+                JSONObject metaJson = entry.getValue().toJson();
+                if (metaJson.isEmpty()) {
+                    continue;
+                }
+                files.put(entry.getKey().toString(), metaJson);
             }
-            jsonObject.put("version", META_VERSION);
-            Files.writeString(file, jsonObject.toString(2));
+            root.put("files", files);
+            Files.writeString(file, root.toString(2));
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to save metadata", e);
         }
