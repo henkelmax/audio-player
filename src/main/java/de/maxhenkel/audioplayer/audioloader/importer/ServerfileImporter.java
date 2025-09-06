@@ -90,7 +90,7 @@ public class ServerfileImporter implements AudioImporter {
 
     @Override
     public String getHandlerName() {
-        return "url";
+        return "serverfile";
     }
 
 }
