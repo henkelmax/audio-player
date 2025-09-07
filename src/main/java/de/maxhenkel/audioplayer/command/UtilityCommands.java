@@ -51,6 +51,10 @@ public class UtilityCommands {
 
     @Command("info")
     public void info(CommandContext<CommandSourceStack> context, @Name("id") UUID id) {
+        if (!AudioStorageManager.instance().checkSoundExists(id)) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_id_found", id.toString()));
+            return;
+        }
         context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(id), false);
     }
 

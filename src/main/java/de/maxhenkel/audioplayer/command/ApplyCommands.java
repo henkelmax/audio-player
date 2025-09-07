@@ -139,6 +139,11 @@ public class ApplyCommands {
     }
 
     private static void applyBulk(CommandContext<CommandSourceStack> context, AudioData data, @Nullable String customName) throws CommandSyntaxException {
+        UUID id = data.getActualSoundId();
+        if (id == null || !AudioStorageManager.instance().checkSoundExists(id)) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_id_found", id == null ? "N/A" : id.toString()));
+            return;
+        }
         int amount = forEachHeldAudioItem(context, PlayerType::fromItemStack, (itemStack, playerType) -> applyToSingleItem(itemStack, playerType, data, customName));
         sendUpdateFeedBack(context, amount);
     }
