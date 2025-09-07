@@ -140,7 +140,7 @@ public class AudioStorageManager {
                 ChatUtils.checkFileSize(bytes.length);
                 UUID id = audioDownloadInfo.getAudioId();
                 String fileName = audioDownloadInfo.getName();
-                saveSound(id, fileName, bytes);
+                saveSound(id, fileName, bytes, player);
                 if (player != null) {
                     player.sendSystemMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
                 }
@@ -164,7 +164,7 @@ public class AudioStorageManager {
         server.execute(runnable);
     }
 
-    private void saveSound(UUID id, @Nullable String fileName, byte[] data) throws UnsupportedAudioFileException, IOException {
+    private void saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException {
         AudioUtils.AudioType audioType = AudioUtils.getAudioType(data);
         checkExtensionAllowed(audioType);
 
@@ -186,6 +186,9 @@ public class AudioStorageManager {
         fileMetadataManager.modifyMetadata(id, metadata -> {
             metadata.setFileName(fileName);
             metadata.setCreated(System.currentTimeMillis());
+            if (player != null) {
+                metadata.setOwner(Metadata.Owner.of(player));
+            }
         });
     }
 

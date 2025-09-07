@@ -1,7 +1,10 @@
 package de.maxhenkel.audioplayer.audioloader;
 
+import de.maxhenkel.audioplayer.AudioPlayerMod;
+import net.minecraft.world.entity.player.Player;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -14,6 +17,8 @@ public class Metadata {
     private Float volume;
     @Nullable
     private Long created;
+    @Nullable
+    private Owner owner;
 
     public Metadata(UUID audioId) {
         this.audioId = audioId;
@@ -50,6 +55,15 @@ public class Metadata {
         this.created = created;
     }
 
+    @Nullable
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(@Nullable Owner owner) {
+        this.owner = owner;
+    }
+
     public static Metadata fromJson(UUID audioId, JSONObject json) {
         Metadata metadata = new Metadata(audioId);
         metadata.fileName = json.optString("fileName", null);
@@ -65,6 +79,19 @@ public class Metadata {
         } else {
             metadata.created = created;
         }
+        JSONObject ownerJson = json.optJSONObject("owner", null);
+        if (ownerJson != null) {
+            try {
+                String uuidString = ownerJson.optString("uuid", null);
+                String name = ownerJson.optString("name", null);
+                if (uuidString != null && name != null) {
+                    UUID uuid = UUID.fromString(uuidString);
+                    metadata.owner = new Owner(uuid, name);
+                }
+            } catch (IllegalArgumentException e) {
+                AudioPlayerMod.LOGGER.warn("Invalid owner UUID in metadata", e);
+            }
+        }
         return metadata;
     }
 
@@ -79,7 +106,21 @@ public class Metadata {
         if (created != null) {
             json.put("created", created);
         }
+        if (owner != null) {
+            JSONObject ownerJson = new JSONObject();
+            ownerJson.put("uuid", owner.uuid());
+            ownerJson.put("name", owner.name());
+            json.put("owner", ownerJson);
+        }
         return json;
+    }
+
+    public static record Owner(@Nonnull UUID uuid, @Nonnull String name) {
+
+        public static Owner of(Player player) {
+            return new Owner(player.getGameProfile().getId(), player.getGameProfile().getName());
+        }
+
     }
 
 }
