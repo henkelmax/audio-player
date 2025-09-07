@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -61,8 +62,17 @@ public class ChatUtils {
         }
         Long created = metadata == null ? null : metadata.getCreated();
         if (created != null) {
-            base.append(", ");
-            base.append(Lang.translatable("audioplayer.creation_date", DATE_FORMAT.format(new Date(created))));
+            base.append(" ");
+            base.append(Lang.translatable("audioplayer.creation_date", Component.literal(DATE_FORMAT.format(new Date(created))).withStyle(ChatFormatting.GRAY)));
+        }
+        Metadata.Owner owner = metadata == null ? null : metadata.getOwner();
+        if (owner != null) {
+            base.append(" ");
+            base.append(Lang.translatable("audioplayer.by", Component.literal(owner.name()).withStyle(style -> {
+                return style
+                        .withHoverEvent(new HoverEvent.ShowEntity(new HoverEvent.EntityTooltipInfo(EntityType.PLAYER, owner.uuid(), Component.literal(owner.name()))))
+                        .withColor(ChatFormatting.GRAY);
+            })));
         }
 
         return createApplyMessage(audioID, base);

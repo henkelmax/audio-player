@@ -1,6 +1,7 @@
 - Removed file name restrictions for serverfile import
 - Added suggestions for serverfile command
 - Save import date of audio files
+- Save owner of audio files
 - Allow bulk applying to bundles and other container items
 - Cleaned up commands
 - Removed randomized sounds

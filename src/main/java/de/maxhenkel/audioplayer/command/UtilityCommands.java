@@ -50,6 +50,11 @@ public class UtilityCommands {
     }
 
     @Command("info")
+    public void info(CommandContext<CommandSourceStack> context, @Name("id") UUID id) {
+        context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(id), false);
+    }
+
+    @Command("info")
     public void info(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         UUID id = getHeldItemId(context);
         if (id == null) {
