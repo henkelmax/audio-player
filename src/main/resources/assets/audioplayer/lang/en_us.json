@@ -51,5 +51,11 @@
   "audioplayer.audio_too_long": "Audio is too long to play",
   "audioplayer.play_audio_failed": "Failed to play audio: %s",
   "audioplayer.no_files_uploaded": "No files uploaded",
-  "audioplayer.no_valid_audio_files_uploaded": "No valid audio files uploaded"
+  "audioplayer.no_valid_audio_files_uploaded": "No valid audio files uploaded",
+  "audioplayer.category.music_discs": "Music discs",
+  "audioplayer.category.music_discs.description": "The volume of all custom music discs",
+  "audioplayer.category.note_blocks": "Note blocks",
+  "audioplayer.category.note_blocks.description": "The volume of all note blocks with custom heads",
+  "audioplayer.category.goat_horns": "Goat horns",
+  "audioplayer.category.goat_horns.description": "The volume of all custom goat horns"
 }

@@ -46,19 +46,25 @@ public class VoicechatAudioPlayerPlugin implements VoicechatPlugin {
         musicDiscs = voicechatServerApi.volumeCategoryBuilder()
                 .setId(AudioPlayerConstants.MUSIC_DISC_CATEGORY)
                 .setName("Music discs")
+                .setNameTranslationKey("audioplayer.category.music_discs")
                 .setDescription("The volume of all custom music discs")
+                .setDescriptionTranslationKey("audioplayer.category.music_discs.description")
                 .setIcon(getIcon("category_music_discs.png"))
                 .build();
         noteBlocks = voicechatServerApi.volumeCategoryBuilder()
                 .setId(AudioPlayerConstants.NOTE_BLOCK_CATEGORY)
                 .setName("Note blocks")
+                .setNameTranslationKey("audioplayer.category.note_blocks")
                 .setDescription("The volume of all note blocks with custom heads")
+                .setDescriptionTranslationKey("audioplayer.category.note_blocks.description")
                 .setIcon(getIcon("category_note_blocks.png"))
                 .build();
         goatHorns = voicechatServerApi.volumeCategoryBuilder()
                 .setId(AudioPlayerConstants.GOAT_HORN_CATEGORY)
                 .setName("Goat horns")
+                .setNameTranslationKey("audioplayer.category.goat_horns")
                 .setDescription("The volume of all custom goat horns")
+                .setDescriptionTranslationKey("audioplayer.category.goat_horns.description")
                 .setIcon(getIcon("category_goat_horns.png"))
                 .build();
 
