@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.utils;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.mp3.Mp3Decoder;
+import net.fabricmc.loader.api.FabricLoader;
 
 import javax.annotation.Nullable;
 import javax.sound.sampled.*;
@@ -121,7 +122,11 @@ public class AudioUtils {
             AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());
             return convert(source);
         } catch (Exception e) {
-            AudioPlayerMod.LOGGER.warn("Error converting mp3 file with native decoder");
+            if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+                AudioPlayerMod.LOGGER.error("Could not convert mp3 using native decoder, using fallback", e);
+            } else {
+                AudioPlayerMod.LOGGER.debug("Could not convert mp3 using native decoder, using fallback");
+            }
             return convert(AudioSystem.getAudioInputStream(inputStreamSupplier.get()));
         }
     }
