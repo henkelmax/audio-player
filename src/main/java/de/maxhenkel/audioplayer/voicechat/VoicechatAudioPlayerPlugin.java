@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.voicechat;
 
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.AudioPlayerConstants;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
@@ -95,7 +96,7 @@ public class VoicechatAudioPlayerPlugin implements VoicechatPlugin {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AudioPlayerMod.LOGGER.error("Failed to load icon '{}'", path, e);
         }
         return null;
     }
