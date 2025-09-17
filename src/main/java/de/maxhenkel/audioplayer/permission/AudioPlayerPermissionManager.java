@@ -107,7 +107,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
                 case EVERYONE -> true;
                 case NOONE -> false;
                 case OPS ->
-                        player != null && player.hasPermissions(player.getServer().getOperatorUserPermissionLevel());
+                        player != null && player.hasPermissions(player.level().getServer().operatorUserPermissionLevel());
             };
         }
 

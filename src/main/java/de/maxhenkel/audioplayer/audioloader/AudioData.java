@@ -19,17 +19,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.InstrumentComponent;
-import net.minecraft.world.item.component.ItemLore;
-import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.*;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.ValueInput;
@@ -235,14 +231,10 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         ItemLore l = null;
 
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock) {
-            CustomData blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
-            CompoundTag blockEntityTag = blockEntityData.copyTag();
+            TypedEntityData<? extends BlockEntityType<?>> blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityType.SKULL, new CompoundTag()));
+            CompoundTag blockEntityTag = blockEntityData.copyTagWithoutId();
             saveToNbt(blockEntityTag);
-            ResourceLocation skullId = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(BlockEntityType.SKULL);
-            if (skullId != null) {
-                blockEntityTag.putString("id", skullId.toString());
-            }
-            stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
+            stack.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityType.SKULL, blockEntityTag));
             if (lore == null) {
                 l = new ItemLore(Collections.singletonList(Component.literal(DEFAULT_HEAD_LORE).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
             }
@@ -284,11 +276,11 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         tag.remove(AUDIOPLAYER_CUSTOM_DATA);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         if (stack.getItem() instanceof BlockItem) {
-            CustomData blockEntityData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            TypedEntityData<BlockEntityType<?>> blockEntityData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
             if (blockEntityData != null) {
-                CompoundTag blockEntityTag = blockEntityData.copyTag();
+                CompoundTag blockEntityTag = blockEntityData.copyTagWithoutId();
                 blockEntityTag.remove(AUDIOPLAYER_CUSTOM_DATA);
-                stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
+                stack.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(blockEntityData.type(), blockEntityTag));
             }
         }
 

@@ -118,7 +118,7 @@ public class Metadata {
     public static record Owner(@Nonnull UUID uuid, @Nonnull String name) {
 
         public static Owner of(Player player) {
-            return new Owner(player.getGameProfile().getId(), player.getGameProfile().getName());
+            return new Owner(player.getGameProfile().id(), player.getGameProfile().name());
         }
 
     }
