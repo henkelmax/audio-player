@@ -40,6 +40,7 @@ public class AudioStorageManager {
 
     public AudioStorageManager(MinecraftServer server) throws Exception {
         this.server = server;
+        //TODO Configurable thread count
         this.executor = Executors.newSingleThreadExecutor(r -> {
             Thread thread = new Thread(r, "AudioPlayerStorageManagerExecutor");
             thread.setDaemon(true);
@@ -141,9 +142,11 @@ public class AudioStorageManager {
                 UUID id = audioDownloadInfo.getAudioId();
                 String fileName = audioDownloadInfo.getName();
                 saveSound(id, fileName, bytes, player);
-                if (player != null) {
-                    player.sendSystemMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
-                }
+                runOnMain(() -> {
+                    if (player != null) {
+                        player.sendSystemMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
+                    }
+                });
                 importer.onPostprocess(player);
             } catch (Exception e) {
                 runOnMain(() -> {
