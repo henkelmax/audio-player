@@ -17,10 +17,10 @@ public class ServerConfig {
     public final ConfigEntry<Float> maxMusicDiscRange;
     public final ConfigEntry<Boolean> allowWavUpload;
     public final ConfigEntry<Boolean> allowMp3Upload;
-    public final ConfigEntry<Integer> maxUploadDuration;
-    public final ConfigEntry<Integer> maxMusicDiscDuration;
-    public final ConfigEntry<Integer> maxNoteBlockDuration;
-    public final ConfigEntry<Integer> maxGoatHornDuration;
+    public final ConfigEntry<Float> maxUploadDuration;
+    public final ConfigEntry<Float> maxMusicDiscDuration;
+    public final ConfigEntry<Float> maxNoteBlockDuration;
+    public final ConfigEntry<Float> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
     public final ConfigEntry<Boolean> runWebServer;
 
@@ -107,34 +107,34 @@ public class ServerConfig {
                 "Note that .mp3 files require Simple Voice Chats mp3 decoder",
                 "Playing .mp3 files can be slightly more CPU intensive"
         );
-        maxUploadDuration = builder.integerEntry(
+        maxUploadDuration = builder.floatEntry(
                 "max_import_duration",
-                60 * 5,
-                1,
-                Integer.MAX_VALUE,
+                60 * 5F,
+                1F,
+                Float.MAX_VALUE,
                 "The maximum allowed duration of a custom audio file in seconds"
         );
-        maxMusicDiscDuration = builder.integerEntry(
+        maxMusicDiscDuration = builder.floatEntry(
                 "max_music_disc_duration",
-                -1,
-                -1,
-                Integer.MAX_VALUE,
+                -1F,
+                -1F,
+                Float.MAX_VALUE,
                 "The maximum allowed duration of a custom music disc in seconds",
                 "Use -1 to disable the limit"
         );
-        maxNoteBlockDuration = builder.integerEntry(
+        maxNoteBlockDuration = builder.floatEntry(
                 "max_note_block_duration",
-                -1,
-                -1,
-                Integer.MAX_VALUE,
+                -1F,
+                -1F,
+                Float.MAX_VALUE,
                 "The maximum allowed duration of a note block with custom audio in seconds",
                 "Use -1 to disable the limit"
         );
-        maxGoatHornDuration = builder.integerEntry(
+        maxGoatHornDuration = builder.floatEntry(
                 "max_goat_horn_duration",
-                -1,
-                -1,
-                Integer.MAX_VALUE,
+                -1F,
+                -1F,
+                Float.MAX_VALUE,
                 "The maximum allowed duration of a custom goat horn in seconds",
                 "Use -1 to disable the limit"
         );

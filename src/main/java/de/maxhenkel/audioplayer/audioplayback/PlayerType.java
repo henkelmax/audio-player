@@ -38,11 +38,11 @@ public enum PlayerType {
 
     private final ConfigEntry<Float> defaultRange;
     private final ConfigEntry<Float> maxRange;
-    private final ConfigEntry<Integer> maxDuration;
+    private final ConfigEntry<Float> maxDuration;
     private final String category;
     private final Predicate<ItemStack> validator;
 
-    PlayerType(ConfigEntry<Float> defaultRange, ConfigEntry<Float> maxRange, ConfigEntry<Integer> maxDuration, String category, Predicate<ItemStack> validator) {
+    PlayerType(ConfigEntry<Float> defaultRange, ConfigEntry<Float> maxRange, ConfigEntry<Float> maxDuration, String category, Predicate<ItemStack> validator) {
         this.defaultRange = defaultRange;
         this.maxRange = maxRange;
         this.maxDuration = maxDuration;
@@ -58,7 +58,7 @@ public enum PlayerType {
         return maxRange;
     }
 
-    public ConfigEntry<Integer> getMaxDuration() {
+    public ConfigEntry<Float> getMaxDuration() {
         return maxDuration;
     }
 

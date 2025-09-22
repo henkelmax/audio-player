@@ -49,8 +49,8 @@ public class PlayerManager {
         if (soundIdToPlay == null) {
             return null;
         }
-        Integer maxDuration = type.getMaxDuration().get();
-        if (maxDuration == null || maxDuration < 0) {
+        Float maxDuration = type.getMaxDuration().get();
+        if (maxDuration == null || maxDuration < 0F) {
             maxDuration = null;
         }
         return playLocational(
@@ -65,7 +65,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public ChannelReferenceImpl<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, @Nullable Integer maxLengthSeconds) {
+    public ChannelReferenceImpl<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, UUID sound, @Nullable ServerPlayer p, float distance, @Nullable String category, @Nullable Float maxLengthSeconds) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) {
             return null;
@@ -88,7 +88,7 @@ public class PlayerManager {
         return playChannel(channel, sound, p, maxLengthSeconds);
     }
 
-    public <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Integer maxLengthSeconds) {
+    public <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Float maxLengthSeconds) {
         AtomicBoolean stopped = new AtomicBoolean();
         AtomicReference<PlayerThread<T>> player = new AtomicReference<>();
 
@@ -125,7 +125,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    private <T extends AudioChannel> PlayerThread<T> playChannel0(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Integer maxLengthSeconds) {
+    private <T extends AudioChannel> PlayerThread<T> playChannel0(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Float maxLengthSeconds) {
         try {
             CachedAudio audio = AudioStorageManager.audioCache().getAudio(sound);
 

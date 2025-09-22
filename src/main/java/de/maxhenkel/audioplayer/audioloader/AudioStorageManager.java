@@ -177,8 +177,8 @@ public class AudioStorageManager {
         Files.createDirectories(soundFile.getParent());
 
         float lengthSeconds = AudioUtils.getLengthSeconds(data);
-        if (lengthSeconds > AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get().floatValue()) {
-            throw new IOException("Maximum upload duration exceeded (%.1fs>%ss)".formatted(lengthSeconds, AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()));
+        if (lengthSeconds > AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()) {
+            throw new IOException("Maximum upload duration exceeded (%.1fs>%.1fs)".formatted(lengthSeconds, AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()));
         }
 
         try (OutputStream outputStream = Files.newOutputStream(soundFile)) {
