@@ -19,3 +19,5 @@
 - Removed name command
 - Renamed `cache_size` config option to `audio_cache_size` and increased default value to 128
 - Added translations with fallback
+- Added `audio_loader_threads` config option
+- Allow disabling audio type duration limits
