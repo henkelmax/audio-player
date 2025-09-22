@@ -25,7 +25,7 @@ public class AudioPlayerMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(getModConfigFolder().resolve("audioplayer-server.properties")).build();
+        SERVER_CONFIG = ConfigBuilder.builder(ServerConfig::new).path(getModConfigFolder().resolve("audioplayer-server.properties")).migration(ServerConfig::migrate).build();
         Lang.onInitialize();
 
         WebServerEvents.onInitialize();

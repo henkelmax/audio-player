@@ -1,10 +1,15 @@
 package de.maxhenkel.audioplayer.config;
 
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.configbuilder.ConfigBuilder;
+import de.maxhenkel.configbuilder.MigratableConfig;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 
 public class ServerConfig {
 
+    private static final int CONFIG_VERSION = 1;
+
+    public ConfigEntry<Integer> configVersion;
     public final ConfigEntry<String> filebinUrl;
     public final ConfigEntry<Long> maxUploadSize;
     public final ConfigEntry<Integer> goatHornCooldown;
@@ -25,6 +30,11 @@ public class ServerConfig {
     public final ConfigEntry<Boolean> runWebServer;
 
     public ServerConfig(ConfigBuilder builder) {
+        configVersion = builder
+                .integerEntry("config_version", CONFIG_VERSION,
+                        "The config version - Used for migration",
+                        "WARNING: DO NOT CHANGE THIS VALUE"
+                );
         filebinUrl = builder.stringEntry(
                 "filebin_url",
                 "https://filebin.net/",
@@ -98,7 +108,7 @@ public class ServerConfig {
                 true,
                 "Whether users should be able to upload .wav files",
                 "Note that .wav files are not compressed and can be very large",
-                "Playing .wav files may result in more RAM usage"
+                "Playing .wav files may result in more RAM and storage usage"
         );
         allowMp3Upload = builder.booleanEntry(
                 "allow_mp3_upload",
@@ -155,6 +165,31 @@ public class ServerConfig {
                 "The webserver.properties will only be generated if this option is set to true",
                 "NOTE: This option is experimental and subject to change"
         );
+    }
+
+    public static void migrate(MigratableConfig migratableConfig) {
+        String configVersionString = migratableConfig.get("config_version");
+        int configVersion = 0;
+        if (configVersionString != null) {
+            try {
+                configVersion = Integer.parseInt(configVersionString);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        if (configVersion == 0) {
+            migrateFrom0To1(migratableConfig);
+            configVersion = 1;
+        }
+    }
+
+    private static void migrateFrom0To1(MigratableConfig migratableConfig) {
+        AudioPlayerMod.LOGGER.info("Migrating config from version 0 to 1");
+
+        migratableConfig.set("config_version", "1");
+        migratableConfig.set("max_music_disc_duration", "-1");
+        migratableConfig.set("max_note_block_duration", "-1");
+        migratableConfig.set("max_goat_horn_duration", "-1");
     }
 
 }
