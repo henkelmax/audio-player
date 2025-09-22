@@ -6,20 +6,17 @@ import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class ChannelReferenceImpl<T extends AudioChannel> implements ChannelReference<T> {
 
     private final T channel;
     private final UUID audioId;
-    private final Stoppable onStop;
-    private final AtomicReference<PlayerThread<T>> player;
+    private final PlayerThread<T> player;
 
-    public ChannelReferenceImpl(T channel, UUID audioId, AtomicReference<PlayerThread<T>> player, Stoppable onStop) {
+    public ChannelReferenceImpl(T channel, UUID audioId, PlayerThread<T> player) {
         this.channel = channel;
         this.audioId = audioId;
-        this.onStop = onStop;
         this.player = player;
     }
 
@@ -35,47 +32,27 @@ public class ChannelReferenceImpl<T extends AudioChannel> implements ChannelRefe
 
     @Override
     public void stopPlaying() {
-        onStop.stop();
+        player.stopPlaying();
     }
 
     @Override
-    public boolean isStarted() {
-        PlayerThread<T> t = player.get();
-        if (t == null) {
-            return false;
-        }
-        return t.isStarted();
+    public boolean isInitialized() {
+        return player.isInitialized();
     }
 
     @Override
-    public boolean isPlaying() {
-        PlayerThread<T> t = player.get();
-        if (t == null) {
-            return true;
-        }
-        return t.isPlaying();
+    public boolean isCurrentlyPlaying() {
+        return player.isCurrentlyPlaying();
     }
 
     @Override
     public boolean isStopped() {
-        PlayerThread<T> t = player.get();
-        if (t == null) {
-            return false;
-        }
-        return t.isStopped();
+        return player.isStopped();
     }
 
     @Override
     public void setOnChannelUpdate(@Nullable Consumer<T> onChannelUpdate) {
-        PlayerThread<T> t = player.get();
-        if (t == null) {
-            return;
-        }
-        t.setChannelUpdate(onChannelUpdate);
-    }
-
-    public interface Stoppable {
-        void stop();
+        player.setChannelUpdate(onChannelUpdate);
     }
 
 }

@@ -14,10 +14,19 @@ public interface ChannelReference<T extends AudioChannel> {
 
     void stopPlaying();
 
-    boolean isStarted();
+    /**
+     * @return if the audio is loaded and playing - this is also true if the channel is done playing
+     */
+    boolean isInitialized();
 
-    boolean isPlaying();
+    /**
+     * @return if the channel is currently playing audio
+     */
+    boolean isCurrentlyPlaying();
 
+    /**
+     * @return if the channel is done playing
+     */
     boolean isStopped();
 
     void setOnChannelUpdate(@Nullable Consumer<T> onChannelUpdate);

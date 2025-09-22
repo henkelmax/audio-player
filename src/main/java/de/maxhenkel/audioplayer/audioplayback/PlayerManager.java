@@ -29,13 +29,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class PlayerManager {
 
-    private final Map<UUID, ChannelReferenceImpl<?>> players;
+    private final Map<UUID, PlayerThread<?>> players;
     private final ExecutorService executor;
 
     public PlayerManager() {
@@ -91,43 +89,18 @@ public class PlayerManager {
     }
 
     public <T extends AudioChannel> ChannelReferenceImpl<T> playChannel(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Float maxLengthSeconds) {
-        AtomicBoolean stopped = new AtomicBoolean();
-        AtomicReference<PlayerThread<T>> player = new AtomicReference<>();
-
-        ChannelReferenceImpl<T> playerReference = new ChannelReferenceImpl<>(channel, sound, player, () -> {
-            synchronized (stopped) {
-                stopped.set(true);
-                PlayerThread<T> audioPlayer = player.get();
-                if (audioPlayer != null) {
-                    audioPlayer.stopPlaying();
-                }
-                players.remove(channel.getId());
-            }
-        });
-        players.put(channel.getId(), playerReference);
+        PlayerThread<T> playerThread = new PlayerThread<>(channel, () -> players.remove(channel.getId()));
+        players.put(channel.getId(), playerThread);
 
         executor.execute(() -> {
-            PlayerThread<T> playerThread = playChannel0(channel, sound, p, maxLengthSeconds);
-            if (playerThread == null) {
+            if (!playChannel0(playerThread, sound, p, maxLengthSeconds)) {
                 players.remove(channel.getId());
-                return;
-            }
-            playerThread.setOnStopped(() -> {
-                players.remove(channel.getId());
-            });
-            synchronized (stopped) {
-                if (!stopped.get()) {
-                    player.set(playerThread);
-                } else {
-                    playerThread.stopPlaying();
-                }
             }
         });
-        return playerReference;
+        return new ChannelReferenceImpl<>(channel, sound, playerThread);
     }
 
-    @Nullable
-    private <T extends AudioChannel> PlayerThread<T> playChannel0(T channel, UUID sound, @Nullable ServerPlayer p, @Nullable Float maxLengthSeconds) {
+    private <T extends AudioChannel> boolean playChannel0(PlayerThread<T> playerThread, UUID sound, @Nullable ServerPlayer p, @Nullable Float maxLengthSeconds) {
         try {
             CachedAudio audio = AudioStorageManager.audioCache().getAudio(sound);
 
@@ -138,12 +111,11 @@ public class PlayerManager {
                     });
                 }
                 AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
-                return null;
+                return false;
             }
 
-            PlayerThread<T> playerThread = new PlayerThread<>(channel, audio);
-            playerThread.startPlaying();
-            return playerThread;
+            playerThread.startPlaying(audio);
+            return true;
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to play audio", e);
             if (p != null) {
@@ -151,12 +123,12 @@ public class PlayerManager {
                     p.displayClientMessage(Lang.translatable("audioplayer.play_audio_failed", e.getMessage()).withStyle(ChatFormatting.DARK_RED), true);
                 });
             }
-            return null;
+            return false;
         }
     }
 
     public void stop(UUID channelID) {
-        ChannelReferenceImpl<?> player = players.get(channelID);
+        PlayerThread<?> player = players.get(channelID);
         if (player == null) {
             players.remove(channelID);
             return;
@@ -164,12 +136,12 @@ public class PlayerManager {
         player.stopPlaying();
     }
 
-    public boolean isPlaying(UUID channelID) {
-        ChannelReferenceImpl<?> player = players.get(channelID);
+    public boolean isStopped(UUID channelID) {
+        PlayerThread<?> player = players.get(channelID);
         if (player == null) {
-            return false;
+            return true;
         }
-        return player.isPlaying();
+        return player.isStopped();
     }
 
     private static PlayerManager instance;
@@ -182,8 +154,14 @@ public class PlayerManager {
     }
 
     public int stopAll(UUID audioId) {
-        List<? extends ChannelReferenceImpl<?>> list = players.entrySet().stream().filter(entry -> entry.getValue().getAudioId().equals(audioId)).map(Map.Entry::getValue).toList();
-        list.forEach(ChannelReferenceImpl::stopPlaying);
+        List<? extends PlayerThread<?>> list = players.values().stream().filter(playerThread -> {
+            CachedAudio audio = playerThread.getAudio();
+            if (audio == null) {
+                return false;
+            }
+            return audio.getId().equals(audioId);
+        }).toList();
+        list.forEach(PlayerThread::stopPlaying);
         return list.size();
     }
 

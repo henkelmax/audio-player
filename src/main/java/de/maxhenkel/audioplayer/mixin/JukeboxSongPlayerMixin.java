@@ -85,7 +85,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (channelId == null) {
             return;
         }
-        cir.setReturnValue(PlayerManager.instance().isPlaying(channelId));
+        cir.setReturnValue(!PlayerManager.instance().isStopped(channelId));
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"), cancellable = true)

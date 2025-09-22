@@ -11,26 +11,31 @@ public class PlayerThread<T extends AudioChannel> extends Thread {
     private static final long FRAME_DURATION_NS = 20_000_000;
 
     private final T audioChannel;
-    private final CachedAudio audio;
-    private boolean started;
     @Nullable
-    private Runnable onStopped;
+    private CachedAudio audio;
+    @Nullable
+    private final Runnable onStopped;
     @Nullable
     private Consumer<T> channelUpdate;
 
-    public PlayerThread(T audioChannel, CachedAudio audio) {
+    public PlayerThread(T audioChannel, @Nullable Runnable onStopped) {
         this.audioChannel = audioChannel;
-        this.audio = audio;
+        this.onStopped = onStopped;
         setDaemon(true);
-        setName(String.format("AudioPlayback-%s", audioChannel.getId()));
+        setName("AudioPlayback-%s".formatted(audioChannel.getId()));
     }
 
-    public void startPlaying() {
-        if (started) {
+    public void startPlaying(CachedAudio cachedAudio) {
+        if (audio != null) {
             return;
         }
+        this.audio = cachedAudio;
         start();
-        started = true;
+    }
+
+    @Nullable
+    public CachedAudio getAudio() {
+        return audio;
     }
 
     private void updateChannel(T audioChannel) {
@@ -43,20 +48,19 @@ public class PlayerThread<T extends AudioChannel> extends Thread {
         interrupt();
     }
 
-    public boolean isStarted() {
-        return started;
+    public boolean isInitialized() {
+        return audio != null;
     }
 
-    public boolean isPlaying() {
+    /**
+     * @return true if the thread is actively playing music - This is also false if the thread is not started yet
+     */
+    public boolean isCurrentlyPlaying() {
         return isAlive();
     }
 
     public boolean isStopped() {
-        return started && !isAlive();
-    }
-
-    public void setOnStopped(@Nullable Runnable onStopped) {
-        this.onStopped = onStopped;
+        return isInitialized() && !isAlive();
     }
 
     public void setChannelUpdate(@Nullable Consumer<T> channelUpdate) {
@@ -65,6 +69,12 @@ public class PlayerThread<T extends AudioChannel> extends Thread {
 
     @Override
     public void run() {
+        if (isInterrupted()) {
+            if (onStopped != null) {
+                onStopped.run();
+            }
+            return;
+        }
         int framePosition = 0;
 
         long startTime = System.nanoTime();

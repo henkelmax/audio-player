@@ -46,7 +46,7 @@ public class NoteBlockMixin extends Block {
             return;
         }
         UUID channelId = channelHolder.audioplayer$getChannelID();
-        if (channelId != null && PlayerManager.instance().isPlaying(channelId)) {
+        if (channelId != null && !PlayerManager.instance().isStopped(channelId)) {
             PlayerManager.instance().stop(channelId);
             channelHolder.audioplayer$setChannelID(null);
         }
