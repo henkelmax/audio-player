@@ -11,6 +11,12 @@ import javax.annotation.Nullable;
 
 public interface PlayEvent extends ModuleAccessor {
 
+    /**
+     * You should check {@link #isOverridden()} before overriding the channel, or else this will throw an exception.
+     *
+     * @param channel The channel to override
+     * @throws ChannelAlreadyOverriddenException If the channel has already been overridden
+     */
     void overrideChannel(ChannelReference<?> channel) throws ChannelAlreadyOverriddenException;
 
     void setCategory(String category);
