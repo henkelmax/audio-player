@@ -116,24 +116,27 @@ public class ServerConfig {
         );
         maxMusicDiscDuration = builder.integerEntry(
                 "max_music_disc_duration",
-                60 * 5,
-                1,
+                -1,
+                -1,
                 Integer.MAX_VALUE,
-                "The maximum allowed duration of a custom music disc in seconds"
+                "The maximum allowed duration of a custom music disc in seconds",
+                "Use -1 to disable the limit"
         );
         maxNoteBlockDuration = builder.integerEntry(
                 "max_note_block_duration",
-                60 * 5,
-                1,
+                -1,
+                -1,
                 Integer.MAX_VALUE,
-                "The maximum allowed duration of a note block with custom audio in seconds"
+                "The maximum allowed duration of a note block with custom audio in seconds",
+                "Use -1 to disable the limit"
         );
         maxGoatHornDuration = builder.integerEntry(
                 "max_goat_horn_duration",
-                20,
-                1,
+                -1,
+                -1,
                 Integer.MAX_VALUE,
-                "The maximum allowed duration of a custom goat horn in seconds"
+                "The maximum allowed duration of a custom goat horn in seconds",
+                "Use -1 to disable the limit"
         );
         cacheSize = builder.integerEntry(
                 "audio_cache_size",

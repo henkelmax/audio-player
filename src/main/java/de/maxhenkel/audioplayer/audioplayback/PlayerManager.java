@@ -49,6 +49,10 @@ public class PlayerManager {
         if (soundIdToPlay == null) {
             return null;
         }
+        Integer maxDuration = type.getMaxDuration().get();
+        if (maxDuration == null || maxDuration < 0) {
+            maxDuration = null;
+        }
         return playLocational(
                 level,
                 pos,
@@ -56,7 +60,7 @@ public class PlayerManager {
                 player,
                 sound.getRange(type),
                 type.getCategory(),
-                type.getMaxDuration().get()
+                maxDuration
         );
     }
 
