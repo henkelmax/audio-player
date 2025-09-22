@@ -161,7 +161,7 @@ public class ApplyCommands {
     }
 
     private static boolean applyToSingleItem(ItemStack stack, PlayerType type, AudioData data, @Nullable String customName) throws CommandSyntaxException {
-        checkRange(type.getMaxRange(), data.getRange().orElse(null));
+        checkRange(type.getMaxRange(), data.getRange());
         if (!type.isValid(stack)) {
             return false;
         }

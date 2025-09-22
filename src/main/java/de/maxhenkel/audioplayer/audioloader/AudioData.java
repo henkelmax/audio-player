@@ -154,7 +154,18 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         return getModule(AudioPlayerModule.KEY).map(AudioPlayerModule::getSoundId).orElse(null);
     }
 
-    public Optional<Float> getRange() {
+    @Override
+    public UUID getSoundId() {
+        return getModule(AudioPlayerModule.KEY).map(AudioPlayerModule::getSoundId).orElseThrow();
+    }
+
+    @Nullable
+    @Override
+    public Float getRange() {
+        return getModule(AudioPlayerModule.KEY).map(AudioPlayerModule::getRange).orElse(null);
+    }
+
+    public Optional<Float> getOptionalRange() {
         return getModule(AudioPlayerModule.KEY).flatMap(m -> Optional.ofNullable(m.getRange()));
     }
 
@@ -163,7 +174,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
     }
 
     public float getRangeOrDefault(ConfigEntry<Float> defaultRange, ConfigEntry<Float> maxRange) {
-        float range = getRange().orElseGet(defaultRange::get);
+        float range = getOptionalRange().orElseGet(defaultRange::get);
         if (range > maxRange.get()) {
             return maxRange.get();
         } else {
