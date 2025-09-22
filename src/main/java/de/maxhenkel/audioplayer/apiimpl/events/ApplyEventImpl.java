@@ -1,12 +1,9 @@
 package de.maxhenkel.audioplayer.apiimpl.events;
 
-import de.maxhenkel.audioplayer.api.data.AudioDataModule;
-import de.maxhenkel.audioplayer.api.data.ModuleKey;
+import de.maxhenkel.audioplayer.api.data.ModuleAccessor;
 import de.maxhenkel.audioplayer.api.events.ApplyEvent;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.Optional;
 
 public class ApplyEventImpl implements ApplyEvent {
 
@@ -19,12 +16,13 @@ public class ApplyEventImpl implements ApplyEvent {
     }
 
     @Override
+    public ModuleAccessor getData() {
+        return audioData;
+    }
+
+    @Override
     public ItemStack getItemStack() {
         return stack;
     }
 
-    @Override
-    public <T extends AudioDataModule> Optional<T> getModule(ModuleKey<T> moduleKey) {
-        return audioData.getModule(moduleKey);
-    }
 }

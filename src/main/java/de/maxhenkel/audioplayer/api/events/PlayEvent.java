@@ -8,8 +8,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
-public interface PlayEvent extends ModuleAccessor {
+public interface PlayEvent {
+
+    ModuleAccessor getData();
 
     /**
      * You should check {@link #isOverridden()} before overriding the channel, or else this will throw an exception.
@@ -18,6 +21,10 @@ public interface PlayEvent extends ModuleAccessor {
      * @throws ChannelAlreadyOverriddenException If the channel has already been overridden
      */
     void overrideChannel(ChannelReference<?> channel) throws ChannelAlreadyOverriddenException;
+
+    void setSoundId(UUID soundId);
+
+    UUID getSoundId();
 
     void setCategory(String category);
 
@@ -35,5 +42,9 @@ public interface PlayEvent extends ModuleAccessor {
     ServerPlayer getPlayer();
 
     float getDefaultDistance();
+
+    void setDistance(float distance);
+
+    float getDistance();
 
 }

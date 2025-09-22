@@ -2,7 +2,9 @@ package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.ChannelReference;
+import de.maxhenkel.audioplayer.api.events.PlayEvent;
 import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
+import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
@@ -14,6 +16,7 @@ import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
+import net.fabricmc.fabric.api.event.Event;
 import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class PlayerManager {
 
@@ -44,8 +48,8 @@ public class PlayerManager {
     }
 
     @Nullable
-    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, PlayerType type, String category, AudioData sound, @Nullable ServerPlayer player) {
-        UUID soundIdToPlay = sound.getSoundIdToPlay();
+    public ChannelReference<?> playType(ServerLevel serverLevel, @Nullable ServerPlayer player, AudioData data, PlayerType type, Event<Consumer<PlayEvent>> playEvent, Vec3 pos) {
+        UUID soundIdToPlay = data.getSoundIdToPlay();
         if (soundIdToPlay == null) {
             return null;
         }
@@ -53,15 +57,13 @@ public class PlayerManager {
         if (maxDuration == null || maxDuration < 0F) {
             maxDuration = null;
         }
-        return playLocational(
-                level,
-                pos,
-                soundIdToPlay,
-                player,
-                sound.getRange(type),
-                category,
-                maxDuration
-        );
+        PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, soundIdToPlay, type.getDefaultRange().get(), type.getCategory(), pos);
+        playEvent.invoker().accept(event);
+        ChannelReference<?> channel = event.getOverrideChannel();
+        if (channel == null) {
+            channel = PlayerManager.instance().playLocational(serverLevel, event.getPosition(), event.getSoundId(), player, event.getDistance(), event.getCategory(), maxDuration);
+        }
+        return channel;
     }
 
     @Nullable

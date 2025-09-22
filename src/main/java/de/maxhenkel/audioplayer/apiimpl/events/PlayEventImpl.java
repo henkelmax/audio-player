@@ -1,8 +1,7 @@
 package de.maxhenkel.audioplayer.apiimpl.events;
 
 import de.maxhenkel.audioplayer.api.ChannelReference;
-import de.maxhenkel.audioplayer.api.data.AudioDataModule;
-import de.maxhenkel.audioplayer.api.data.ModuleKey;
+import de.maxhenkel.audioplayer.api.data.ModuleAccessor;
 import de.maxhenkel.audioplayer.api.events.PlayEvent;
 import de.maxhenkel.audioplayer.api.exceptions.ChannelAlreadyOverriddenException;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
@@ -11,7 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.UUID;
 
 public class PlayEventImpl implements PlayEvent {
 
@@ -19,19 +18,28 @@ public class PlayEventImpl implements PlayEvent {
     protected final ServerLevel level;
     @Nullable
     protected final ServerPlayer player;
-    protected float defaultDistance;
+    protected UUID soundId;
+    protected final float defaultDistance;
+    protected float distance;
     protected String category;
     protected Vec3 position;
     @Nullable
     protected ChannelReference<?> overrideChannel;
 
-    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, float defaultDistance, String category, Vec3 position) {
+    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, UUID soundId, float defaultDistance, String category, Vec3 position) {
         this.audioData = audioData;
         this.level = level;
         this.player = player;
+        this.soundId = soundId;
         this.defaultDistance = defaultDistance;
+        this.distance = defaultDistance;
         this.category = category;
         this.position = position;
+    }
+
+    @Override
+    public ModuleAccessor getData() {
+        return audioData;
     }
 
     @Override
@@ -40,6 +48,16 @@ public class PlayEventImpl implements PlayEvent {
             throw new ChannelAlreadyOverriddenException("Channel already overridden with audio ID %s".formatted(overrideChannel.getAudioId()));
         }
         overrideChannel = channel;
+    }
+
+    @Override
+    public void setSoundId(UUID soundId) {
+        this.soundId = soundId;
+    }
+
+    @Override
+    public UUID getSoundId() {
+        return soundId;
     }
 
     @Override
@@ -83,14 +101,18 @@ public class PlayEventImpl implements PlayEvent {
         return defaultDistance;
     }
 
-    @Nullable
-    public ChannelReference<?> getOverrideChannel() {
-        return overrideChannel;
+    @Override
+    public void setDistance(float distance) {
+        this.distance = distance;
     }
 
     @Override
+    public float getDistance() {
+        return distance;
+    }
+
     @Nullable
-    public <T extends AudioDataModule> Optional<T> getModule(ModuleKey<T> moduleKey) {
-        return audioData.getModule(moduleKey);
+    public ChannelReference<?> getOverrideChannel() {
+        return overrideChannel;
     }
 }

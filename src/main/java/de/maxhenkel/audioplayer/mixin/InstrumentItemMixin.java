@@ -3,7 +3,6 @@ package de.maxhenkel.audioplayer.mixin;
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
-import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
@@ -38,16 +37,10 @@ public class InstrumentItemMixin {
             return;
         }
 
-        PlayerType playerType = PlayerType.GOAT_HORN;
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        PlayEventImpl event = new PlayEventImpl(data, serverLevel, player, playerType.getDefaultRange().get(), playerType.getCategory(), p.getEyePosition());
-        AudioEvents.PLAY_GOAT_HORN.invoker().accept(event);
-        ChannelReference<?> channel = event.getOverrideChannel();
+        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, null, data, PlayerType.GOAT_HORN, AudioEvents.PLAY_GOAT_HORN, p.getEyePosition());
         if (channel == null) {
-            channel = PlayerManager.instance().playLocational(serverLevel, event.getPosition(), playerType, event.getCategory(), data, player);
-            if (channel == null) {
-                return;
-            }
+            return;
         }
         player.startUsingItem(interactionHand);
         player.getCooldowns().addCooldown(itemInHand, AudioPlayerMod.SERVER_CONFIG.goatHornCooldown.get());

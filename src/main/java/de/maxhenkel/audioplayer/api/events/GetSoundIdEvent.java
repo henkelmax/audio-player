@@ -5,7 +5,9 @@ import de.maxhenkel.audioplayer.api.data.ModuleAccessor;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public interface GetSoundIdEvent extends ModuleAccessor {
+public interface GetSoundIdEvent {
+
+    ModuleAccessor getData();
 
     @Nullable
     UUID getSoundId();
