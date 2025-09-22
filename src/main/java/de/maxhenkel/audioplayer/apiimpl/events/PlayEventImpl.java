@@ -4,6 +4,7 @@ import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.PlayEvent;
+import de.maxhenkel.audioplayer.api.exceptions.ChannelAlreadyOverriddenException;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +35,10 @@ public class PlayEventImpl implements PlayEvent {
     }
 
     @Override
-    public void overrideChannel(ChannelReference<?> channel) {
+    public void overrideChannel(ChannelReference<?> channel) throws ChannelAlreadyOverriddenException {
+        if (overrideChannel != null) {
+            throw new ChannelAlreadyOverriddenException("Channel already overridden with audio ID %s".formatted(overrideChannel.getAudioId()));
+        }
         overrideChannel = channel;
     }
 
