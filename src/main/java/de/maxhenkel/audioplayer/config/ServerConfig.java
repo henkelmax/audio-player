@@ -8,6 +8,7 @@ public class ServerConfig {
     public final ConfigEntry<String> filebinUrl;
     public final ConfigEntry<Long> maxUploadSize;
     public final ConfigEntry<Integer> goatHornCooldown;
+    public final ConfigEntry<Integer> audioLoaderThreads;
     public final ConfigEntry<Float> musicDiscRange;
     public final ConfigEntry<Float> noteBlockRange;
     public final ConfigEntry<Float> goatHornRange;
@@ -42,6 +43,13 @@ public class ServerConfig {
                 1,
                 (int) Short.MAX_VALUE,
                 "The cooldown of goat horns with custom audio in ticks"
+        );
+        audioLoaderThreads = builder.integerEntry(
+                "audio_loader_threads",
+                2,
+                1,
+                Integer.MAX_VALUE,
+                "The number of threads to use for loading audio"
         );
         musicDiscRange = builder.floatEntry(
                 "music_disc_range",

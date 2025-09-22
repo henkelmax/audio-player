@@ -36,8 +36,8 @@ public class PlayerManager {
 
     public PlayerManager() {
         this.players = new ConcurrentHashMap<>();
-        this.executor = Executors.newSingleThreadExecutor(r -> {
-            Thread thread = new Thread(r, "AudioPlayerThread");
+        this.executor = Executors.newFixedThreadPool(AudioPlayerMod.SERVER_CONFIG.audioLoaderThreads.get(), r -> {
+            Thread thread = new Thread(r, "AudioLoaderThread");
             thread.setDaemon(true);
             return thread;
         });
@@ -127,7 +127,7 @@ public class PlayerManager {
 
             if (maxLengthSeconds != null && audio.getDurationSeconds() > maxLengthSeconds) {
                 if (p != null) {
-                    //TODO Rework this
+                    //TODO Rework this and run it on the main thread
                     p.displayClientMessage(Lang.translatable("audioplayer.audio_too_long").withStyle(ChatFormatting.DARK_RED), true);
                 }
                 AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
