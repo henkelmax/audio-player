@@ -40,7 +40,6 @@ public class AudioStorageManager {
 
     public AudioStorageManager(MinecraftServer server) throws Exception {
         this.server = server;
-        //TODO Configurable thread count
         this.executor = Executors.newSingleThreadExecutor(r -> {
             Thread thread = new Thread(r, "AudioPlayerStorageManagerExecutor");
             thread.setDaemon(true);
