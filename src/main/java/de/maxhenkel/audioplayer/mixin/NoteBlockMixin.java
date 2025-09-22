@@ -52,11 +52,12 @@ public class NoteBlockMixin extends Block {
             channelHolder.audioplayer$setChannelID(null);
         }
 
-        PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, PlayerType.NOTE_BLOCK.getDefaultRange().get());
+        PlayerType playerType = PlayerType.NOTE_BLOCK;
+        PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, playerType.getDefaultRange().get(), playerType.getCategory(), blockPos.getCenter());
         AudioEvents.PLAY_NOTE_BLOCK.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
-            channel = PlayerManager.instance().playLocational(serverLevel, blockPos.getCenter(), PlayerType.NOTE_BLOCK, data, null);
+            channel = PlayerManager.instance().playLocational(serverLevel, event.getPosition(), playerType, event.getCategory(), data, null);
         }
 
         if (channel != null) {

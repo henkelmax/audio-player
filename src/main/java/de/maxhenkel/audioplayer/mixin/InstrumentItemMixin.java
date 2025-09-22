@@ -37,12 +37,14 @@ public class InstrumentItemMixin {
             ci.setReturnValue(InteractionResult.CONSUME);
             return;
         }
+
+        PlayerType playerType = PlayerType.GOAT_HORN;
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        PlayEventImpl event = new PlayEventImpl(data, serverLevel, player, PlayerType.GOAT_HORN.getDefaultRange().get());
+        PlayEventImpl event = new PlayEventImpl(data, serverLevel, player, playerType.getDefaultRange().get(), playerType.getCategory(), p.getEyePosition());
         AudioEvents.PLAY_GOAT_HORN.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
-            channel = PlayerManager.instance().playLocational(serverLevel, p.getEyePosition(), PlayerType.GOAT_HORN, data, player);
+            channel = PlayerManager.instance().playLocational(serverLevel, event.getPosition(), playerType, event.getCategory(), data, player);
             if (channel == null) {
                 return;
             }

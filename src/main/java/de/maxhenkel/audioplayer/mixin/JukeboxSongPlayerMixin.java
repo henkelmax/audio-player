@@ -57,11 +57,12 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (data == null) {
             return false;
         }
-        PlayEventImpl event = new PlayEventImpl(data, level, null, PlayerType.MUSIC_DISC.getDefaultRange().get());
+        PlayerType playerType = PlayerType.MUSIC_DISC;
+        PlayEventImpl event = new PlayEventImpl(data, level, null, playerType.getDefaultRange().get(), playerType.getCategory(), blockPos.getCenter());
         AudioEvents.PLAY_MUSIC_DISC.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
-            channel = PlayerManager.instance().playLocational(level, blockPos.getCenter(), PlayerType.MUSIC_DISC, data, null);
+            channel = PlayerManager.instance().playLocational(level, event.getPosition(), playerType, event.getCategory(), data, null);
             if (channel == null) {
                 return false;
             }

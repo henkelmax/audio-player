@@ -7,6 +7,7 @@ import de.maxhenkel.audioplayer.api.events.PlayEvent;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -18,19 +19,43 @@ public class PlayEventImpl implements PlayEvent {
     @Nullable
     protected final ServerPlayer player;
     protected float defaultDistance;
+    protected String category;
+    protected Vec3 position;
     @Nullable
     protected ChannelReference<?> overrideChannel;
 
-    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, float defaultDistance) {
+    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, float defaultDistance, String category, Vec3 position) {
         this.audioData = audioData;
         this.level = level;
         this.player = player;
         this.defaultDistance = defaultDistance;
+        this.category = category;
+        this.position = position;
     }
 
     @Override
     public void overrideChannel(ChannelReference<?> channel) {
         overrideChannel = channel;
+    }
+
+    @Override
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    @Override
+    public String getCategory() {
+        return category;
+    }
+
+    @Override
+    public void setPosition(Vec3 position) {
+        this.position = position;
+    }
+
+    @Override
+    public Vec3 getPosition() {
+        return position;
     }
 
     @Override

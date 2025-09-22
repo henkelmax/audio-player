@@ -44,7 +44,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, PlayerType type, AudioData sound, @Nullable ServerPlayer player) {
+    public ChannelReference<LocationalAudioChannel> playLocational(ServerLevel level, Vec3 pos, PlayerType type, String category, AudioData sound, @Nullable ServerPlayer player) {
         UUID soundIdToPlay = sound.getSoundIdToPlay();
         if (soundIdToPlay == null) {
             return null;
@@ -59,7 +59,7 @@ public class PlayerManager {
                 soundIdToPlay,
                 player,
                 sound.getRange(type),
-                type.getCategory(),
+                category,
                 maxDuration
         );
     }
