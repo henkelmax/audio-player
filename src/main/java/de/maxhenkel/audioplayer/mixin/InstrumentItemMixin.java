@@ -38,7 +38,7 @@ public class InstrumentItemMixin {
         }
 
         itemInHand.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
-        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, player, data, PlayerType.GOAT_HORN, AudioEvents.PLAY_GOAT_HORN, p.getEyePosition());
+        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, player, data, PlayerType.GOAT_HORN, AudioEvents.PLAY_GOAT_HORN, AudioEvents.POST_PLAY_GOAT_HORN, p.getEyePosition());
         if (channel == null) {
             return;
         }

@@ -56,7 +56,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (data == null) {
             return false;
         }
-        ChannelReference<?> channel = PlayerManager.instance().playType(level, null, data, PlayerType.MUSIC_DISC, AudioEvents.PLAY_MUSIC_DISC, blockPos.getCenter());
+        ChannelReference<?> channel = PlayerManager.instance().playType(level, null, data, PlayerType.MUSIC_DISC, AudioEvents.PLAY_MUSIC_DISC, AudioEvents.POST_PLAY_MUSIC_DISC, blockPos.getCenter());
         if (channel == null) {
             return false;
         }

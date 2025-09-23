@@ -3,8 +3,10 @@ package de.maxhenkel.audioplayer.audioplayback;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.events.PlayEvent;
+import de.maxhenkel.audioplayer.api.events.PostPlayEvent;
 import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
+import de.maxhenkel.audioplayer.apiimpl.events.PostPlayEventImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
@@ -46,7 +48,7 @@ public class PlayerManager {
     }
 
     @Nullable
-    public ChannelReference<?> playType(ServerLevel serverLevel, @Nullable ServerPlayer player, AudioData data, PlayerType type, Event<Consumer<PlayEvent>> playEvent, Vec3 pos) {
+    public ChannelReference<?> playType(ServerLevel serverLevel, @Nullable ServerPlayer player, AudioData data, PlayerType type, Event<Consumer<PlayEvent>> playEvent, Event<Consumer<PostPlayEvent>> postPlayEvent, Vec3 pos) {
         UUID soundIdToPlay = data.getSoundIdToPlay();
         if (soundIdToPlay == null) {
             return null;
@@ -60,6 +62,9 @@ public class PlayerManager {
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
             channel = PlayerManager.instance().playLocational(serverLevel, event.getPosition(), event.getSoundId(), player, event.getDistance(), event.getCategory(), maxDuration);
+        }
+        if (channel != null) {
+            postPlayEvent.invoker().accept(new PostPlayEventImpl(channel, data, event.getSoundId(), event.getCategory(), event.getPosition(), serverLevel, player, event.getDistance()));
         }
         return channel;
     }

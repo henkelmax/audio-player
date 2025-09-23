@@ -50,7 +50,7 @@ public class NoteBlockMixin extends Block {
             PlayerManager.instance().stop(channelId);
             channelHolder.audioplayer$setChannelID(null);
         }
-        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, null, data, PlayerType.NOTE_BLOCK, AudioEvents.PLAY_NOTE_BLOCK, blockPos.getCenter());
+        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, null, data, PlayerType.NOTE_BLOCK, AudioEvents.PLAY_NOTE_BLOCK, AudioEvents.POST_PLAY_NOTE_BLOCK, blockPos.getCenter());
         if (channel != null) {
             channelHolder.audioplayer$setChannelID(channel.getChannel().getId());
             cir.setReturnValue(true);
