@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.audioloader;
 
+import com.google.gson.*;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.api.AudioPlayerModule;
@@ -8,7 +9,6 @@ import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.events.AudioEvents;
 import de.maxhenkel.audioplayer.api.events.ItemEvents;
 import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
-import de.maxhenkel.audioplayer.apiimpl.JsonData;
 import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.GetSoundIdEventImpl;
@@ -30,8 +30,6 @@ import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -43,8 +41,10 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
 
     public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
+    public static final Gson GSON = new GsonBuilder().create();
+
     protected Map<ModuleKey<? extends AudioDataModule>, AudioDataModule> modules;
-    protected Map<ResourceLocation, JSONObject> unknownModules;
+    protected Map<ResourceLocation, JsonObject> unknownModules;
 
     protected AudioData() {
         this.modules = new ConcurrentHashMap<>();
@@ -52,19 +52,20 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
     }
 
     @Nullable
-    private static AudioData fromJson(JSONObject rawData) {
+    private static AudioData fromJson(JsonObject rawData) {
         AudioData data = new AudioData();
-        for (String key : rawData.keySet()) {
-            ResourceLocation resourceLocation = ResourceLocation.tryParse(key);
+        for (Map.Entry<String, JsonElement> entry : rawData.entrySet()) {
+            ResourceLocation resourceLocation = ResourceLocation.tryParse(entry.getKey());
             if (resourceLocation == null) {
-                AudioPlayerMod.LOGGER.warn("Invalid module key: {}", key);
+                AudioPlayerMod.LOGGER.warn("Invalid module key: {}", entry.getKey());
                 continue;
             }
-            JSONObject jsonObject = rawData.optJSONObject(key);
-            if (jsonObject == null) {
-                AudioPlayerMod.LOGGER.warn("Invalid content for module: {}", key);
+            JsonElement jsonElement = entry.getValue();
+            if (!jsonElement.isJsonObject()) {
+                AudioPlayerMod.LOGGER.warn("Invalid content for module: {}", entry.getKey());
                 continue;
             }
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
             ModuleKey<? extends AudioDataModule> moduleKey = AudioPlayerApiImpl.INSTANCE.getModuleType(resourceLocation);
             if (moduleKey == null) {
                 data.unknownModules.put(resourceLocation, jsonObject);
@@ -72,7 +73,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
             } else {
                 AudioDataModule module = moduleKey.create();
                 try {
-                    module.load(new JsonData(jsonObject));
+                    module.load(jsonObject);
                     data.modules.put(moduleKey, module);
                 } catch (Exception e) {
                     data.unknownModules.put(resourceLocation, jsonObject);
@@ -117,8 +118,13 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
             return null;
         }
         try {
-            return AudioData.fromJson(new JSONObject(data));
-        } catch (JSONException e) {
+            JsonElement jsonElement = JsonParser.parseString(data);
+            if (!jsonElement.isJsonObject()) {
+                AudioPlayerMod.LOGGER.error("Failed to parse item data - element is not a json object");
+                return null;
+            }
+            return AudioData.fromJson(jsonElement.getAsJsonObject());
+        } catch (JsonSyntaxException e) {
             AudioPlayerMod.LOGGER.error("Failed to parse item data", e);
             return null;
         }
@@ -182,17 +188,17 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         }
     }
 
-    private JSONObject toJson() {
-        JSONObject rawData = new JSONObject();
-        for (Map.Entry<ResourceLocation, JSONObject> entry : unknownModules.entrySet()) {
-            rawData.put(entry.toString(), entry.getValue());
+    private JsonObject toJson() {
+        JsonObject rawData = new JsonObject();
+        for (Map.Entry<ResourceLocation, JsonObject> entry : unknownModules.entrySet()) {
+            rawData.add(entry.toString(), entry.getValue());
         }
         for (Map.Entry<ModuleKey<? extends AudioDataModule>, AudioDataModule> entry : modules.entrySet()) {
             AudioDataModule module = entry.getValue();
-            JsonData jsonData = new JsonData(new JSONObject());
+            JsonObject jsonData = new JsonObject();
             try {
                 module.save(jsonData);
-                rawData.put(entry.getKey().getId().toString(), jsonData.getRawData());
+                rawData.add(entry.getKey().getId().toString(), jsonData);
             } catch (Exception e) {
                 AudioPlayerMod.LOGGER.error("Failed to save module {}", entry.getKey().getId(), e);
             }
@@ -201,11 +207,11 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
     }
 
     public void saveToNbt(CompoundTag tag) {
-        tag.putString(AUDIOPLAYER_CUSTOM_DATA, toJson().toString());
+        tag.putString(AUDIOPLAYER_CUSTOM_DATA, GSON.toJson(toJson()));
     }
 
     public void saveToValueOutput(ValueOutput valueOutput) {
-        valueOutput.putString(AUDIOPLAYER_CUSTOM_DATA, toJson().toString());
+        valueOutput.putString(AUDIOPLAYER_CUSTOM_DATA, GSON.toJson(toJson()));
     }
 
     public void saveToItemIgnoreLore(ItemStack stack) {

@@ -1,9 +1,9 @@
 package de.maxhenkel.audioplayer.api;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
-import de.maxhenkel.audioplayer.api.data.DataAccessor;
-import de.maxhenkel.audioplayer.api.data.DataModifier;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -45,20 +45,21 @@ public class AudioPlayerModule implements AudioDataModule {
     }
 
     @Override
-    public void load(DataAccessor accessor) throws Exception {
-        String id = accessor.getString("id");
+    public void load(JsonObject json) throws Exception {
+        JsonElement id = json.get("id");
         if (id == null) {
             throw new Exception("Missing sound ID");
         }
-        soundId = UUID.fromString(id);
-        range = accessor.getFloat("range");
+        soundId = UUID.fromString(id.getAsString());
+        JsonElement rangeElement = json.get("range");
+        range = rangeElement == null ? null : rangeElement.getAsFloat();
     }
 
     @Override
-    public void save(DataModifier modifier) throws Exception {
-        modifier.setString("id", soundId.toString());
+    public void save(JsonObject json) throws Exception {
+        json.addProperty("id", soundId.toString());
         if (range != null) {
-            modifier.setFloat("range", range);
+            json.addProperty("range", range);
         }
     }
 

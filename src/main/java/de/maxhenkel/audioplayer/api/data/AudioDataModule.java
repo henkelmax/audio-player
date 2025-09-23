@@ -1,9 +1,11 @@
 package de.maxhenkel.audioplayer.api.data;
 
+import com.google.gson.JsonObject;
+
 public interface AudioDataModule {
 
-    void load(DataAccessor accessor) throws Exception;
+    void load(JsonObject json) throws Exception;
 
-    void save(DataModifier modifier) throws Exception;
+    void save(JsonObject json) throws Exception;
 
 }

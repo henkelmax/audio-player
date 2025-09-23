@@ -33,9 +33,6 @@ dependencies {
     implementation "org.microhttp:microhttp:${microhttp_version}"
     shadow "org.microhttp:microhttp:${microhttp_version}"
 
-    implementation "org.json:json:${json_version}"
-    shadow "org.json:json:${json_version}"
-
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
     modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}:fabric-stub"
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
@@ -89,7 +86,6 @@ shadowJar {
     relocate 'javazoom', "de.maxhenkel.audioplayer.javazoom"
     relocate 'org.tritonus', "de.maxhenkel.audioplayer.tritonus"
     relocate 'org.microhttp', "de.maxhenkel.audioplayer.microhttp"
-    relocate 'org.json', "de.maxhenkel.audioplayer.json"
 }
 
 node {
