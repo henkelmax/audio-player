@@ -69,7 +69,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
             ModuleKey<? extends AudioDataModule> moduleKey = AudioPlayerApiImpl.INSTANCE.getModuleType(resourceLocation);
             if (moduleKey == null) {
                 data.unknownModules.put(resourceLocation, jsonObject);
-                //TODO Debug log unknown module
+                AudioPlayerMod.LOGGER.debug("Unknown module: {}", resourceLocation);
             } else {
                 AudioDataModule module = moduleKey.create();
                 try {
@@ -83,7 +83,6 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         }
         if (!data.modules.containsKey(AudioPlayerModule.KEY)) {
             AudioPlayerMod.LOGGER.error("Missing audio player module");
-            //TODO Do we want to allow items without an actual ID?
             return null;
         }
         return data;
