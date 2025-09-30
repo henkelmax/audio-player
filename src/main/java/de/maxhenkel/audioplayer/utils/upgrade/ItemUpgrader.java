@@ -1,4 +1,4 @@
-package de.maxhenkel.audioplayer.utils;
+package de.maxhenkel.audioplayer.utils.upgrade;
 
 import com.mojang.serialization.Codec;
 import de.maxhenkel.audioplayer.audioloader.AudioData;

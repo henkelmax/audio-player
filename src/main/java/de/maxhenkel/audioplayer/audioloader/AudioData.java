@@ -13,7 +13,7 @@ import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.GetSoundIdEventImpl;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
-import de.maxhenkel.audioplayer.utils.ItemUpgrader;
+import de.maxhenkel.audioplayer.utils.upgrade.ItemUpgrader;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
