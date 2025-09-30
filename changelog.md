@@ -1,3 +1,4 @@
+- Updated to 1.21.9
 - Removed file name restrictions for serverfile import
 - Added suggestions for serverfile command
 - Save import date of audio files
