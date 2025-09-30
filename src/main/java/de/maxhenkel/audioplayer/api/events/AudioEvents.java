@@ -49,4 +49,10 @@ public class AudioEvents {
         }
     });
 
+    public static final Event<Consumer<GetDistanceEvent>> GET_DISTANCE = EventFactory.createArrayBacked(Consumer.class, listeners -> event -> {
+        for (Consumer<GetDistanceEvent> listener : listeners) {
+            listener.accept(event);
+        }
+    });
+
 }

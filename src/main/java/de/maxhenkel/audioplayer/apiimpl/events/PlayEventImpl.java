@@ -26,13 +26,13 @@ public class PlayEventImpl implements PlayEvent {
     @Nullable
     protected ChannelReference<?> overrideChannel;
 
-    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, UUID soundId, float defaultDistance, String category, Vec3 position) {
+    public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, UUID soundId, float defaultDistance, float distance, String category, Vec3 position) {
         this.audioData = audioData;
         this.level = level;
         this.player = player;
         this.soundId = soundId;
         this.defaultDistance = defaultDistance;
-        this.distance = defaultDistance;
+        this.distance = distance;
         this.category = category;
         this.position = position;
     }

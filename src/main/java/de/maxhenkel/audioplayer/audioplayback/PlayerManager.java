@@ -2,9 +2,12 @@ package de.maxhenkel.audioplayer.audioplayback;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.ChannelReference;
+import de.maxhenkel.audioplayer.api.events.AudioEvents;
+import de.maxhenkel.audioplayer.api.events.GetDistanceEvent;
 import de.maxhenkel.audioplayer.api.events.PlayEvent;
 import de.maxhenkel.audioplayer.api.events.PostPlayEvent;
 import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
+import de.maxhenkel.audioplayer.apiimpl.events.GetDistanceEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.PostPlayEventImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
@@ -57,7 +60,9 @@ public class PlayerManager {
         if (maxDuration == null || maxDuration < 0F) {
             maxDuration = null;
         }
-        PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, soundIdToPlay, type.getDefaultRange().get(), type.getCategory(), pos);
+        GetDistanceEvent distanceEvent = new GetDistanceEventImpl(data, type.getDefaultRange().get(), pos);
+        AudioEvents.GET_DISTANCE.invoker().accept(distanceEvent);
+        PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, soundIdToPlay, type.getDefaultRange().get(), distanceEvent.getDistance(), type.getCategory(), pos);
         playEvent.invoker().accept(event);
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
