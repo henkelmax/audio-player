@@ -143,7 +143,22 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
 
     @Override
     public <T extends AudioDataModule> void setModule(ModuleKey<T> moduleKey, T module) {
+        if (module == null) {
+            throw new IllegalArgumentException("Module cannot be null");
+        }
         modules.put(moduleKey, module);
+    }
+
+    @Nullable
+    @Override
+    public <T extends AudioDataModule> T removeModule(ModuleKey<T> moduleKey) {
+        if (moduleKey == null) {
+            return null;
+        }
+        if (moduleKey.equals(AudioPlayerModule.KEY)) {
+            throw new IllegalArgumentException("Can't remove base audioplayer module");
+        }
+        return (T) modules.remove(moduleKey);
     }
 
     @Nullable

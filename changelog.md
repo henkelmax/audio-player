@@ -1,4 +1,5 @@
 - Allow cancelling play events
+- Allow removing audio player moules
 
 
 **WARNING**
