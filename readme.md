@@ -86,8 +86,6 @@ Run `/audioplayer search <SEARCH_TEXT>` to get all audio files that contain the 
 
 ![](https://user-images.githubusercontent.com/13237524/179395296-be3643eb-1c23-4300-ac17-25d11d53d6f3.png)
 
-![](https://user-images.githubusercontent.com/13237524/142997959-9120d038-4ee6-45bb-8815-2179884ef958.png)
-
 ![](https://user-images.githubusercontent.com/13237524/143213769-99a6b03a-887a-4b30-8b18-baf394be6b6c.png)
 
 ## Credits
