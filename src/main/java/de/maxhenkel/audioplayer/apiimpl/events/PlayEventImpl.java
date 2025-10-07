@@ -25,6 +25,7 @@ public class PlayEventImpl implements PlayEvent {
     protected Vec3 position;
     @Nullable
     protected ChannelReference<?> overrideChannel;
+    protected boolean cancelled;
 
     public PlayEventImpl(AudioData audioData, ServerLevel level, @Nullable ServerPlayer player, UUID soundId, float defaultDistance, float distance, String category, Vec3 position) {
         this.audioData = audioData;
@@ -109,6 +110,16 @@ public class PlayEventImpl implements PlayEvent {
     @Override
     public float getDistance() {
         return distance;
+    }
+
+    @Override
+    public void cancel() {
+        cancelled = true;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     @Nullable

@@ -10,6 +10,9 @@ public class AudioEvents {
     public static final Event<Consumer<PlayEvent>> PLAY_MUSIC_DISC = EventFactory.createArrayBacked(Consumer.class, listeners -> event -> {
         for (Consumer<PlayEvent> listener : listeners) {
             listener.accept(event);
+            if (event.isCancelled()) {
+                break;
+            }
         }
     });
 
@@ -22,6 +25,9 @@ public class AudioEvents {
     public static final Event<Consumer<PlayEvent>> PLAY_GOAT_HORN = EventFactory.createArrayBacked(Consumer.class, listeners -> event -> {
         for (Consumer<PlayEvent> listener : listeners) {
             listener.accept(event);
+            if (event.isCancelled()) {
+                break;
+            }
         }
     });
 
@@ -34,6 +40,9 @@ public class AudioEvents {
     public static final Event<Consumer<PlayEvent>> PLAY_NOTE_BLOCK = EventFactory.createArrayBacked(Consumer.class, listeners -> event -> {
         for (Consumer<PlayEvent> listener : listeners) {
             listener.accept(event);
+            if (event.isCancelled()) {
+                break;
+            }
         }
     });
 

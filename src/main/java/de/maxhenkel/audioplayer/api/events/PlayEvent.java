@@ -47,4 +47,8 @@ public interface PlayEvent {
 
     float getDistance();
 
+    void cancel();
+
+    boolean isCancelled();
+
 }

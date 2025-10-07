@@ -64,6 +64,9 @@ public class PlayerManager {
         AudioEvents.GET_DISTANCE.invoker().accept(distanceEvent);
         PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, soundIdToPlay, type.getDefaultRange().get(), distanceEvent.getDistance(), type.getCategory(), pos);
         playEvent.invoker().accept(event);
+        if (event.isCancelled()) {
+            return null;
+        }
         ChannelReference<?> channel = event.getOverrideChannel();
         if (channel == null) {
             channel = PlayerManager.instance().playLocational(serverLevel, event.getPosition(), event.getSoundId(), player, event.getDistance(), event.getCategory(), maxDuration);
