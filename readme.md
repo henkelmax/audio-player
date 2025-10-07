@@ -16,6 +16,9 @@ This server side Fabric mod enables uploading custom audio for music discs, goat
 
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
 
+> [!IMPORTANT]  
+> This documentation is for version 2.x.x of the mod only!
+
 ## Features
 
 - On the fly audio uploading without needing to restart the server
