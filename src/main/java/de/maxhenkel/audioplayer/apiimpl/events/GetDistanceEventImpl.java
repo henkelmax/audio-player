@@ -9,13 +9,15 @@ public class GetDistanceEventImpl implements GetDistanceEvent {
 
     private final AudioData itemData;
     private final float defaultDistance;
+    private final float itemDistance;
     private float distance;
     private final Vec3 position;
 
-    public GetDistanceEventImpl(AudioData itemData, float defaultDistance, Vec3 position) {
+    public GetDistanceEventImpl(AudioData itemData, float defaultDistance, float itemDistance, Vec3 position) {
         this.itemData = itemData;
         this.defaultDistance = defaultDistance;
-        this.distance = defaultDistance;
+        this.itemDistance = itemDistance;
+        this.distance = itemDistance;
         this.position = position;
     }
 
@@ -27,6 +29,11 @@ public class GetDistanceEventImpl implements GetDistanceEvent {
     @Override
     public float getDefaultDistance() {
         return defaultDistance;
+    }
+
+    @Override
+    public float getItemDistance() {
+        return itemDistance;
     }
 
     @Override

@@ -60,7 +60,7 @@ public class PlayerManager {
         if (maxDuration == null || maxDuration < 0F) {
             maxDuration = null;
         }
-        GetDistanceEvent distanceEvent = new GetDistanceEventImpl(data, type.getDefaultRange().get(), pos);
+        GetDistanceEvent distanceEvent = new GetDistanceEventImpl(data, type.getDefaultRange().get(), data.getRange(type), pos);
         AudioEvents.GET_DISTANCE.invoker().accept(distanceEvent);
         PlayEventImpl event = new PlayEventImpl(data, serverLevel, null, soundIdToPlay, type.getDefaultRange().get(), distanceEvent.getDistance(), type.getCategory(), pos);
         playEvent.invoker().accept(event);

@@ -1,5 +1,5 @@
-- Updated admiral
-- Updated to 1.21.10
+- Fixed distance not working
+- Added `getItemDistance` for get distance event
 
 
 **WARNING**

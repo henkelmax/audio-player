@@ -9,6 +9,8 @@ public interface GetDistanceEvent {
 
     float getDefaultDistance();
 
+    float getItemDistance();
+
     void setDistance(float distance);
 
     float getDistance();
