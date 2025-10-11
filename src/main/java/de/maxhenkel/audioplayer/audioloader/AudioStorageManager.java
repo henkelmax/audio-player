@@ -45,7 +45,9 @@ public class AudioStorageManager {
             thread.setDaemon(true);
             return thread;
         });
-        Path metaPath = getAudioDataFolder().resolve("meta.json");
+        Path audioDataFolder = getAudioDataFolder();
+        Files.createDirectories(audioDataFolder);
+        Path metaPath = audioDataFolder.resolve("meta.json");
         boolean initial = !Files.exists(metaPath);
         fileMetadataManager = new FileMetadataManager(metaPath);
         audioCache = new AudioCache();

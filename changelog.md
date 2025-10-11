@@ -1,5 +1,4 @@
-- Fixed distance not working
-- Added `getItemDistance` for get distance event
+- Fixed initial setup throwing errors
 
 
 **WARNING**
