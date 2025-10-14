@@ -1,4 +1,4 @@
-- Fixed initial setup throwing errors
+- Expose `createInfoMessage` to the API
 
 
 **WARNING**

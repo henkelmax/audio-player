@@ -32,6 +32,8 @@ public interface AudioPlayerApi {
 
     MutableComponent createApplyMessage(UUID audioID, MutableComponent component);
 
+    MutableComponent createInfoMessage(UUID audioID);
+
     void invalidateCachedAudio(UUID audioID);
 
     void clearAudioCache();

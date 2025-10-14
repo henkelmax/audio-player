@@ -59,6 +59,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
+    public MutableComponent createInfoMessage(UUID audioID) {
+        return ChatUtils.createInfoMessage(audioID);
+    }
+
+    @Override
     public void invalidateCachedAudio(UUID audioID) {
         AudioStorageManager.audioCache().invalidate(audioID);
     }
