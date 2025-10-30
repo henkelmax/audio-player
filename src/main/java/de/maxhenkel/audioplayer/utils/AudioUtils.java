@@ -20,42 +20,31 @@ public class AudioUtils {
 
     @Nullable
     public static AudioType getAudioType(Path path) throws IOException {
-        if (isWav(Files.newInputStream(path))) {
-            return AudioType.WAV;
+        try {
+            return getAudioType(AudioSystem.getAudioFileFormat(path.toFile()));
+        } catch (UnsupportedAudioFileException e) {
+            return null;
         }
-        if (isMp3(Files.newInputStream(path))) {
-            return AudioType.MP3;
-        }
-        return null;
     }
 
     @Nullable
     public static AudioType getAudioType(byte[] data) throws IOException {
-        if (isWav(new ByteArrayInputStream(data))) {
-            return AudioType.WAV;
+        try (ByteArrayInputStream is = new ByteArrayInputStream(data)) {
+            return getAudioType(AudioSystem.getAudioFileFormat(is));
+        } catch (UnsupportedAudioFileException e) {
+            return null;
         }
-        if (isMp3(new ByteArrayInputStream(data))) {
+    }
+
+    @Nullable
+    private static AudioType getAudioType(AudioFileFormat fileFormat) {
+        String type = fileFormat.getType().toString();
+        if (type.equalsIgnoreCase("wave")) {
+            return AudioType.WAV;
+        } else if (type.equalsIgnoreCase("mp3")) {
             return AudioType.MP3;
         }
         return null;
-    }
-
-    public static boolean isWav(InputStream inputStream) throws IOException {
-        try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
-            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(bis);
-            return fileFormat.getType().toString().equalsIgnoreCase("wave");
-        } catch (UnsupportedAudioFileException e) {
-            return false;
-        }
-    }
-
-    public static boolean isMp3(InputStream inputStream) throws IOException {
-        try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
-            AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(bis);
-            return fileFormat.getType().toString().equalsIgnoreCase("mp3");
-        } catch (UnsupportedAudioFileException e) {
-            return false;
-        }
     }
 
     public static float getLengthSeconds(short[] audio) {

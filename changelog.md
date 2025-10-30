@@ -1,4 +1,5 @@
-- Expose `createInfoMessage` to the API
+- Optimized audio format detection
+- Fixed mp3s with thumbnails failing to load
 
 
 **WARNING**
