@@ -54,7 +54,13 @@ public class ItemUpgrader {
         //boolean staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC).orElse(false);
 
         Float range = tag.getFloat(CUSTOM_SOUND_RANGE).orElse(null);
-        return AudioData.withSoundAndRange(soundId, range);
+        AudioData audioData = AudioData.withSoundAndRange(soundId, range);
+        upgradeRoleplayData(tag, audioData);
+        return audioData;
+    }
+
+    private static void upgradeRoleplayData(CompoundTag compoundTag, AudioData audioData) {
+        // Keep this for audioplayer-rp
     }
 
     @Nullable
@@ -69,7 +75,13 @@ public class ItemUpgrader {
         //boolean staticSound = valueInput.read(CUSTOM_SOUND_STATIC, Codec.BOOL).orElse(false);
 
         Float range = valueInput.read(CUSTOM_SOUND_RANGE, Codec.FLOAT).orElse(null);
-        return AudioData.withSoundAndRange(soundId, range);
+        AudioData audioData = AudioData.withSoundAndRange(soundId, range);
+        upgradeRoleplayData(valueInput, audioData);
+        return audioData;
+    }
+
+    private static void upgradeRoleplayData(ValueInput valueInput, AudioData audioData) {
+        // Keep this for audioplayer-rp
     }
 
 }

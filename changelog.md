@@ -1,5 +1,4 @@
-- Optimized audio format detection
-- Fixed mp3s with thumbnails failing to load
+- Added support for third party mods to upgrade their data
 
 
 **WARNING**
