@@ -49,10 +49,6 @@ public class ItemUpgrader {
             return null;
         }
 
-        //TODO Upgrade random sounds and static sound
-        //List<UUID> randomSounds = tag.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
-        //boolean staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC).orElse(false);
-
         Float range = tag.getFloat(CUSTOM_SOUND_RANGE).orElse(null);
         AudioData audioData = AudioData.withSoundAndRange(soundId, range);
         upgradeRoleplayData(tag, audioData);
@@ -69,10 +65,6 @@ public class ItemUpgrader {
         if (soundId == null) {
             return null;
         }
-
-        //TODO Upgrade random sounds and static sound
-        //List<UUID> randomSounds = valueInput.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
-        //boolean staticSound = valueInput.read(CUSTOM_SOUND_STATIC, Codec.BOOL).orElse(false);
 
         Float range = valueInput.read(CUSTOM_SOUND_RANGE, Codec.FLOAT).orElse(null);
         AudioData audioData = AudioData.withSoundAndRange(soundId, range);
