@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.*;
+import de.maxhenkel.audioplayer.api.MessageReceiver;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
@@ -133,7 +134,7 @@ public class AudioStorageManager {
         return FabricLoader.getInstance().getGameDir().resolve("audioplayer_uploads");
     }
 
-    public void handleImport(AudioImporter importer, @Nullable ServerPlayer player) {
+    public void handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
         //TODO Prevent this from hanging infinitely
         executor.execute(() -> {
             try {
@@ -144,18 +145,16 @@ public class AudioStorageManager {
                 String fileName = audioDownloadInfo.getName();
                 saveSound(id, fileName, bytes, player);
                 runOnMain(() -> {
-                    if (player != null) {
-                        player.sendSystemMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
-                    }
+                    messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
                 });
                 importer.onPostprocess(player);
             } catch (Exception e) {
                 runOnMain(() -> {
                     if (player != null) {
                         if (e instanceof ComponentException c) {
-                            player.sendSystemMessage(Lang.translatable("audioplayer.error", c.getComponent()).withStyle(ChatFormatting.RED));
+                            messageReceiver.sendMessage(Lang.translatable("audioplayer.error", c.getComponent()).withStyle(ChatFormatting.RED));
                         } else {
-                            player.sendSystemMessage(Lang.translatable("audioplayer.error", e.getMessage()).withStyle(ChatFormatting.RED));
+                            messageReceiver.sendMessage(Lang.translatable("audioplayer.error", e.getMessage()).withStyle(ChatFormatting.RED));
                         }
                     }
                 });

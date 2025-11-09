@@ -1,4 +1,4 @@
-- Added support for third party mods to upgrade their data
+- Improved command feedback handling
 
 
 **WARNING**

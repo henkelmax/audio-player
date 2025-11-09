@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer.apiimpl;
 
 import de.maxhenkel.audioplayer.api.AudioPlayerApi;
 import de.maxhenkel.audioplayer.api.ChannelReference;
+import de.maxhenkel.audioplayer.api.MessageReceiver;
 import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
@@ -49,8 +50,8 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
-    public void importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
-        AudioStorageManager.instance().handleImport(importer, player);
+    public void importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+        AudioStorageManager.instance().handleImport(importer, messageReceiver, player);
     }
 
     @Override

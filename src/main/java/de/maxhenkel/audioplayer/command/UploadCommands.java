@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Name;
 import de.maxhenkel.admiral.annotations.RequiresPermission;
+import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.importer.FilebinImporter;
 import de.maxhenkel.audioplayer.audioloader.importer.ServerfileImporter;
@@ -66,7 +67,7 @@ public class UploadCommands {
     @Command("filebin")
     public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
-        AudioStorageManager.instance().handleImport(new FilebinImporter(sound), context.getSource().getPlayer());
+        AudioPlayerApiImpl.INSTANCE.importAudio(new FilebinImporter(sound), context.getSource());
     }
 
     @Command("url")
@@ -87,7 +88,7 @@ public class UploadCommands {
     @Command("url")
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
-        AudioStorageManager.instance().handleImport(new UrlImporter(url), context.getSource().getPlayer());
+        AudioPlayerApiImpl.INSTANCE.importAudio(new UrlImporter(url), context.getSource());
     }
 
     @Command("web")
@@ -144,7 +145,7 @@ public class UploadCommands {
 
     @Command("serverfile")
     public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") ServerFileArgument serverFile) {
-        AudioStorageManager.instance().handleImport(new ServerfileImporter(serverFile.getFileName()), context.getSource().getPlayer());
+        AudioPlayerApiImpl.INSTANCE.importAudio(new ServerfileImporter(serverFile.getFileName()), context.getSource());
     }
 
 }
