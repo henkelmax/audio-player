@@ -1,4 +1,4 @@
-- Improved command feedback handling
+- Improve audio quality
 
 
 **WARNING**

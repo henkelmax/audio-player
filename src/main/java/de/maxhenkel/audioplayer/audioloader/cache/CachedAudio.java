@@ -4,6 +4,7 @@ import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
+import de.maxhenkel.voicechat.api.opus.OpusEncoderMode;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ public class CachedAudio {
         Path existingSoundFile = instance.getExistingSoundFile(audioId);
         short[] audio = AudioUtils.convert(existingSoundFile, AudioStorageManager.metadataManager().getVolumeOverride(audioId).orElse(null));
 
-        OpusEncoder encoder = VoicechatAudioPlayerPlugin.voicechatApi.createEncoder();
+        OpusEncoder encoder = VoicechatAudioPlayerPlugin.voicechatApi.createEncoder(OpusEncoderMode.AUDIO);
         int frameCount = (audio.length + FRAME_SIZE - 1) / FRAME_SIZE;
         byte[][] opusFrames = new byte[frameCount][];
 
