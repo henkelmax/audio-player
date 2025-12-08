@@ -10,7 +10,7 @@ import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public interface AudioPlayerApi {
         return AudioPlayerApiImpl.INSTANCE;
     }
 
-    <T extends AudioDataModule> ModuleKey<T> registerModuleType(ResourceLocation id, Supplier<T> constructor);
+    <T extends AudioDataModule> ModuleKey<T> registerModuleType(Identifier id, Supplier<T> constructor);
 
     default void importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
         importAudio(importer, message -> {

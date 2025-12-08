@@ -22,7 +22,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.*;
@@ -44,7 +44,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
     public static final Gson GSON = new GsonBuilder().create();
 
     protected Map<ModuleKey<? extends AudioDataModule>, AudioDataModule> modules;
-    protected Map<ResourceLocation, JsonObject> unknownModules;
+    protected Map<Identifier, JsonObject> unknownModules;
 
     protected AudioData() {
         this.modules = new ConcurrentHashMap<>();
@@ -55,7 +55,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
     private static AudioData fromJson(JsonObject rawData) {
         AudioData data = new AudioData();
         for (Map.Entry<String, JsonElement> entry : rawData.entrySet()) {
-            ResourceLocation resourceLocation = ResourceLocation.tryParse(entry.getKey());
+            Identifier resourceLocation = Identifier.tryParse(entry.getKey());
             if (resourceLocation == null) {
                 AudioPlayerMod.LOGGER.warn("Invalid module key: {}", entry.getKey());
                 continue;
@@ -204,7 +204,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
 
     private JsonObject toJson() {
         JsonObject rawData = new JsonObject();
-        for (Map.Entry<ResourceLocation, JsonObject> entry : unknownModules.entrySet()) {
+        for (Map.Entry<Identifier, JsonObject> entry : unknownModules.entrySet()) {
             rawData.add(entry.toString(), entry.getValue());
         }
         for (Map.Entry<ModuleKey<? extends AudioDataModule>, AudioDataModule> entry : modules.entrySet()) {

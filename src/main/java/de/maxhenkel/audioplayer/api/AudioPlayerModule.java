@@ -5,14 +5,14 @@ import com.google.gson.JsonObject;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class AudioPlayerModule implements AudioDataModule {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(AudioPlayerMod.MODID, "audio");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(AudioPlayerMod.MODID, "audio");
     public static ModuleKey<AudioPlayerModule> KEY;
 
     protected UUID soundId;

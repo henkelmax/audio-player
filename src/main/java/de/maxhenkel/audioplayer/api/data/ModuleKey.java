@@ -1,10 +1,10 @@
 package de.maxhenkel.audioplayer.api.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface ModuleKey<T extends AudioDataModule> {
 
-    ResourceLocation getId();
+    Identifier getId();
 
     T create();
 

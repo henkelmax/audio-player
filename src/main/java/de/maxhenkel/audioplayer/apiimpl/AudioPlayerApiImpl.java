@@ -15,7 +15,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -32,18 +32,18 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
 
     public static final AudioPlayerApiImpl INSTANCE = new AudioPlayerApiImpl();
 
-    protected Map<ResourceLocation, ModuleKeyImpl<? extends AudioDataModule>> moduleTypes;
+    protected Map<Identifier, ModuleKeyImpl<? extends AudioDataModule>> moduleTypes;
 
     public AudioPlayerApiImpl() {
         moduleTypes = new ConcurrentHashMap<>();
     }
 
-    public ModuleKey<? extends AudioDataModule> getModuleType(ResourceLocation id) {
+    public ModuleKey<? extends AudioDataModule> getModuleType(Identifier id) {
         return moduleTypes.get(id);
     }
 
     @Override
-    public <T extends AudioDataModule> ModuleKey<T> registerModuleType(ResourceLocation id, Supplier<T> constructor) {
+    public <T extends AudioDataModule> ModuleKey<T> registerModuleType(Identifier id, Supplier<T> constructor) {
         ModuleKeyImpl<T> key = new ModuleKeyImpl<>(id, constructor);
         moduleTypes.put(id, key);
         return key;
