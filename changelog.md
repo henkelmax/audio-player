@@ -1,4 +1,4 @@
-- Updated to 1.21.11
+- Update admiral and fabric-permissions-api
 
 
 **WARNING**
