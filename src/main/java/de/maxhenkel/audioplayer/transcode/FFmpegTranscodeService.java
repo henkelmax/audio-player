@@ -4,7 +4,10 @@ import de.maxhenkel.audioplayer.AudioPlayerMod;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -12,6 +15,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class FFmpegTranscodeService {
 
@@ -92,19 +96,22 @@ public class FFmpegTranscodeService {
             connection.connect();
 
             String contentType = connection.getContentType();
-            if (contentType == null) {
-                return false; // Assume standard if unknown, or let download fail later
-            }
 
-            // Check for standard supported types (MP3, WAV)
-            // Note: Content-Types can vary (audio/mpeg, audio/mqv, audio/x-wav, etc.)
-            // We return FALSE if it IS a supported type.
-
-            if (contentType.toLowerCase().contains("audio/mpeg") ||
-                    contentType.toLowerCase().contains("audio/mp3") ||
-                    contentType.toLowerCase().contains("audio/wav") ||
-                    contentType.toLowerCase().contains("audio/x-wav")) {
-                return false;
+            // Refined Check: Handle null or generic content types by checking extension
+            if (contentType == null || contentType.equalsIgnoreCase("application/octet-stream")) {
+                String path = url.getPath().toLowerCase();
+                if (path.endsWith(".mp3") || path.endsWith(".wav")) {
+                    return false; // Trust extension if mime is ambiguous
+                }
+                // If extension is also unknown or other, assume transcode needed
+            } else {
+                // Strict mime check
+                if (contentType.toLowerCase().contains("audio/mpeg") ||
+                        contentType.toLowerCase().contains("audio/mp3") ||
+                        contentType.toLowerCase().contains("audio/wav") ||
+                        contentType.toLowerCase().contains("audio/x-wav")) {
+                    return false;
+                }
             }
 
             return true; // Transcode everything else
@@ -120,11 +127,6 @@ public class FFmpegTranscodeService {
         }
 
         int myOptions = queueSize.incrementAndGet();
-        // Since we are blocking the download thread, we can't easily send feedback to
-        // the specific player
-        // without passing the player object down, but the requirement was generic chat
-        // feedback or just handling the queue.
-        // We warn if the queue is getting large.
         if (myOptions > AudioPlayerMod.SERVER_CONFIG.maxConcurrentTranscodes.get()) {
             AudioPlayerMod.LOGGER.info("Transcode queue active. Position: {}", myOptions);
         }
@@ -150,24 +152,15 @@ public class FFmpegTranscodeService {
                 "-f", "mp3", // Format
                 destination.toAbsolutePath().toString());
 
-        // Redirect stderr to logger or ignore to prevent buffer filling?
-        // Ideally inheritIO or consume it. ProcessBuilder needs logic to consume
-        // streams.
-        // For simplicity and safety against deadlocks, we redirect Error to Output and
-        // ignore,
-        // or discard both if we don't care about logs.
-        // But FFmpeg writes stats to stderr.
-        // Let's redirect stderr to null or a gobbler if we can, but Java 9+ has
-        // redirectOutput(ProcessBuilder.Redirect.DISCARD).
-        // Since we are on Java 21:
-        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+        // Merge stderr into stdout so we can capture it
+        pb.redirectErrorStream(true);
 
         Process process = pb.start();
 
-        // Watchdog for timeout? Requirement said "Ensure process is destroyed if ...
-        // takes too long"
-        // We can use waitFor with timeout.
+        // Capture output in a separate thread to prevent buffer blocking
+        StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream());
+        outputGobbler.start();
+
         boolean finished = process.waitFor(5, TimeUnit.MINUTES);
 
         if (!finished) {
@@ -176,11 +169,44 @@ public class FFmpegTranscodeService {
         }
 
         if (process.exitValue() != 0) {
+            // Log the captured output for debugging
+            AudioPlayerMod.LOGGER.error("FFmpeg failed with exit code {}. Output:\n{}", process.exitValue(),
+                    outputGobbler.getOutput());
             throw new IOException("FFmpeg exited with error code: " + process.exitValue());
         }
 
         if (java.nio.file.Files.size(destination) == 0) {
+            AudioPlayerMod.LOGGER.error("FFmpeg produced empty file. Output:\n{}", outputGobbler.getOutput());
             throw new IOException("FFmpeg produced empty file");
+        }
+    }
+
+    private static class StreamGobbler extends Thread {
+        private final InputStream inputStream;
+        private final StringBuilder output = new StringBuilder();
+
+        public StreamGobbler(InputStream inputStream) {
+            this.inputStream = inputStream;
+            this.setDaemon(true);
+        }
+
+        @Override
+        public void run() {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Limit log size to prevent memory issues if ffmpeg goes crazy
+                    if (output.length() < 10000) {
+                        output.append(line).append("\n");
+                    }
+                }
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
+
+        public String getOutput() {
+            return output.toString();
         }
     }
 }
