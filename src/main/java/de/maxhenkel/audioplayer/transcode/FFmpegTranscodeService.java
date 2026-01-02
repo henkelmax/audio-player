@@ -141,6 +141,7 @@ public class FFmpegTranscodeService {
     private void runFFmpeg(String url, Path destination) throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(
                 ffmpegPath,
+                "-y", // Force overwrite
                 "-i", url,
                 "-vn", // No video
                 "-ar", "44100", // Sample rate
@@ -176,6 +177,10 @@ public class FFmpegTranscodeService {
 
         if (process.exitValue() != 0) {
             throw new IOException("FFmpeg exited with error code: " + process.exitValue());
+        }
+
+        if (java.nio.file.Files.size(destination) == 0) {
+            throw new IOException("FFmpeg produced empty file");
         }
     }
 }
