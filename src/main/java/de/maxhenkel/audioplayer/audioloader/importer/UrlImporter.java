@@ -41,6 +41,20 @@ public class UrlImporter implements AudioImporter {
 
     @Override
     public byte[] onProcess(@Nullable ServerPlayer player) throws Exception {
+        if (de.maxhenkel.audioplayer.transcode.FFmpegTranscodeService.instance().needsTranscoding(urlString)) {
+            if (player != null) {
+                player.sendSystemMessage(
+                        net.minecraft.network.chat.Component.literal("Non-standard audio detected. Transcoding..."));
+            }
+            java.nio.file.Path tempFile = java.nio.file.Files.createTempFile("audioplayer_transcode", ".mp3");
+            try {
+                de.maxhenkel.audioplayer.transcode.FFmpegTranscodeService.instance().process(urlString, tempFile);
+                return java.nio.file.Files.readAllBytes(tempFile);
+            } finally {
+                java.nio.file.Files.deleteIfExists(tempFile);
+            }
+        }
+
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.connect();
