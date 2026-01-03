@@ -1,15 +1,19 @@
 package de.maxhenkel.audioplayer.utils.upgrade;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.storage.ValueInput;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 public class ItemUpgrader {
@@ -55,8 +59,19 @@ public class ItemUpgrader {
         return audioData;
     }
 
-    private static void upgradeRoleplayData(CompoundTag compoundTag, AudioData audioData) {
-        // Keep this for audioplayer-rp
+    private static final Codec<List<UUID>> UUID_LIST_CODEC = Codec.list(UUIDUtil.CODEC);
+    private static final ResourceLocation RANDOM_PLAYBACK_MODULE = ResourceLocation.fromNamespaceAndPath("audioplayer_roleplay", "rng_playback");
+    private static final ResourceLocation STATIC_PLAYBACK_MODULE = ResourceLocation.fromNamespaceAndPath("audioplayer_roleplay", "static");
+
+    private static void upgradeRoleplayData(CompoundTag tag, AudioData audioData) {
+        List<UUID> randomSounds = tag.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
+        if (randomSounds != null) {
+            applyRandomPlayback(randomSounds, audioData);
+        }
+        boolean staticSound = tag.getBoolean(CUSTOM_SOUND_STATIC).orElse(false);
+        if (staticSound) {
+            audioData.addUnknownData(STATIC_PLAYBACK_MODULE, new JsonObject());
+        }
     }
 
     @Nullable
@@ -73,7 +88,27 @@ public class ItemUpgrader {
     }
 
     private static void upgradeRoleplayData(ValueInput valueInput, AudioData audioData) {
-        // Keep this for audioplayer-rp
+        List<UUID> randomSounds = valueInput.read(CUSTOM_SOUND_RANDOM, UUID_LIST_CODEC).orElse(null);
+        if (randomSounds != null) {
+            applyRandomPlayback(randomSounds, audioData);
+        }
+        boolean staticSound = valueInput.read(CUSTOM_SOUND_STATIC, Codec.BOOL).orElse(false);
+        if (staticSound) {
+            audioData.addUnknownData(STATIC_PLAYBACK_MODULE, new JsonObject());
+        }
+    }
+
+    private static void applyRandomPlayback(List<UUID> randomSounds, AudioData audioData) {
+        JsonObject data = new JsonObject();
+        JsonArray array = new JsonArray();
+        for (UUID uuid : randomSounds) {
+            JsonArray jsonUUID = new JsonArray();
+            jsonUUID.add(uuid.getLeastSignificantBits());
+            jsonUUID.add(uuid.getMostSignificantBits());
+            array.add(jsonUUID);
+        }
+        data.add("ids", array);
+        audioData.addUnknownData(RANDOM_PLAYBACK_MODULE, data);
     }
 
 }

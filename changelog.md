@@ -1,4 +1,4 @@
-- Improve audio quality
+- Keep static and random playback data from older versions
 
 
 **WARNING**

@@ -149,6 +149,10 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         modules.put(moduleKey, module);
     }
 
+    public void addUnknownData(ResourceLocation key, JsonObject data) {
+        unknownModules.put(key, data);
+    }
+
     @Nullable
     @Override
     public <T extends AudioDataModule> T removeModule(ModuleKey<T> moduleKey) {
