@@ -1,4 +1,4 @@
-- Update admiral and fabric-permissions-api
+- Keep static and random playback data from older versions
 
 
 **WARNING**
