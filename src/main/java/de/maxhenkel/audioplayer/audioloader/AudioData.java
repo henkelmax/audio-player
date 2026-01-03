@@ -209,7 +209,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
     private JsonObject toJson() {
         JsonObject rawData = new JsonObject();
         for (Map.Entry<Identifier, JsonObject> entry : unknownModules.entrySet()) {
-            rawData.add(entry.toString(), entry.getValue());
+            rawData.add(entry.getKey().toString(), entry.getValue());
         }
         for (Map.Entry<ModuleKey<? extends AudioDataModule>, AudioDataModule> entry : modules.entrySet()) {
             AudioDataModule module = entry.getValue();
