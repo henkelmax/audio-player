@@ -1,2 +1,1 @@
-- Keep static and random playback data from older versions
-- Fixed unknown modules not persisted correctly
+- Fix redstone sometimes not working consistently with custom discs in jukeboxes
