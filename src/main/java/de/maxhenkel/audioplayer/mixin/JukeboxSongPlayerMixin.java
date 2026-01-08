@@ -50,9 +50,6 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
     @Nullable
     private UUID channelId;
 
-    @Unique
-    private boolean audioplayer$customIsPlaying = false;
-
     @Override
     public boolean audioplayer$customPlay(ServerLevel level, ItemStack item) {
         AudioData data = AudioData.of(item);
@@ -63,7 +60,6 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (channel == null) {
             return false;
         }
-        audioplayer$customIsPlaying = true;
         channelId = channel.getChannel().getId();
         song = null;
         ticksSinceSongStarted = 0L;
@@ -77,7 +73,6 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
             return false;
         }
         PlayerManager.instance().stop(channelId);
-        audioplayer$customIsPlaying = false;
         channelId = null;
         song = null;
         ticksSinceSongStarted = 0L;
@@ -88,7 +83,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
     @Inject(method = "isPlaying", at = @At(value = "RETURN"), cancellable = true)
     public void isPlaying(CallbackInfoReturnable<Boolean> cir) {
         if (channelId != null) {
-            cir.setReturnValue(audioplayer$customIsPlaying);
+            cir.setReturnValue(true);
         }
     }
 
@@ -98,7 +93,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
             return;
         }
         ci.cancel();
-        if (!isPlaying() || PlayerManager.instance().isStopped(channelId)) {
+        if (PlayerManager.instance().isStopped(channelId)) {
             if (channelId != null) {
                 audioplayer$customStop();
             }
@@ -128,9 +123,6 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
             channelId = null;
         }
     }
-
-    @Shadow
-    public abstract boolean isPlaying();
 
     @Shadow
     protected abstract boolean shouldEmitJukeboxPlayingEvent();
