@@ -7,6 +7,7 @@
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/audioplayer)
 - [Modrinth](https://modrinth.com/mod/audioplayer)
 - [Simple Voice Chat Discord](https://discord.gg/4dH2zwTmyX)
+- [Audioplayer Roleplay](https://modrinth.com/mod/audioplayer-roleplay)
 
 ---
 
@@ -15,6 +16,8 @@
 This server side Fabric mod enables uploading custom audio for music discs, goat horns and note blocks with heads.
 
 This mod requires [Simple Voice Chat](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat) on the client and server.
+
+For additional features check out [Audioplayer Roleplay](https://modrinth.com/mod/audioplayer-roleplay).
 
 > [!IMPORTANT]  
 > This documentation is for version 2.x.x of the mod only!
