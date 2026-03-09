@@ -28,35 +28,35 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
         } else if (response.status === 400) {
             return {
                 success: false,
-                headline: 'Upload could not be processed',
+                headline: 'Upload could not be processed!',
                 subText: 'The file could not be uploaded. Please request a new token in Minecraft and try again.',
                 buttonText: 'Try again!'
             }
         } else if (response.status === 404) {
             return {
                 success: false,
-                headline: 'URL not found',
+                headline: 'URL not found!',
                 subText: 'Please request a new token in Minecraft and try again. If the issue persists, please reach out to your server admin.',
                 buttonText: 'Try again!'
             }
         } else if (response.status === 413) {
             return {
                 success: false,
-                headline: 'File too big',
+                headline: 'File too big!',
                 subText: 'Your file was too big, please request a new token in Minecraft and try again with a smaller file.',
                 buttonText: 'Try again!'
             }
         } else if (response.status === 200) {
             return {
                 success: true,
-                headline: 'Sound uploaded successfully!',
+                headline: 'Audio uploaded successfully!',
                 subText: 'Your file was uploaded successfully. You can now go back into Minecraft and use it!',
                 buttonText: 'Upload another file!'
             }
         } else {
             return {
                 success: false,
-                headline: 'Unexpected critical error',
+                headline: 'Unexpected critical error!',
                 subText: 'Please reach out to your server admin.',
                 buttonText: 'Try again!'
             }
@@ -64,7 +64,7 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
     } catch (error) {
         return {
             success: false,
-            headline: 'File too big',
+            headline: 'File too big!',
             subText: 'Your file was too big, please request a new token in Minecraft and try again with a smaller file.',
             buttonText: 'Try again!'
         }
