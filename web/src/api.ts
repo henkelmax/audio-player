@@ -1,12 +1,12 @@
-export const BASE_URL = import.meta.env.DEV ? 'http://localhost:8080' : '';
+export const BASE_URL = import.meta.env.DEV ? 'http://localhost:8080' : ''
 
-export const UUID_REGEX = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
+export const UUID_REGEX = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/
 
 export interface UploadFileResponse {
-    success: boolean;
-    headline: string;
-    subText: string;
-    buttonText: string;
+    success: boolean
+    headline: string
+    subText: string
+    buttonText: string
 }
 
 export const uploadAudio = async (file: File, token: string): Promise<UploadFileResponse> => {
@@ -17,7 +17,7 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
                 'token': token
             }),
             body: file
-        });
+        })
         if (response.status === 401) {
             return {
                 success: false,
@@ -70,4 +70,4 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
         }
     }
 
-};
+}

@@ -1,10 +1,10 @@
-import {type FC, useMemo, useRef, useState} from "react";
-import {UUID_REGEX} from "./api.ts";
+import {type FC, useMemo, useRef, useState} from "react"
+import {UUID_REGEX} from "./api.ts"
 
 const EnterToken: FC<{ setToken: (t: string | null) => void }> = ({setToken}) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [tokenText, setTokenText] = useState<string | null>(null);
-    const valid = useMemo(() => tokenText !== null && UUID_REGEX.test(tokenText), [tokenText]);
+    const inputRef = useRef<HTMLInputElement>(null)
+    const [tokenText, setTokenText] = useState<string | null>(null)
+    const valid = useMemo(() => tokenText !== null && UUID_REGEX.test(tokenText), [tokenText])
     return (
         <main className="h-full w-full">
             <div className="flex flex-col gap-32 justify-center items-center">
@@ -35,7 +35,7 @@ const EnterToken: FC<{ setToken: (t: string | null) => void }> = ({setToken}) =>
                 </div>
             </div>
         </main>
-    );
+    )
 }
 
-export default EnterToken;
+export default EnterToken
