@@ -1,4 +1,4 @@
-import type {FC, ReactNode} from "react";
+import type {FC, ReactNode} from "react"
 
 export const Button: FC<{ onClick: () => void, children: ReactNode }> = ({onClick, children}) => (
     <button
@@ -8,4 +8,4 @@ export const Button: FC<{ onClick: () => void, children: ReactNode }> = ({onClic
     >
         {children}
     </button>
-);
+)

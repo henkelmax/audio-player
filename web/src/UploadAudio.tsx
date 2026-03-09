@@ -1,15 +1,15 @@
-import {type ChangeEvent, type FC, useRef, useState} from "react";
-import {uploadAudio, type UploadFileResponse} from "./api.ts";
-import {Button} from "./Button.tsx";
+import {type ChangeEvent, type FC, useRef, useState} from "react"
+import {uploadAudio, type UploadFileResponse} from "./api.ts"
+import {Button} from "./Button.tsx"
 
 const SelectFile: FC<{ setFile: (f: File | null) => void }> = ({setFile}) => {
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null)
     const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files?.[0];
+        const selectedFile = e.target.files?.[0]
         if (selectedFile) {
-            setFile(selectedFile);
+            setFile(selectedFile)
         }
-    };
+    }
 
     return (
         <div className="flex flex-col gap-4 justify-center items-center">
@@ -58,7 +58,7 @@ const UploadFile:
 export const UploadAudio:
     FC<{ token: string, setResponse: (response: UploadFileResponse) => void }>
     = ({token, setResponse}) => {
-    const [file, setFile] = useState<File | null>(null);
+    const [file, setFile] = useState<File | null>(null)
 
     return (
         <main className="h-full w-full">
@@ -72,5 +72,5 @@ export const UploadAudio:
                     <SelectFile setFile={setFile}/>}
             </div>
         </main>
-    );
+    )
 }

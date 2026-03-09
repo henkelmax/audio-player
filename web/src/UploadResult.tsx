@@ -1,6 +1,6 @@
-import {type FC} from "react";
-import type {UploadFileResponse} from "./api.ts";
-import {Button} from "./Button.tsx";
+import {type FC} from "react"
+import type {UploadFileResponse} from "./api.ts"
+import {Button} from "./Button.tsx"
 
 export const UploadResult: FC<{ response: UploadFileResponse }> = ({response}) => {
     return (
@@ -21,5 +21,5 @@ export const UploadResult: FC<{ response: UploadFileResponse }> = ({response}) =
                 </div>
             </div>
         </main>
-    );
+    )
 }
