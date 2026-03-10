@@ -86,10 +86,10 @@ export const UploadAudio:
     = ({token, setResponse}) => {
     const [file, setFile] = useState<File | null>(null)
     // true = valid, false = invalid, null = no overlay
-    const [hoverType, setHoverType] = useState<boolean | null>(null);
+    const [hoverType, setHoverType] = useState<boolean | null>(null)
 
     const handleDragOver = (e: DragEvent<HTMLElement>) => {
-        e.preventDefault();
+        e.preventDefault()
         const items = e.dataTransfer.items
         if (items && items.length > 0) {
             const item = items[0]
@@ -99,25 +99,25 @@ export const UploadAudio:
             }
         }
         setHoverType(false)
-    };
+    }
 
     const handleDragLeave = (e: DragEvent<HTMLElement>) => {
-        e.preventDefault();
-        setHoverType(null);
-    };
+        e.preventDefault()
+        setHoverType(null)
+    }
 
     const handleDrop = (e: DragEvent<HTMLElement>) => {
-        e.preventDefault();
-        setHoverType(null);
+        e.preventDefault()
+        setHoverType(null)
 
-        const droppedFiles = e.dataTransfer.files;
+        const droppedFiles = e.dataTransfer.files
         if (droppedFiles && droppedFiles.length > 0) {
-            const type = droppedFiles[0].type;
+            const type = droppedFiles[0].type
             if (isValidAudioMimeType(type)) {
-                setFile(droppedFiles[0]);
+                setFile(droppedFiles[0])
             }
         }
-    };
+    }
 
     return (
         <main
