@@ -153,7 +153,19 @@ public class WebServer implements AutoCloseable {
                             401,
                             "UNAUTHORIZED",
                             headers,
-                            "Unauthorized\n".getBytes()
+                            "Unauthorized".getBytes()
+                    )
+            );
+            return;
+        }
+        String fileName = request.header("filename");
+        if (fileName == null || fileName.isBlank()) {
+            responseConsumer.accept(
+                    new Response(
+                            400,
+                            "BAD REQUEST",
+                            headers,
+                            "No file name provided".getBytes()
                     )
             );
             return;
@@ -172,7 +184,7 @@ public class WebServer implements AutoCloseable {
             return;
         }
 
-        upload(playerId, token, data);
+        upload(playerId, token, fileName, data);
         responseConsumer.accept(
                 new Response(
                         200,
@@ -269,12 +281,12 @@ public class WebServer implements AutoCloseable {
         return MIME_TYPES.get(extension);
     }
 
-    private void upload(UUID playerId, UUID token, byte[] audioData) {
+    private void upload(UUID playerId, UUID token, String fileName, byte[] audioData) {
         ServerPlayer player = minecraftServer.getPlayerList().getPlayer(playerId);
         if (player == null) {
             return;
         }
-        AudioStorageManager.instance().handleImport(new WebServerImporter(token, audioData, null), player::sendSystemMessage, player); //TODO File name
+        AudioStorageManager.instance().handleImport(new WebServerImporter(token, audioData, fileName), player::sendSystemMessage, player);
     }
 
     @Nullable
