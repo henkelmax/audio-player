@@ -9,7 +9,7 @@ import {
 } from 'mediabunny';
 import {registerMp3Encoder} from "@mediabunny/mp3-encoder";
 
-export async function convertAudio(inputFile: File) {
+export async function convertAudio(inputFile: File): Promise<{ blob: Blob, fileName: string }> {
     if (!(await canEncodeAudio('mp3'))) {
         registerMp3Encoder();
     }
@@ -38,5 +38,8 @@ export async function convertAudio(inputFile: File) {
     await conversion.execute();
     await output.finalize();
 
-    return new Blob([output.target.buffer!], { type: output.format.mimeType });
+    return {
+        blob: new Blob([output.target.buffer!], {type: output.format.mimeType}),
+        fileName: inputFile.name.replace(/\.[^/.]+$/, ".mp3")
+    };
 }
