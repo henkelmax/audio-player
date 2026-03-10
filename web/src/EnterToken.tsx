@@ -6,7 +6,7 @@ const EnterToken: FC<{ setToken: (t: string | null) => void }> = ({setToken}) =>
     const [tokenText, setTokenText] = useState<string | null>(null)
     const valid = useMemo(() => tokenText !== null && UUID_REGEX.test(tokenText), [tokenText])
     return (
-        <main className="h-full w-full">
+        <main className="h-full w-full p-8">
             <div className="flex flex-col gap-32 justify-center items-center">
                 <div className="flex flex-col gap-16 w-full">
                     <div className="flex flex-row justify-center items-center text-4xl">
