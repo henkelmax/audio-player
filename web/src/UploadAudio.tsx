@@ -18,7 +18,7 @@ const SelectFile: FC<{ setFile: (f: File | null) => void }> = ({setFile}) => {
                     ref={inputRef}
                     onChange={handleFileUpload}
                     className="hidden"
-                    accept=".mp3,.wav"
+                    accept="audio/*"
                     type="file"
                 />
                 <Button onClick={() => inputRef.current?.click()}>

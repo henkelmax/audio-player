@@ -1,3 +1,5 @@
+import {convertAudio} from "./audioConverter.ts";
+
 export const BASE_URL = import.meta.env.DEV ? 'http://localhost:8080' : ''
 
 export const UUID_REGEX = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/
@@ -10,19 +12,30 @@ export interface UploadFileResponse {
 }
 
 export const uploadAudio = async (file: File, token: string): Promise<UploadFileResponse> => {
+    let blob: Blob
+    try {
+        blob = await convertAudio(file)
+    } catch (error) {
+        return {
+            success: false,
+            headline: 'Failed to convert audio!',
+            subText: convertError(error),
+            buttonText: 'Try again!'
+        }
+    }
     try {
         const response = await fetch(`${BASE_URL}/upload`, {
             method: 'POST',
             headers: new Headers({
                 'token': token
             }),
-            body: file
+            body: blob
         })
         if (response.status === 401) {
             return {
                 success: false,
-                headline: 'Unauthorized request!',
-                subText: 'The file could not be uploaded. Please request a new token in Minecraft and try again.',
+                headline: 'Invalid token!',
+                subText: 'Your token is invalid or expired. Please request a new token in Minecraft and try again.',
                 buttonText: 'Try again!'
             }
         } else if (response.status === 400) {
@@ -54,6 +67,7 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
                 buttonText: 'Upload another file!'
             }
         } else {
+            console.error(`Unexpected response status ${response.status}: ${response.statusText}`)
             return {
                 success: false,
                 headline: 'Unexpected critical error!',
@@ -62,6 +76,7 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
             }
         }
     } catch (error) {
+        console.error(error)
         return {
             success: false,
             headline: 'File too big!',
@@ -70,4 +85,12 @@ export const uploadAudio = async (file: File, token: string): Promise<UploadFile
         }
     }
 
+}
+
+function convertError(error: unknown) {
+    if (error instanceof Error) {
+        return error.message
+    } else {
+        return String(error)
+    }
 }
