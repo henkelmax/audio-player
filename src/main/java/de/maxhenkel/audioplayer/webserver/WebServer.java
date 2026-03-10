@@ -79,132 +79,72 @@ public class WebServer implements AutoCloseable {
                 return true;
             }
         }
-        responseConsumer.accept(
-                new Response(
-                        401,
-                        "UNAUTHORIZED",
-                        List.of(
-                                new Header("Content-Type", "text/plain"),
-                                new Header("WWW-Authenticate", "Basic realm=\"Restricted Area\"")
-                        ),
-                        "Unauthorized\n".getBytes()
-                )
-        );
+        sendResponse(responseConsumer, 401, "UNAUTHORIZED", "Unauthorized", new Header("Content-Type", "text/plain"), new Header("WWW-Authenticate", "Basic realm=\"Restricted Area\""));
         return false;
     }
 
     private void handleUpload(Request request, Consumer<Response> responseConsumer) {
-        List<Header> headers = new ArrayList<>();
-        headers.add(new Header("Access-Control-Allow-Origin", "*"));
-        headers.add(new Header("Access-Control-Allow-Methods", "*"));
-        headers.add(new Header("Access-Control-Allow-Headers", "*"));
         if (request.method().equalsIgnoreCase("OPTIONS")) {
-            responseConsumer.accept(
-                    new Response(
-                            204,
-                            "NO CONTENT",
-                            headers,
-                            "".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 204, "NO CONTENT", "");
             return;
         }
         if (!request.method().equalsIgnoreCase("POST")) {
-            responseConsumer.accept(
-                    new Response(
-                            400,
-                            "BAD REQUEST",
-                            headers,
-                            "Bad request".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 400, "BAD REQUEST", "Method not allowed");
             return;
         }
         String tokenValue = request.header("token");
         if (tokenValue == null) {
-            responseConsumer.accept(
-                    new Response(
-                            401,
-                            "UNAUTHORIZED",
-                            headers,
-                            "Unauthorized\n".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 401, "UNAUTHORIZED", "No token provided");
             return;
         }
         UUID token;
         try {
             token = UUID.fromString(tokenValue);
         } catch (IllegalArgumentException e) {
-            responseConsumer.accept(
-                    new Response(
-                            400,
-                            "BAD REQUEST",
-                            headers,
-                            "Bad request".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 400, "BAD REQUEST", "Invalid token");
             return;
         }
         UUID playerId = tokenManager.useToken(token);
         if (playerId == null) {
-            responseConsumer.accept(
-                    new Response(
-                            401,
-                            "UNAUTHORIZED",
-                            headers,
-                            "Unauthorized".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 401, "UNAUTHORIZED", "Unauthorized");
             return;
         }
         String fileName = request.header("filename");
         if (fileName == null || fileName.isBlank()) {
-            responseConsumer.accept(
-                    new Response(
-                            400,
-                            "BAD REQUEST",
-                            headers,
-                            "No file name provided".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 400, "BAD REQUEST", "No file name provided");
             return;
         }
         byte[] data = request.body();
 
         if (data.length > AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get()) {
-            responseConsumer.accept(
-                    new Response(
-                            414,
-                            "TOO LONG",
-                            headers,
-                            "Too long\n".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 414, "TOO LONG", "Too long");
             return;
         }
 
         upload(playerId, token, fileName, data);
+        sendResponse(responseConsumer, 200, "OK", "");
+    }
+
+    private void sendResponse(Consumer<Response> responseConsumer, int code, String reason, String body, Header... headers) {
+        List<Header> headerList = new ArrayList<>();
+        headerList.add(new Header("Access-Control-Allow-Origin", "*"));
+        headerList.add(new Header("Access-Control-Allow-Methods", "*"));
+        headerList.add(new Header("Access-Control-Allow-Headers", "*"));
+        headerList.addAll(Arrays.asList(headers));
+
         responseConsumer.accept(
                 new Response(
-                        200,
-                        "OK",
-                        headers,
-                        "".getBytes()
+                        code,
+                        reason,
+                        headerList,
+                        (body + "\n").getBytes()
                 )
         );
     }
 
     private void handleServeStatic(Request request, Consumer<Response> responseConsumer) {
         if (!request.method().equalsIgnoreCase("GET")) {
-            responseConsumer.accept(
-                    new Response(
-                            400,
-                            "BAD REQUEST",
-                            List.of(),
-                            "Bad Request\n".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 400, "BAD REQUEST", "Bad Request");
             return;
         }
         String requestedResource = request.uri().split("\\?")[0];
@@ -216,14 +156,7 @@ public class WebServer implements AutoCloseable {
         byte[] data = staticFileCache.get(requestedResource);
 
         if (data == null) {
-            responseConsumer.accept(
-                    new Response(
-                            400,
-                            "BAD REQUEST",
-                            List.of(new Header("Content-Type", "text/plain")),
-                            "Bad Request\n".getBytes()
-                    )
-            );
+            sendResponse(responseConsumer, 400, "BAD REQUEST", "Bad Request", new Header("Content-Type", "text/plain"));
             return;
         }
         String mimeType = getMimeType(requestedResource);
