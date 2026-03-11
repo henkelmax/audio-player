@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.JukeboxSongPlayer;
@@ -51,12 +52,12 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
     private UUID channelId;
 
     @Override
-    public boolean audioplayer$customPlay(ServerLevel level, ItemStack item) {
+    public boolean audioplayer$customPlay(ServerLevel level, ItemStack item, @Nullable ServerPlayer player) {
         AudioData data = AudioData.of(item);
         if (data == null) {
             return false;
         }
-        ChannelReference<?> channel = PlayerManager.instance().playType(level, null, data, PlayerType.MUSIC_DISC, AudioEvents.PLAY_MUSIC_DISC, AudioEvents.POST_PLAY_MUSIC_DISC, blockPos.getCenter());
+        ChannelReference<?> channel = PlayerManager.instance().playType(level, player, data, PlayerType.MUSIC_DISC, AudioEvents.PLAY_MUSIC_DISC, AudioEvents.POST_PLAY_MUSIC_DISC, blockPos.getCenter());
         if (channel == null) {
             return false;
         }
