@@ -95,7 +95,11 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity implements Pla
     }
 
     @Override
-    public void audioplayer$setPlayer(ServerPlayer player) {
+    public void audioplayer$setPlayer(@Nullable ServerPlayer player) {
+        if (player == null) {
+            this.player = null;
+            return;
+        }
         this.player = new WeakReference<>(player);
     }
 

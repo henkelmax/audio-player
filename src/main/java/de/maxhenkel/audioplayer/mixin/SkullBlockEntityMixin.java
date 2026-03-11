@@ -4,8 +4,10 @@ import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.interfaces.ChannelHolder;
 import de.maxhenkel.audioplayer.interfaces.AudioDataHolder;
+import de.maxhenkel.audioplayer.interfaces.PlayerHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -19,10 +21,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 @Mixin(SkullBlockEntity.class)
-public class SkullBlockEntityMixin extends BlockEntity implements AudioDataHolder, ChannelHolder {
+public class SkullBlockEntityMixin extends BlockEntity implements AudioDataHolder, ChannelHolder, PlayerHolder {
 
     @Unique
     @Nullable
@@ -31,6 +34,10 @@ public class SkullBlockEntityMixin extends BlockEntity implements AudioDataHolde
     @Unique
     @Nullable
     private AudioData audioData;
+
+    @Unique
+    @Nullable
+    private WeakReference<ServerPlayer> player;
 
     public SkullBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -76,5 +83,20 @@ public class SkullBlockEntityMixin extends BlockEntity implements AudioDataHolde
             PlayerManager.instance().stop(channelID);
         }
         super.setRemoved();
+    }
+
+    @Nullable
+    @Override
+    public ServerPlayer audioplayer$getPlayer() {
+        return player == null ? null : player.get();
+    }
+
+    @Override
+    public void audioplayer$setPlayer(@Nullable ServerPlayer player) {
+        if (player == null) {
+            this.player = null;
+            return;
+        }
+        this.player = new WeakReference<>(player);
     }
 }
