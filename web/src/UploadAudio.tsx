@@ -1,6 +1,7 @@
 import {type ChangeEvent, type DragEvent, type FC, useRef, useState} from "react"
 import {uploadAudio, type UploadFileResponse} from "./api.ts"
 import {Button} from "./Button.tsx"
+import {isSupportedAudioType} from "./audioConverter.ts";
 
 const SelectFile: FC<{ setFile: (f: File | null) => void }> = ({setFile}) => {
     const inputRef = useRef<HTMLInputElement>(null)
@@ -42,14 +43,15 @@ const UploadFile:
                     {file?.name}
                 </div>
             </div>
-            <div>
-                <button
-                    onClick={async () => setResponse(await uploadAudio(file, token))}
-                    type="button"
-                    className="bg-green-800 p-2 rounded-lg hover:active:bg-green-900 disabled:opacity-75 cursor-pointer"
-                >
-                    Start upload
-                </button>
+            <div className="flex gap-4">
+                <Button onClick={async () => setResponse(await uploadAudio(file, token))}>
+                    Convert to mp3 and upload
+                </Button>
+                {isSupportedAudioType(file) &&
+                    <Button onClick={async () => setResponse(await uploadAudio(file, token, false))}>
+                        Upload
+                    </Button>
+                }
             </div>
         </div>
     )
