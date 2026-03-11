@@ -1,9 +1,12 @@
 package de.maxhenkel.audioplayer.interfaces;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+
+import javax.annotation.Nullable;
 
 public interface CustomJukeboxSongPlayer {
 
@@ -11,7 +14,7 @@ public interface CustomJukeboxSongPlayer {
 
     void audioplayer$onLoad(ItemStack itemStack, ValueInput valueInput);
 
-    boolean audioplayer$customPlay(ServerLevel level, ItemStack item);
+    boolean audioplayer$customPlay(ServerLevel level, ItemStack item, @Nullable ServerPlayer player);
 
     boolean audioplayer$customStop();
 
