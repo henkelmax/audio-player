@@ -43,3 +43,7 @@ export async function convertAudio(inputFile: File): Promise<{ blob: Blob, fileN
         fileName: inputFile.name.replace(/\.[^/.]+$/, ".mp3")
     };
 }
+
+export function isSupportedAudioType(file: File): boolean {
+    return file.type === 'audio/mpeg' || file.type === 'audio/wav';
+}

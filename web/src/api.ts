@@ -1,4 +1,4 @@
-import {convertAudio} from "./audioConverter.ts";
+import {convertAudio, isSupportedAudioType} from "./audioConverter.ts";
 
 export const BASE_URL = import.meta.env.DEV ? "http://localhost:8080" : ""
 
@@ -11,18 +11,31 @@ export interface UploadFileResponse {
     buttonText: string
 }
 
-export const uploadAudio = async (file: File, token: string): Promise<UploadFileResponse> => {
-    let audioData: {blob: Blob, fileName: string}
-    try {
-        audioData = await convertAudio(file)
-    } catch (error) {
-        return {
-            success: false,
-            headline: "Failed to convert audio!",
-            subText: convertError(error),
-            buttonText: "Try again!"
+export const uploadAudio = async (file: File, token: string, convert: boolean = true): Promise<UploadFileResponse> => {
+    let audioData: { blob: Blob | File, fileName: string }
+    if (convert) {
+        try {
+            audioData = await convertAudio(file)
+        } catch (error) {
+            return {
+                success: false,
+                headline: "Failed to convert audio!",
+                subText: convertError(error),
+                buttonText: "Try again!"
+            }
         }
+    } else {
+        if (!isSupportedAudioType(file)) {
+            return {
+                success: false,
+                headline: "Unsupported audio format!",
+                subText: "Please upload a supported audio format (mp3 or wav).",
+                buttonText: "Try again!"
+            }
+        }
+        audioData = {blob: file, fileName: file.name}
     }
+
     try {
         const response = await fetch(`${BASE_URL}/upload`, {
             method: "POST",
