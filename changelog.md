@@ -1,2 +1,6 @@
-- Keep static and random playback data from older versions
-- Fixed unknown modules not persisted correctly
+- Updated web upload page
+- Added audio conversion support to web upload
+- Fixed audio file name not preserved when uploading through web upload
+- Added drag and drop support to web upload
+- Retain causing player for playing music discs
+- Retain causing player for playing note blocks
