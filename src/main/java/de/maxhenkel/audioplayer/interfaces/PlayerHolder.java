@@ -9,6 +9,6 @@ public interface PlayerHolder {
     @Nullable
     ServerPlayer audioplayer$getPlayer();
 
-    void audioplayer$setPlayer(ServerPlayer player);
+    void audioplayer$setPlayer(@Nullable ServerPlayer player);
 
 }
