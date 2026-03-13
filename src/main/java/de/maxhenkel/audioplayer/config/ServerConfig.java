@@ -28,6 +28,8 @@ public class ServerConfig {
     public final ConfigEntry<Float> maxGoatHornDuration;
     public final ConfigEntry<Integer> cacheSize;
     public final ConfigEntry<Boolean> runWebServer;
+    public final ConfigEntry<Boolean> useFfmpeg;
+    public final ConfigEntry<String> ffmpegPath;
 
     public ServerConfig(ConfigBuilder builder) {
         configVersion = builder
@@ -153,7 +155,7 @@ public class ServerConfig {
                 128,
                 0,
                 Integer.MAX_VALUE,
-                "The maximum amount of audio files that are cached in memory",
+                "The maximum count of audio files that are cached in memory",
                 "Setting this to 0 will disable the cache",
                 "A higher value will result in less disk reads, but more RAM usage"
         );
@@ -164,6 +166,19 @@ public class ServerConfig {
                 "You can configure the webserver in the webserver.properties config",
                 "The webserver.properties will only be generated if this option is set to true",
                 "NOTE: This option is experimental and subject to change"
+        );
+        useFfmpeg = builder.booleanEntry(
+                "use_ffmpeg",
+                false,
+                "If the mod should use ffmpeg for audio conversion",
+                "If this is enabled, all unknown audio formats will be converted to mp3",
+                "You can configure the ffmpeg path in \"ffmpeg_path\""
+        );
+        ffmpegPath = builder.stringEntry(
+                "ffmpeg_path",
+                "",
+                "The path to the ffmpeg executable",
+                "If empty, the mod will try to find ffmpeg in the system path"
         );
     }
 
