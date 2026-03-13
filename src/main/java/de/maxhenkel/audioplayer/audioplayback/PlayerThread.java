@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.audioplayback;
 
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.cache.CachedAudio;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 
@@ -75,13 +76,22 @@ public class PlayerThread<T extends AudioChannel> extends Thread {
             }
             return;
         }
+        byte[][] opusFrames = audio.getOpusFrames();
+        if (opusFrames.length <= 0) {
+            AudioPlayerMod.LOGGER.error("Tried to play empty audio {}", audio.getId());
+            if (onStopped != null) {
+                onStopped.run();
+            }
+            return;
+        }
+
         int framePosition = 0;
 
         long startTime = System.nanoTime();
 
         byte[] frame;
 
-        while ((frame = audio.getOpusFrames()[framePosition]) != null) {
+        while (framePosition < opusFrames.length && (frame = opusFrames[framePosition]) != null) {
             audioChannel.send(frame);
             framePosition++;
             updateChannel(audioChannel);
