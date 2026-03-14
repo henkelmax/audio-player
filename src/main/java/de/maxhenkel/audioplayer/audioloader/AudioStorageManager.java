@@ -5,6 +5,7 @@ import de.maxhenkel.audioplayer.api.MessageReceiver;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.audioloader.converter.FfmpegConverter;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
@@ -167,9 +168,44 @@ public class AudioStorageManager {
         server.execute(runnable);
     }
 
-    private void saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException {
+    private void saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
         AudioUtils.AudioType audioType = AudioUtils.getAudioType(data);
+        if (AudioPlayerMod.SERVER_CONFIG.useFfmpeg.get() && shouldConvertToMp3(audioType)) {
+            convertAndSaveSound(id, fileName, data, player);
+            return;
+        }
         checkExtensionAllowed(audioType);
+        try {
+            saveSound0(audioType, id, fileName, data, player);
+        } catch (UnsupportedAudioFileException e) {
+            if (!AudioPlayerMod.SERVER_CONFIG.useFfmpeg.get()) {
+                throw e;
+            }
+            if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+                AudioPlayerMod.LOGGER.error("Failed to save audio without conversion, trying FFmpeg conversion", e);
+            } else {
+                AudioPlayerMod.LOGGER.error("Failed to save audio without conversion, trying FFmpeg conversion");
+            }
+            convertAndSaveSound(id, fileName, data, player);
+        }
+    }
+
+    private void convertAndSaveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+        AudioPlayerMod.LOGGER.info("Converting audio {} to mp3 using FFmpeg", id);
+        FfmpegConverter.ConvertedAudio converted = FfmpegConverter.convert(fileName, data);
+        saveSound0(converted.audioType(), id, converted.fileName(), converted.data(), player);
+    }
+
+    private void saveSound0(AudioUtils.AudioType audioType, UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+        float lengthSeconds = AudioUtils.getLengthSeconds(data);
+        if (lengthSeconds < 0.1F) {
+            // Uploading mp4 files will cause java to detect an mp3 container,
+            // but actually decoding it will basically result in a tiny audio file
+            throw new UnsupportedAudioFileException("Audio is too short");
+        }
+        if (lengthSeconds > AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()) {
+            throw new IOException("Maximum upload duration exceeded (%.1fs>%.1fs)".formatted(lengthSeconds, AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()));
+        }
 
         Path soundFile = getSoundFile(id, audioType.getExtension());
         if (Files.exists(soundFile)) {
@@ -177,22 +213,29 @@ public class AudioStorageManager {
         }
         Files.createDirectories(soundFile.getParent());
 
-        float lengthSeconds = AudioUtils.getLengthSeconds(data);
-        if (lengthSeconds > AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()) {
-            throw new IOException("Maximum upload duration exceeded (%.1fs>%.1fs)".formatted(lengthSeconds, AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()));
-        }
-
         try (OutputStream outputStream = Files.newOutputStream(soundFile)) {
             IOUtils.write(data, outputStream);
         }
 
+        String finalFileName = fileName;
         fileMetadataManager.modifyMetadata(id, metadata -> {
-            metadata.setFileName(fileName);
+            metadata.setFileName(finalFileName);
             metadata.setCreated(System.currentTimeMillis());
             if (player != null) {
                 metadata.setOwner(Metadata.Owner.of(player));
             }
         });
+    }
+
+    private boolean shouldConvertToMp3(@Nullable AudioUtils.AudioType audioType) {
+        if (audioType == null) {
+            return true;
+        }
+        // Convert to mp3 if the user tries to upload a wav file when wav uploads are disabled
+        if (!AudioPlayerMod.SERVER_CONFIG.allowWavUpload.get() && audioType.equals(AudioUtils.AudioType.WAV)) {
+            return true;
+        }
+        return false;
     }
 
     private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioFileException {
