@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.utils;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.mp3.Mp3Decoder;
+import javazoom.spi.mpeg.sampled.file.MpegAudioFormat;
 import net.fabricmc.loader.api.FabricLoader;
 
 import javax.annotation.Nullable;
@@ -42,7 +43,11 @@ public class AudioUtils {
         if (type.equalsIgnoreCase("wave")) {
             return AudioType.WAV;
         } else if (type.equalsIgnoreCase("mp3")) {
-            return AudioType.MP3;
+            // Renaming mp4 files to mp3 would still have the type mp3, so we actually need to check the layer
+            // See javazoom.spi.mpeg.sampled.file.MpegEncoding
+            if (fileFormat.getFormat() instanceof MpegAudioFormat mpegFormat && mpegFormat.getEncoding().toString().endsWith("L3")) {
+                return AudioType.MP3;
+            }
         }
         return null;
     }
@@ -107,6 +112,9 @@ public class AudioUtils {
             byte[] data = VoicechatAudioPlayerPlugin.voicechatApi.getAudioConverter().shortsToBytes(mp3Decoder.decode());
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
             AudioFormat audioFormat = mp3Decoder.getAudioFormat();
+            if (audioFormat == null) {
+                throw new IOException("Error getting audio format");
+            }
             AudioInputStream source = new AudioInputStream(byteArrayInputStream, audioFormat, data.length / audioFormat.getFrameSize());
             return convert(source);
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.audioloader.converter;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.utils.AudioUtils;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -41,13 +42,41 @@ public class FfmpegConverter {
         }
     }
 
-    public static byte[] convertToMonoMp3(InputStream sourceAudio) throws Exception {
+    public static ConvertedAudio convert(@Nullable String fileName, byte[] sourceAudio) throws FfmpegException {
+        return convert(fileName, new ByteArrayInputStream(sourceAudio));
+    }
+
+    public static ConvertedAudio convert(@Nullable String fileName, InputStream sourceAudio) throws FfmpegException {
+        try {
+            return new ConvertedAudio(updateFilename(fileName), convertToMonoMp3(sourceAudio), AudioUtils.AudioType.MP3);
+        } catch (Exception e) {
+            throw new FfmpegException("Failed to convert audio to mp3", e);
+        }
+    }
+
+    @Nullable
+    private static String updateFilename(@Nullable String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+        int idx = fileName.indexOf(".");
+        if (idx == -1) {
+            return "%s.mp3".formatted(fileName);
+        }
+        return "%s.mp3".formatted(fileName.substring(0, idx));
+    }
+
+    private static byte[] convertToMonoMp3(InputStream sourceAudio) throws Exception {
         if (getFfmpegVersion() == null) {
-            throw new IOException("FFMPEG not found");
+            throw new IOException("FFmpeg not found");
         }
 
+        // Use "-xerror" and "-abort_on empty_output" because converting an mp4 file
+        // ffmpeg will fail to seek due to piping stdin and just output an id3 tag and then exit with exit code 0
         ProcessBuilder pb = new ProcessBuilder(
                 getFfmpegPath(),
+                "-xerror",
+                "-abort_on", "empty_output",
                 "-i", "pipe:0",
                 "-ac", "1",
                 "-f", "mp3",
@@ -104,6 +133,15 @@ public class FfmpegConverter {
             return "ffmpeg";
         }
         return path;
+    }
+
+    public static record ConvertedAudio(@Nullable String fileName, byte[] data, AudioUtils.AudioType audioType) {
+    }
+
+    public static class FfmpegException extends Exception {
+        public FfmpegException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
 }

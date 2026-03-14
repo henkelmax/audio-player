@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer;
 import de.maxhenkel.admiral.MinecraftAdmiral;
 import de.maxhenkel.audioplayer.api.AudioPlayerModule;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioloader.converter.FfmpegConverter;
 import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
 import de.maxhenkel.audioplayer.lang.Lang;
@@ -45,6 +46,15 @@ public class AudioPlayerMod implements ModInitializer {
         });
 
         AudioPlayerModule.onInitialize();
+
+        if (SERVER_CONFIG.useFfmpeg.get()) {
+            String ffmpegVersion = FfmpegConverter.getFfmpegVersion();
+            if (ffmpegVersion == null) {
+                LOGGER.error("Failed to detect FFmpeg");
+            } else {
+                LOGGER.info("Using FFmpeg {}", ffmpegVersion);
+            }
+        }
     }
 
     public static Path getModConfigFolder() {

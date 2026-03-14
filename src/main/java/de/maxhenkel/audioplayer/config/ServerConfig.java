@@ -110,14 +110,13 @@ public class ServerConfig {
                 true,
                 "Whether users should be able to upload .wav files",
                 "Note that .wav files are not compressed and can be very large",
-                "Playing .wav files may result in more RAM and storage usage"
+                "Playing .wav files may result in more RAM and storage usage",
+                "If \"use_ffmpeg\" is enabled, disabling wav uploads will automatically convert all uploaded wav files to mp3"
         );
         allowMp3Upload = builder.booleanEntry(
                 "allow_mp3_upload",
                 true,
-                "Whether users should be able to upload .mp3 files",
-                "Note that .mp3 files require Simple Voice Chats mp3 decoder",
-                "Playing .mp3 files can be slightly more CPU intensive"
+                "Whether users should be able to upload .mp3 files"
         );
         maxUploadDuration = builder.floatEntry(
                 "max_import_duration",
