@@ -120,7 +120,7 @@ public class PlayerManager {
             if (maxLengthSeconds != null && audio.getDurationSeconds() > maxLengthSeconds) {
                 if (p != null) {
                     p.level().getServer().execute(() -> {
-                        p.displayClientMessage(Lang.translatable("audioplayer.audio_too_long").withStyle(ChatFormatting.DARK_RED), true);
+                        p.sendOverlayMessage(Lang.translatable("audioplayer.audio_too_long").withStyle(ChatFormatting.DARK_RED));
                     });
                 }
                 AudioPlayerMod.LOGGER.error("Audio {} was too long to play", sound);
@@ -133,7 +133,7 @@ public class PlayerManager {
             AudioPlayerMod.LOGGER.error("Failed to play audio", e);
             if (p != null) {
                 p.level().getServer().execute(() -> {
-                    p.displayClientMessage(Lang.translatable("audioplayer.play_audio_failed", e.getMessage()).withStyle(ChatFormatting.DARK_RED), true);
+                    p.sendOverlayMessage(Lang.translatable("audioplayer.play_audio_failed", e.getMessage()).withStyle(ChatFormatting.DARK_RED));
                 });
             }
             return false;

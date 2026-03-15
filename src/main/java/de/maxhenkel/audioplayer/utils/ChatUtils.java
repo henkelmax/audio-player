@@ -105,7 +105,7 @@ public class ChatUtils {
     }
 
     public static void sendEnableVoicechatMessage(ServerPlayer player) {
-        player.displayClientMessage(Lang.translatable("audioplayer.enable_voicechat"), true);
+        player.sendOverlayMessage(Lang.translatable("audioplayer.enable_voicechat"));
     }
 
 }

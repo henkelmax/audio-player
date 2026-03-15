@@ -18,6 +18,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
@@ -107,7 +108,7 @@ public class ApplyCommands {
                 }
                 amount++;
             }
-            itemInHand.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(bundleContents));
+            itemInHand.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(bundleContents.stream().map(ItemStackTemplate::fromNonEmptyStack).toList()));
             return amount;
         }
 

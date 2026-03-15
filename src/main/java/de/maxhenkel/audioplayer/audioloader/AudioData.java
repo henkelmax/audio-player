@@ -260,7 +260,11 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
             stack.set(DataComponents.INSTRUMENT, ComponentUtils.EMPTY_INSTRUMENT);
         }
         if (stack.has(DataComponents.JUKEBOX_PLAYABLE)) {
-            stack.set(DataComponents.JUKEBOX_PLAYABLE, ComponentUtils.CUSTOM_JUKEBOX_PLAYABLE);
+            Optional<JukeboxPlayable> customPlayable = ComponentUtils.getCustomPlayable();
+            if (customPlayable.isEmpty()) {
+                AudioPlayerMod.LOGGER.error("Failed to save audio data to item: Could not get custom playable");
+            }
+            stack.set(DataComponents.JUKEBOX_PLAYABLE, customPlayable.orElse(null));
         }
 
         ItemLore l = null;

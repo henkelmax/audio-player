@@ -1,6 +1,6 @@
 plugins {
     id 'com.gradleup.shadow' version "${shadow_version}"
-    id 'fabric-loom' version "${fabric_loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${fabric_loom_version}"
     id 'mod-update' version "${mod_update_version}"
     id 'de.maxhenkel.cursegradle' version "${cursegradle_version}"
     id 'com.modrinth.minotaur' version "${minotaur_version}"
@@ -20,8 +20,10 @@ java {
 }
 
 dependencies {
-    include(modImplementation("maven.modrinth:admiral:${admiral_version}+fabric"))
-    modImplementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
+    //TODO Change once admiral is published
+    //include(implementation("maven.modrinth:admiral:${admiral_version}+fabric"))
+    include(implementation("de.maxhenkel.admiral:admiral-fabric:${admiral_version}"))
+    implementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
 
     implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
         exclude group: 'junit', module: 'junit'
@@ -34,19 +36,19 @@ dependencies {
     shadow "org.microhttp:microhttp:${microhttp_version}"
 
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
-    modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}:fabric-stub"
-    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
+    runtimeOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}:fabric-stub"
+    runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
 
     Set<String> voicechatModules = [
             'fabric-api-base',
             'fabric-command-api-v2',
             'fabric-lifecycle-events-v1',
             'fabric-networking-api-v1',
-            'fabric-resource-loader-v0',
-            'fabric-key-binding-api-v1'
+            'fabric-resource-loader-v1',
+            'fabric-key-mapping-api-v1'
     ]
     voicechatModules.forEach {
-        modRuntimeOnly(fabricApi.module(it, fabric_api_version))
+        runtimeOnly(fabricApi.module(it, fabric_api_version))
     }
 }
 

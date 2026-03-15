@@ -8,6 +8,7 @@ import de.maxhenkel.audioplayer.command.*;
 import de.maxhenkel.audioplayer.config.ServerConfig;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
+import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import de.maxhenkel.audioplayer.webserver.WebServerEvents;
 import de.maxhenkel.configbuilder.ConfigBuilder;
 import net.fabricmc.api.ModInitializer;
@@ -44,6 +45,7 @@ public class AudioPlayerMod implements ModInitializer {
                     })
                     .build();
         });
+        ComponentUtils.init();
 
         AudioPlayerModule.onInitialize();
 
