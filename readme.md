@@ -60,14 +60,18 @@ Run `/audioplayer filebin` and follow the instructions.
 
 ### Putting custom audio on an item
 
-Run `/audioplayer apply <ID>` and hold a **music disc**, **goat horn** or **head** in your main hand.
+Run `/audioplayer apply <ID> [TOOLTIP]` and hold a **music disc**, **goat horn** or **head** in your main hand.
 
 It's also possible to bulk apply audio to more than one item at a time by holding a shulker box, bundle or other container item in your hand.
 
 You can also apply custom audio by its original file name:
-`/audioplayer apply "<FILE_NAME>"`.
+`/audioplayer apply "<FILE_NAME> [TOOLTIP]"`.
 This command works with and without the file extension (like `.mp3` or `.wav`).
 Note that the file name must be unique for this to work.
+
+### Changing the tooltip of an item
+
+Run `/audioplayer tooltip <TOOLTIP>` while holding an item that has custom audio in your main hand.
 
 ### Adjusting the range of an item
 
