@@ -8,6 +8,7 @@
   "audioplayer.no_valid_items_found": "No valid items found",
   "audioplayer.item_update_successful": "Successfully updated item",
   "audioplayer.item_updates_successful": "Successfully updated %s items",
+  "audioplayer.item_rename_successful": "Successfully renamed item",
   "audioplayer.play_successful": "Successfully played %s",
   "audioplayer.stop_streams_successful": "Successfully stopped %s stream(s)",
   "audioplayer.upload_filebin": "Upload audio via Filebin",

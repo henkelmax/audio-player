@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
+import de.maxhenkel.admiral.arguments.GreedyString;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
@@ -11,6 +12,7 @@ import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.*;
@@ -38,6 +40,22 @@ public class UtilityCommands {
         }
 
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_clear_successful"), false);
+    }
+
+    @RequiresPermission(AudioPlayerPermissionManager.APPLY_PERMISSION_STRING)
+    @Command("rename")
+    public void rename(CommandContext<CommandSourceStack> context, @Name("name") GreedyString name) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+        AudioData audioData = AudioData.of(itemInHand);
+        if (audioData == null) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
+            return;
+        }
+
+        audioData.saveToItem(itemInHand, Component.literal(name.get()));
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_rename_successful"), false);
     }
 
     @Command("id")
