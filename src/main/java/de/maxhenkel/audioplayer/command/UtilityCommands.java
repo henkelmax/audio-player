@@ -43,8 +43,8 @@ public class UtilityCommands {
     }
 
     @RequiresPermission(AudioPlayerPermissionManager.APPLY_PERMISSION_STRING)
-    @Command("rename")
-    public void rename(CommandContext<CommandSourceStack> context, @Name("name") GreedyString name) throws CommandSyntaxException {
+    @Command("tooltip")
+    public void tooltip(CommandContext<CommandSourceStack> context, @Name("name") GreedyString name) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
@@ -55,7 +55,7 @@ public class UtilityCommands {
         }
 
         audioData.saveToItem(itemInHand, Component.literal(name.get()));
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_rename_successful"), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_rename_tooltip_successful"), false);
     }
 
     @Command("id")
