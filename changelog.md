@@ -4,3 +4,4 @@
 - Added drag and drop support to web upload
 - Retain causing player for playing music discs
 - Retain causing player for playing note blocks
+- Added a rename command
