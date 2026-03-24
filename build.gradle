@@ -20,9 +20,7 @@ java {
 }
 
 dependencies {
-    //TODO Change once admiral is published
-    //include(implementation("maven.modrinth:admiral:${admiral_version}+fabric"))
-    include(implementation("de.maxhenkel.admiral:admiral-fabric:${admiral_version}"))
+    include(implementation("maven.modrinth:admiral:${admiral_version}+fabric"))
     implementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
 
     implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
