@@ -37,7 +37,7 @@ public class FfmpegConverter {
                 return ffmpegVersion;
             }
         } catch (Exception e) {
-            AudioPlayerMod.LOGGER.warn("Failed to get ffmpeg version", e);
+            AudioPlayerMod.LOGGER.warn("Failed to get FFmpeg version", e);
             return null;
         }
     }
