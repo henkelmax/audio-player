@@ -5,3 +5,4 @@
 - Retain causing player for playing music discs
 - Retain causing player for playing note blocks
 - Added a tooltip command
+- Improved audio uploading error feedback

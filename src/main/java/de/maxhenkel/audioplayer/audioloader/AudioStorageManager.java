@@ -141,6 +141,9 @@ public class AudioStorageManager {
             try {
                 AudioImportInfo audioDownloadInfo = importer.onPreprocess(player);
                 byte[] bytes = importer.onProcess(player);
+                if (bytes == null || bytes.length <= 0) {
+                    throw new ComponentException(Lang.translatable("audioplayer.empty_file"));
+                }
                 ChatUtils.checkFileSize(bytes.length);
                 UUID id = audioDownloadInfo.getAudioId();
                 String fileName = audioDownloadInfo.getName();
