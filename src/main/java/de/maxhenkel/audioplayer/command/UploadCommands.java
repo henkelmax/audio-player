@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.UUID;
 
 @Command("audioplayer")
-@RequiresPermission(AudioPlayerPermissionManager.UPLOAD_PERMISSION_STRING)
 public class UploadCommands {
 
     @Command
@@ -60,17 +59,20 @@ public class UploadCommands {
     }
 
     @Command("filebin")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_FILEBIN_PERMISSION_STRING)
     public void filebin(CommandContext<CommandSourceStack> context) {
         FilebinImporter.sendFilebinUploadMessage(context.getSource());
     }
 
     @Command("filebin")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_FILEBIN_PERMISSION_STRING)
     public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
         AudioPlayerApiImpl.INSTANCE.importAudio(new FilebinImporter(sound), context.getSource());
     }
 
     @Command("url")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_URL_PERMISSION_STRING)
     public void url(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
                         Lang.translatable("audioplayer.url_command",
@@ -84,12 +86,14 @@ public class UploadCommands {
     }
 
     @Command("url")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_URL_PERMISSION_STRING)
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
         AudioPlayerApiImpl.INSTANCE.importAudio(new UrlImporter(url), context.getSource());
     }
 
     @Command("web")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_WEB_PERMISSION_STRING)
     public void web(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         WebServer webServer = WebServerEvents.getWebServer();
         if (webServer == null) {
@@ -126,6 +130,7 @@ public class UploadCommands {
     }
 
     @Command("serverfile")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_SERVERFILE_PERMISSION_STRING)
     public void serverFile(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
                         Lang.translatable("audioplayer.upload_serverfile_instructions",
@@ -140,6 +145,7 @@ public class UploadCommands {
     }
 
     @Command("serverfile")
+    @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_SERVERFILE_PERMISSION_STRING)
     public void serverFileUpload(CommandContext<CommandSourceStack> context, @Name("filename") ServerFileArgument serverFile) {
         AudioPlayerApiImpl.INSTANCE.importAudio(new ServerfileImporter(serverFile.getFileName()), context.getSource());
     }
