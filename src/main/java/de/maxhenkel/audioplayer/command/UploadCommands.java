@@ -74,8 +74,6 @@ public class UploadCommands {
     public void url(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
                         Lang.translatable("audioplayer.url_command",
-                                Component.literal(".mp3").withStyle(ChatFormatting.GRAY),
-                                Component.literal(".wav").withStyle(ChatFormatting.GRAY),
                                 Component.literal("/audioplayer url <link-to-your-file>").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.SuggestCommand("/audioplayer url "))
@@ -131,8 +129,6 @@ public class UploadCommands {
     public void serverFile(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
                         Lang.translatable("audioplayer.upload_serverfile_instructions",
-                                Component.literal(".mp3").withStyle(ChatFormatting.GRAY),
-                                Component.literal(".wav").withStyle(ChatFormatting.GRAY),
                                 Component.literal(AudioStorageManager.getUploadFolder().toAbsolutePath().toString()).withStyle(ChatFormatting.GRAY),
                                 Component.literal("/audioplayer serverfile \"yourfile.mp3\"").withStyle(ChatFormatting.GRAY).withStyle(style -> {
                                     return style

@@ -80,7 +80,7 @@ public class FilebinImporter implements AudioImporter {
 
                 String contentType = file.get("content-type").getAsString();
 
-                if (contentType.equals("audio/wav") || contentType.equals("audio/mpeg")) {
+                if (contentType.startsWith("audio/")) {
                     long size = file.get("bytes").getAsLong();
                     ChatUtils.checkFileSize(size);
 
@@ -159,8 +159,6 @@ public class FilebinImporter implements AudioImporter {
                                     .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_open")));
                         })
                         .withStyle(ChatFormatting.GREEN),
-                Component.literal("mp3").withStyle(ChatFormatting.GRAY),
-                Component.literal("wav").withStyle(ChatFormatting.GRAY),
                 Lang.translatable("audioplayer.here")
                         .withStyle(style -> {
                             return style
