@@ -81,8 +81,7 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
         }
 
         private boolean checkFabricPermission(ServerPlayer player) {
-            //TODO Fix
-            TriState permissionValue = TriState.DEFAULT; //Permissions.getPermissionValue(player, permission);
+            TriState permissionValue = Permissions.getPermissionValue(player, permission);
             return switch (permissionValue) {
                 case DEFAULT -> type.hasPermission(player);
                 case TRUE -> true;
