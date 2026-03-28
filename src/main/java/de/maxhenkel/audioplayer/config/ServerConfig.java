@@ -169,15 +169,16 @@ public class ServerConfig {
         useFfmpeg = builder.booleanEntry(
                 "use_ffmpeg",
                 false,
-                "If the mod should use ffmpeg for audio conversion",
+                "If the mod should use FFmpeg for audio conversion",
                 "If this is enabled, all unknown audio formats will be converted to mp3",
-                "You can configure the ffmpeg path in \"ffmpeg_path\""
+                "You can configure the FFmpeg path in \"ffmpeg_path\"",
+                "NOTE: This option is experimental and subject to change"
         );
         ffmpegPath = builder.stringEntry(
                 "ffmpeg_path",
                 "",
-                "The path to the ffmpeg executable",
-                "If empty, the mod will try to find ffmpeg in the system path"
+                "The path to the FFmpeg executable",
+                "If empty, the mod will try to find FFmpeg in the system path"
         );
     }
 
