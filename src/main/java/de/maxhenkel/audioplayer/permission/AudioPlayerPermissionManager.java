@@ -15,17 +15,26 @@ public class AudioPlayerPermissionManager implements PermissionManager<CommandSo
     public static final AudioPlayerPermissionManager INSTANCE = new AudioPlayerPermissionManager();
 
     public static final String VOLUME_PERMISSION_STRING = "audioplayer.volume";
-    public static final String UPLOAD_PERMISSION_STRING = "audioplayer.upload";
+    public static final String UPLOAD_FILEBIN_PERMISSION_STRING = "audioplayer.upload.filebin";
+    public static final String UPLOAD_SERVERFILE_PERMISSION_STRING = "audioplayer.upload.serverfile";
+    public static final String UPLOAD_URL_PERMISSION_STRING = "audioplayer.upload.url";
+    public static final String UPLOAD_WEB_PERMISSION_STRING = "audioplayer.upload.web";
     public static final String APPLY_PERMISSION_STRING = "audioplayer.apply";
     public static final String PLAY_COMMAND_PERMISSION_STRING = "audioplayer.play_command";
 
     private static final Permission VOLUME_PERMISSION = new Permission(VOLUME_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission UPLOAD_PERMISSION = new Permission(UPLOAD_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission UPLOAD_FILEBIN_PERMISSION = new Permission(UPLOAD_FILEBIN_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission UPLOAD_SERVERFILE_PERMISSION = new Permission(UPLOAD_SERVERFILE_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission UPLOAD_URL_PERMISSION = new Permission(UPLOAD_URL_PERMISSION_STRING, PermissionType.EVERYONE);
+    private static final Permission UPLOAD_WEB_PERMISSION = new Permission(UPLOAD_WEB_PERMISSION_STRING, PermissionType.EVERYONE);
     private static final Permission APPLY_PERMISSION = new Permission(APPLY_PERMISSION_STRING, PermissionType.EVERYONE);
     private static final Permission PLAY_COMMAND_PERMISSION = new Permission(PLAY_COMMAND_PERMISSION_STRING, PermissionType.OPS);
 
     private static final List<Permission> PERMISSIONS = List.of(
-            UPLOAD_PERMISSION,
+            UPLOAD_FILEBIN_PERMISSION,
+            UPLOAD_SERVERFILE_PERMISSION,
+            UPLOAD_URL_PERMISSION,
+            UPLOAD_WEB_PERMISSION,
             APPLY_PERMISSION,
             PLAY_COMMAND_PERMISSION,
             VOLUME_PERMISSION
