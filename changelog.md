@@ -6,3 +6,4 @@
 - Retain causing player for playing note blocks
 - Added a tooltip command
 - Improved audio uploading error feedback
+- Added individual permissions for each upload type
