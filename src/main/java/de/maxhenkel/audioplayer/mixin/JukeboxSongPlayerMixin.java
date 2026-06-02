@@ -18,6 +18,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,7 +58,7 @@ public abstract class JukeboxSongPlayerMixin implements CustomJukeboxSongPlayer 
         if (data == null) {
             return false;
         }
-        ChannelReference<?> channel = PlayerManager.instance().playType(level, player, data, PlayerType.MUSIC_DISC, AudioEvents.PLAY_MUSIC_DISC, AudioEvents.POST_PLAY_MUSIC_DISC, blockPos.getCenter());
+        ChannelReference<?> channel = PlayerManager.instance().playType(level, player, data, PlayerType.MUSIC_DISC, AudioEvents.PLAY_MUSIC_DISC, AudioEvents.POST_PLAY_MUSIC_DISC, Vec3.atCenterOf(blockPos));
         if (channel == null) {
             return false;
         }

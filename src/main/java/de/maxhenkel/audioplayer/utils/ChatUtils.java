@@ -11,7 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class ChatUtils {
             base.append(" ");
             base.append(Lang.translatable("audioplayer.by", Component.literal(owner.name()).withStyle(style -> {
                 return style
-                        .withHoverEvent(new HoverEvent.ShowEntity(new HoverEvent.EntityTooltipInfo(EntityType.PLAYER, owner.uuid(), Component.literal(owner.name()))))
+                        .withHoverEvent(new HoverEvent.ShowEntity(new HoverEvent.EntityTooltipInfo(EntityTypes.PLAYER, owner.uuid(), Component.literal(owner.name()))))
                         .withColor(ChatFormatting.GRAY);
             })));
         }

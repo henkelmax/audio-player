@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -60,7 +61,7 @@ public class NoteBlockMixin extends Block {
             PlayerManager.instance().stop(channelId);
             channelHolder.audioplayer$setChannelID(null);
         }
-        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, causingPlayer, data, PlayerType.NOTE_BLOCK, AudioEvents.PLAY_NOTE_BLOCK, AudioEvents.POST_PLAY_NOTE_BLOCK, blockPos.getCenter());
+        ChannelReference<?> channel = PlayerManager.instance().playType(serverLevel, causingPlayer, data, PlayerType.NOTE_BLOCK, AudioEvents.PLAY_NOTE_BLOCK, AudioEvents.POST_PLAY_NOTE_BLOCK, Vec3.atCenterOf(blockPos));
         if (channel != null) {
             channelHolder.audioplayer$setChannelID(channel.getChannel().getId());
             cir.setReturnValue(true);

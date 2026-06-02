@@ -28,6 +28,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.*;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -270,10 +271,10 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         ItemLore l = null;
 
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SkullBlock) {
-            TypedEntityData<? extends BlockEntityType<?>> blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityType.SKULL, new CompoundTag()));
+            TypedEntityData<? extends BlockEntityType<?>> blockEntityData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityTypes.SKULL, new CompoundTag()));
             CompoundTag blockEntityTag = blockEntityData.copyTagWithoutId();
             saveToNbt(blockEntityTag);
-            stack.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityType.SKULL, blockEntityTag));
+            stack.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityTypes.SKULL, blockEntityTag));
             if (lore == null) {
                 l = new ItemLore(Collections.singletonList(Component.literal(DEFAULT_HEAD_LORE).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
             }
