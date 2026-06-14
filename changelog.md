@@ -1,1 +1,2 @@
+- Updated web dependencies
 - Updated to 26.2
