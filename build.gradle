@@ -10,20 +10,13 @@ plugins {
 
 apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/mod.gradle"
 
-repositories {
-    //TODO Remove
-    mavenLocal()
-}
-
 java {
     withJavadocJar()
     withSourcesJar()
 }
 
 dependencies {
-    //include(implementation("maven.modrinth:admiral:${admiral_version}+fabric"))
-    //TODO Change
-    include(implementation("de.maxhenkel.admiral:admiral-fabric:0.4.10+26.2-pre-3"))
+    include(implementation("maven.modrinth:admiral:${admiral_version}+fabric"))
     implementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
 
     implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
