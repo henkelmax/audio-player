@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer.audioloader;
 
 import com.google.gson.*;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.utils.FileUtils;
 
 import javax.annotation.Nullable;
@@ -100,6 +101,10 @@ public class FileMetadataManager {
 
     public Metadata getOrCreateMetadata(UUID uuid) {
         return metadata.computeIfAbsent(uuid, Metadata::new);
+    }
+
+    public Collection<AudioFileMetadata> getAllMetadata() {
+        return Collections.unmodifiableCollection(metadata.values());
     }
 
     public void modifyMetadata(UUID uuid, Consumer<Metadata> metadataConsumer) {
