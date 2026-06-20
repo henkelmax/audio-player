@@ -1,2 +1,1 @@
-- Updated web dependencies
-- Updated to 26.2
+- Made import API return a future
