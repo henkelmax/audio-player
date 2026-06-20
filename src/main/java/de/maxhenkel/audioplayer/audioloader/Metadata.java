@@ -3,13 +3,15 @@ package de.maxhenkel.audioplayer.audioloader;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
+import de.maxhenkel.audioplayer.api.data.AudioFileOwner;
 import net.minecraft.world.entity.player.Player;
+import org.jspecify.annotations.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class Metadata {
+public class Metadata implements AudioFileMetadata {
 
     private final UUID audioId;
     @Nullable
@@ -19,17 +21,19 @@ public class Metadata {
     @Nullable
     private Long created;
     @Nullable
-    private Owner owner;
+    private AudioFileOwner owner;
 
     public Metadata(UUID audioId) {
         this.audioId = audioId;
     }
 
+    @Override
     public UUID getAudioId() {
         return audioId;
     }
 
     @Nullable
+    @Override
     public String getFileName() {
         return fileName;
     }
@@ -39,6 +43,7 @@ public class Metadata {
     }
 
     @Nullable
+    @Override
     public Float getVolume() {
         return volume;
     }
@@ -48,6 +53,7 @@ public class Metadata {
     }
 
     @Nullable
+    @Override
     public Long getCreated() {
         return created;
     }
@@ -57,11 +63,12 @@ public class Metadata {
     }
 
     @Nullable
-    public Owner getOwner() {
+    @Override
+    public AudioFileOwner getOwner() {
         return owner;
     }
 
-    public void setOwner(@Nullable Owner owner) {
+    public void setOwner(@Nullable AudioFileOwner owner) {
         this.owner = owner;
     }
 
@@ -104,19 +111,38 @@ public class Metadata {
         }
         if (owner != null) {
             JsonObject ownerJson = new JsonObject();
-            ownerJson.addProperty("uuid", owner.uuid().toString());
-            ownerJson.addProperty("name", owner.name());
+            ownerJson.addProperty("uuid", owner.getUUID().toString());
+            ownerJson.addProperty("name", owner.getName());
             json.add("owner", ownerJson);
         }
         return json;
     }
 
-    public static record Owner(@Nonnull UUID uuid, @Nonnull String name) {
+    public static class Owner implements AudioFileOwner {
+
+        private final UUID uuid;
+        private final String name;
+
+        public Owner(UUID uuid, String name) {
+            this.uuid = uuid;
+            this.name = name;
+        }
 
         public static Owner of(Player player) {
             return new Owner(player.getGameProfile().id(), player.getGameProfile().name());
         }
 
+        @Override
+        @NonNull
+        public UUID getUUID() {
+            return uuid;
+        }
+
+        @Override
+        @NonNull
+        public String getName() {
+            return name;
+        }
     }
 
 }
