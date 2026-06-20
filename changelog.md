@@ -1,1 +1,1 @@
-- Updated web dependencies
+- Made import API return a future
