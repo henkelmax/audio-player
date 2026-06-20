@@ -1,5 +1,6 @@
 package de.maxhenkel.audioplayer.apiimpl;
 
+import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.AudioPlayerApi;
 import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.MessageReceiver;
@@ -116,6 +117,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public Collection<AudioFileMetadata> getAllMetadata() {
         return AudioStorageManager.instance().getFileMetadataManager().getAllMetadata();
+    }
+
+    @Override
+    public long getMaxUploadSize() {
+        return AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get();
     }
 
 }
