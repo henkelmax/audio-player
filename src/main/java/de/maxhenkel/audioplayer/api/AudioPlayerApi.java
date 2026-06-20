@@ -79,4 +79,6 @@ public interface AudioPlayerApi {
 
     Collection<AudioFileMetadata> getAllMetadata();
 
+    long getMaxUploadSize();
+
 }
