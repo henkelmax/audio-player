@@ -1,1 +1,2 @@
 - Made import API return a future
+- Added audio file metadata access to the API

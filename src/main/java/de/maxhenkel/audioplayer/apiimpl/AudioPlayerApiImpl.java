@@ -5,6 +5,7 @@ import de.maxhenkel.audioplayer.api.ChannelReference;
 import de.maxhenkel.audioplayer.api.MessageReceiver;
 import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
+import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
@@ -21,9 +22,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -105,6 +108,12 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public Optional<AudioData> getAudioData(ItemStack stack) {
         return Optional.ofNullable(de.maxhenkel.audioplayer.audioloader.AudioData.of(stack));
+    }
+
+    @Override
+    public Optional<AudioFileMetadata> getAudioFileMetadata(@NonNull UUID audioId) {
+        Objects.requireNonNull(audioId);
+        return AudioStorageManager.instance().getFileMetadataManager().getMetadata(audioId).map(metadata -> metadata);
     }
 
 }
