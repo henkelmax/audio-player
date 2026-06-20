@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.api;
 import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
+import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -19,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public interface AudioPlayerApi {
@@ -29,15 +31,15 @@ public interface AudioPlayerApi {
 
     <T extends AudioDataModule> ModuleKey<T> registerModuleType(ResourceLocation id, Supplier<T> constructor);
 
-    default void importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
-        importAudio(importer, message -> {
+    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
+        return importAudio(importer, message -> {
             if (player != null) {
                 player.sendSystemMessage(message);
             }
         }, player);
     }
 
-    void importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player);
+    CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player);
 
     default void importAudio(AudioImporter importer, CommandSourceStack source) {
         importAudio(importer, message -> source.sendSuccess(() -> message, false), source.getPlayer());

@@ -6,6 +6,7 @@ import de.maxhenkel.audioplayer.api.MessageReceiver;
 import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
+import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
@@ -25,6 +26,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -50,8 +52,8 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
-    public void importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
-        AudioStorageManager.instance().handleImport(importer, messageReceiver, player);
+    public CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+        return AudioStorageManager.instance().handleImport(importer, messageReceiver, player);
     }
 
     @Override

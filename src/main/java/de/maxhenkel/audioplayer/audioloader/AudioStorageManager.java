@@ -26,6 +26,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -135,7 +136,8 @@ public class AudioStorageManager {
         return FabricLoader.getInstance().getGameDir().resolve("audioplayer_uploads");
     }
 
-    public void handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+    public CompletableFuture<AudioImportInfo> handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+        CompletableFuture<AudioImportInfo> future = new CompletableFuture<>();
         //TODO Prevent this from hanging infinitely
         executor.execute(() -> {
             try {
@@ -152,6 +154,7 @@ public class AudioStorageManager {
                     messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
                 });
                 importer.onPostprocess(player);
+                future.complete(audioDownloadInfo);
             } catch (Exception e) {
                 runOnMain(() -> {
                     if (player != null) {
@@ -163,8 +166,10 @@ public class AudioStorageManager {
                     }
                 });
                 AudioPlayerMod.LOGGER.error("Failed to download audio using '{}' download handler", importer.getHandlerName(), e);
+                future.completeExceptionally(e);
             }
         });
+        return future;
     }
 
     private void runOnMain(Runnable runnable) {
