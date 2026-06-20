@@ -1,2 +1,3 @@
 - Made import API return a future
 - Added audio file metadata access to the API
+- Added a way to list all audio file metadata
