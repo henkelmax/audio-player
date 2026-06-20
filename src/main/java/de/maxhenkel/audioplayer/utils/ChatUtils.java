@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.utils;
 
 import de.maxhenkel.audioplayer.AudioPlayerMod;
+import de.maxhenkel.audioplayer.api.data.AudioFileOwner;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.lang.Lang;
@@ -65,12 +66,12 @@ public class ChatUtils {
             base.append(" ");
             base.append(Lang.translatable("audioplayer.creation_date", Component.literal(DATE_FORMAT.format(new Date(created))).withStyle(ChatFormatting.GRAY)));
         }
-        Metadata.Owner owner = metadata == null ? null : metadata.getOwner();
+        AudioFileOwner owner = metadata == null ? null : metadata.getOwner();
         if (owner != null) {
             base.append(" ");
-            base.append(Lang.translatable("audioplayer.by", Component.literal(owner.name()).withStyle(style -> {
+            base.append(Lang.translatable("audioplayer.by", Component.literal(owner.getName()).withStyle(style -> {
                 return style
-                        .withHoverEvent(new HoverEvent.ShowEntity(new HoverEvent.EntityTooltipInfo(EntityTypes.PLAYER, owner.uuid(), Component.literal(owner.name()))))
+                        .withHoverEvent(new HoverEvent.ShowEntity(new HoverEvent.EntityTooltipInfo(EntityTypes.PLAYER, owner.getUUID(), Component.literal(owner.getName()))))
                         .withColor(ChatFormatting.GRAY);
             })));
         }
