@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,6 +123,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public long getMaxUploadSize() {
         return AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get();
+    }
+
+    @Override
+    public Path getUploadFolder() {
+        return AudioStorageManager.getUploadFolder();
     }
 
 }

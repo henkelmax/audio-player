@@ -20,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -80,5 +81,7 @@ public interface AudioPlayerApi {
     Collection<AudioFileMetadata> getAllMetadata();
 
     long getMaxUploadSize();
+
+    Path getUploadFolder();
 
 }
