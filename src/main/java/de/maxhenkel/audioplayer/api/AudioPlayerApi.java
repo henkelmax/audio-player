@@ -20,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -75,5 +76,7 @@ public interface AudioPlayerApi {
     Optional<AudioData> getAudioData(ItemStack stack);
 
     Optional<AudioFileMetadata> getAudioFileMetadata(@Nonnull UUID audioId);
+
+    Collection<AudioFileMetadata> getAllMetadata();
 
 }

@@ -25,10 +25,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -114,6 +111,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     public Optional<AudioFileMetadata> getAudioFileMetadata(@NonNull UUID audioId) {
         Objects.requireNonNull(audioId);
         return AudioStorageManager.instance().getFileMetadataManager().getMetadata(audioId).map(metadata -> metadata);
+    }
+
+    @Override
+    public Collection<AudioFileMetadata> getAllMetadata() {
+        return AudioStorageManager.instance().getFileMetadataManager().getAllMetadata();
     }
 
 }
