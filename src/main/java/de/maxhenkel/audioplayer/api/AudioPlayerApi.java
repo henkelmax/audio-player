@@ -36,17 +36,29 @@ public interface AudioPlayerApi {
     <T extends AudioDataModule> ModuleKey<T> registerModuleType(ResourceLocation id, Supplier<T> constructor);
 
     default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
-        return importAudio(importer, message -> {
-            if (player != null) {
-                player.sendSystemMessage(message);
-            }
-        }, player);
+        return importAudio(importer, player, true);
     }
 
-    CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player);
+    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, @Nullable ServerPlayer player, boolean sendMessages) {
+        return importAudio(importer, message -> {
+            if (player != null && sendMessages) {
+                player.sendSystemMessage(message);
+            }
+        }, player, sendMessages);
+    }
 
-    default void importAudio(AudioImporter importer, CommandSourceStack source) {
-        importAudio(importer, message -> source.sendSuccess(() -> message, false), source.getPlayer());
+    CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages);
+
+    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+        return importAudio(importer, messageReceiver, player, true);
+    }
+
+    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, CommandSourceStack source, boolean sendMessages) {
+        return importAudio(importer, message -> source.sendSuccess(() -> message, false), source.getPlayer(), sendMessages);
+    }
+
+    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, CommandSourceStack source) {
+        return importAudio(importer, source, true);
     }
 
     MutableComponent createApplyMessage(UUID audioID, MutableComponent component);

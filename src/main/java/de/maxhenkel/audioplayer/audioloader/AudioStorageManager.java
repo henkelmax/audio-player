@@ -136,7 +136,7 @@ public class AudioStorageManager {
         return FabricLoader.getInstance().getGameDir().resolve("audioplayer_uploads");
     }
 
-    public CompletableFuture<AudioImportInfo> handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+    public CompletableFuture<AudioImportInfo> handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages) {
         CompletableFuture<AudioImportInfo> future = new CompletableFuture<>();
         //TODO Prevent this from hanging infinitely
         executor.execute(() -> {
@@ -150,16 +150,18 @@ public class AudioStorageManager {
                 UUID id = audioDownloadInfo.getAudioId();
                 String fileName = audioDownloadInfo.getName();
                 saveSound(id, fileName, bytes, player);
-                runOnMain(() -> {
-                    messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
-                });
+                if (sendMessages) {
+                    runOnMain(() -> {
+                        messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
+                    });
+                }
                 importer.onPostprocess(player);
                 runOnMain(() -> {
                     future.complete(audioDownloadInfo);
                 });
             } catch (Exception e) {
                 runOnMain(() -> {
-                    if (player != null) {
+                    if (sendMessages && player != null) {
                         if (e instanceof ComponentException c) {
                             messageReceiver.sendMessage(Lang.translatable("audioplayer.error", c.getComponent()).withStyle(ChatFormatting.RED));
                         } else {

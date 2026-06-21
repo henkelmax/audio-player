@@ -54,8 +54,8 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
-    public CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
-        return AudioStorageManager.instance().handleImport(importer, messageReceiver, player);
+    public CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages) {
+        return AudioStorageManager.instance().handleImport(importer, messageReceiver, player, sendMessages);
     }
 
     @Override
