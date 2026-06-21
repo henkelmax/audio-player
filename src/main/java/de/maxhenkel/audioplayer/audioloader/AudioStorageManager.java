@@ -154,7 +154,9 @@ public class AudioStorageManager {
                     messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
                 });
                 importer.onPostprocess(player);
-                future.complete(audioDownloadInfo);
+                runOnMain(() -> {
+                    future.complete(audioDownloadInfo);
+                });
             } catch (Exception e) {
                 runOnMain(() -> {
                     if (player != null) {
@@ -164,9 +166,9 @@ public class AudioStorageManager {
                             messageReceiver.sendMessage(Lang.translatable("audioplayer.error", e.getMessage()).withStyle(ChatFormatting.RED));
                         }
                     }
+                    future.completeExceptionally(e);
                 });
                 AudioPlayerMod.LOGGER.error("Failed to download audio using '{}' download handler", importer.getHandlerName(), e);
-                future.completeExceptionally(e);
             }
         });
         return future;
