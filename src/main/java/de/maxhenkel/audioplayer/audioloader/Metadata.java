@@ -6,8 +6,8 @@ import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.api.data.AudioFileOwner;
 import net.minecraft.world.entity.player.Player;
-import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -133,13 +133,13 @@ public class Metadata implements AudioFileMetadata {
         }
 
         @Override
-        @NonNull
+        @Nonnull
         public UUID getUUID() {
             return uuid;
         }
 
         @Override
-        @NonNull
+        @Nonnull
         public String getName() {
             return name;
         }

@@ -23,8 +23,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.*;
@@ -110,7 +110,7 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
-    public Optional<AudioFileMetadata> getAudioFileMetadata(@NonNull UUID audioId) {
+    public Optional<AudioFileMetadata> getAudioFileMetadata(@Nonnull UUID audioId) {
         Objects.requireNonNull(audioId);
         return AudioStorageManager.instance().getFileMetadataManager().getMetadata(audioId).map(metadata -> metadata);
     }
