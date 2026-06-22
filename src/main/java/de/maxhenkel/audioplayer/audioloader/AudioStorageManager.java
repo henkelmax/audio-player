@@ -147,7 +147,7 @@ public class AudioStorageManager {
                     throw new ComponentException(Lang.translatable("audioplayer.empty_file"));
                 }
                 ChatUtils.checkFileSize(bytes.length);
-                String fileName = audioDownloadInfo.getName();
+                String fileName = FileUtils.stripFileExtension(audioDownloadInfo.getName());
                 Optional<Metadata> duplicate;
                 if (AudioPlayerMod.SERVER_CONFIG.deduplicate.get()) {
                     duplicate = fileMetadataManager.getAudioMetadataByHash(FileUtils.sha256(bytes));

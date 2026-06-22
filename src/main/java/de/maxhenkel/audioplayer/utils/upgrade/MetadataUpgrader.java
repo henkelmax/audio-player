@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class MetadataUpgrader {
@@ -142,6 +141,34 @@ public class MetadataUpgrader {
                 AudioPlayerMod.LOGGER.error("Failed to generate hash for audio file {}", meta.getAudioId());
             }
         }
+
+        AudioPlayerMod.LOGGER.info("Stripping file extensions from name");
+        for (Metadata meta : metaManager.getMetadata().values()) {
+            meta.setFileName(FileUtils.stripFileExtension(meta.getFileName()));
+        }
+    }
+
+    public static boolean makeFileNamesUnique(FileMetadataManager metaManager) {
+        AudioPlayerMod.LOGGER.info("Deduplicating file names");
+        ArrayList<Metadata> sorted = new ArrayList<>(metaManager.getMetadata().values());
+        sorted.sort(Comparator.comparing(metadata -> metadata.getCreated() == null ? 0L : metadata.getCreated()));
+
+        boolean changed = false;
+        Set<String> names = new HashSet<>();
+        for (Metadata metadata : sorted) {
+            String name = metadata.getFileName();
+            if (name == null) {
+                continue;
+            }
+            while (names.contains(name)) {
+                name = FileUtils.deduplicateName(name);
+                changed = true;
+            }
+            metadata.setFileName(name);
+            names.add(name);
+        }
+
+        return changed;
     }
 
 }

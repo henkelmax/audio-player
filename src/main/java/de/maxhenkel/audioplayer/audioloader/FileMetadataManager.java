@@ -64,6 +64,7 @@ public class FileMetadataManager {
         } else {
             metaVersion = metaVersionElement.getAsInt();
         }
+        //TODO Save backup before upgrading
         boolean changed = MetadataUpgrader.upgrade(this, root, metaVersion, META_VERSION);
 
         JsonObject files = root.getAsJsonObject("files");
@@ -82,9 +83,10 @@ public class FileMetadataManager {
         }
         metadata = meta;
 
-        boolean changedPost = MetadataUpgrader.upgradePostLoad(this, root, metaVersion, META_VERSION);
+        changed |= MetadataUpgrader.upgradePostLoad(this, root, metaVersion, META_VERSION);
+        changed |= MetadataUpgrader.makeFileNamesUnique(this);
 
-        if (changed || changedPost) {
+        if (changed) {
             saveSync();
         }
     }

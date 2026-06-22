@@ -2,3 +2,5 @@
 - Save a backup of the metadata file before saving
 - Deduplicate already existing audio files
 - Added deduplicate config option
+- Removed file extensions from audio file names
+- Made audio file names unique
