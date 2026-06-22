@@ -10,7 +10,7 @@ public interface AudioImporter {
 
     byte[] onProcess(@Nullable ServerPlayer player) throws Exception;
 
-    void onPostprocess(@Nullable ServerPlayer player) throws Exception;
+    void onPostprocess(@Nullable ServerPlayer player, ImportedAudio audio) throws Exception;
 
     String getHandlerName();
 

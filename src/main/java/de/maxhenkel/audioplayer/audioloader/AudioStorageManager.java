@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.api.MessageReceiver;
+import de.maxhenkel.audioplayer.apiimpl.ImportedAudioImpl;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
@@ -145,15 +146,17 @@ public class AudioStorageManager {
                     throw new ComponentException(Lang.translatable("audioplayer.empty_file"));
                 }
                 ChatUtils.checkFileSize(bytes.length);
-                UUID id = audioDownloadInfo.getAudioId();
                 String fileName = audioDownloadInfo.getName();
-                saveSound(id, fileName, bytes, player);
+                //TODO Check duplicate
+                UUID id = UUID.randomUUID();
+                Metadata metadata = saveSound(id, fileName, bytes, player);
                 if (sendMessages) {
                     runOnMain(() -> {
                         messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
                     });
                 }
-                importer.onPostprocess(player);
+                ImportedAudioImpl audio = new ImportedAudioImpl(id, metadata, false);
+                importer.onPostprocess(player, audio);
                 runOnMain(() -> {
                     future.complete(audioDownloadInfo);
                 });
@@ -178,15 +181,14 @@ public class AudioStorageManager {
         server.execute(runnable);
     }
 
-    private void saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+    private Metadata saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
         AudioUtils.AudioType audioType = AudioUtils.getAudioType(data);
         if (AudioPlayerMod.SERVER_CONFIG.useFfmpeg.get() && shouldConvertToMp3(audioType)) {
-            convertAndSaveSound(id, fileName, data, player);
-            return;
+            return convertAndSaveSound(id, fileName, data, player);
         }
         checkExtensionAllowed(audioType);
         try {
-            saveSound0(audioType, id, fileName, data, player);
+            return saveSound0(audioType, id, fileName, data, player);
         } catch (UnsupportedAudioFileException e) {
             if (!AudioPlayerMod.SERVER_CONFIG.useFfmpeg.get()) {
                 throw e;
@@ -196,17 +198,17 @@ public class AudioStorageManager {
             } else {
                 AudioPlayerMod.LOGGER.error("Failed to save audio without conversion, trying FFmpeg conversion");
             }
-            convertAndSaveSound(id, fileName, data, player);
+            return convertAndSaveSound(id, fileName, data, player);
         }
     }
 
-    private void convertAndSaveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+    private Metadata convertAndSaveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
         AudioPlayerMod.LOGGER.info("Converting audio {} to mp3 using FFmpeg", id);
         FfmpegConverter.ConvertedAudio converted = FfmpegConverter.convert(fileName, data);
-        saveSound0(converted.audioType(), id, converted.fileName(), converted.data(), player);
+        return saveSound0(converted.audioType(), id, converted.fileName(), converted.data(), player);
     }
 
-    private void saveSound0(AudioUtils.AudioType audioType, UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+    private Metadata saveSound0(AudioUtils.AudioType audioType, UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
         float lengthSeconds = AudioUtils.getLengthSeconds(data);
         if (lengthSeconds < 0.1F) {
             // Uploading mp4 files will cause java to detect an mp3 container,
@@ -229,7 +231,7 @@ public class AudioStorageManager {
 
         String sha256 = FileUtils.sha256(data);
 
-        fileMetadataManager.modifyMetadata(id, metadata -> {
+        return fileMetadataManager.modifyMetadata(id, metadata -> {
             metadata.setFileName(fileName);
             metadata.setCreated(System.currentTimeMillis());
             metadata.setSha256(sha256);
