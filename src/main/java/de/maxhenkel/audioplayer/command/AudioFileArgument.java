@@ -21,6 +21,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class AudioFileArgument {
 
@@ -82,14 +83,14 @@ public class AudioFileArgument {
 
 
             String finalInput = input;
-            List<String> sortedSuggestions = AudioStorageManager.metadataManager().getAllMetadata()
+            Set<String> sortedSuggestions = AudioStorageManager.metadataManager().getAllMetadata()
                     .stream()
                     .map(x -> Objects.requireNonNullElse(x.getFileName(), x.getAudioId().toString()))
                     .filter(x -> x.toLowerCase().contains(finalInput.toLowerCase()))
                     .sorted(Comparator.comparingInt(p -> levenshtein(p, finalInput.toLowerCase())))
                     .map(x -> x.contains(" ") ? "\"%s\"".formatted(x) : x)
                     .peek(builder::suggest)
-                    .toList();
+                    .collect(Collectors.toSet());
 
             Suggestions suggestions = builder.build();
             return CompletableFuture.completedFuture(
