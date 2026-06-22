@@ -64,7 +64,7 @@ public class UtilityCommands {
         if (id == null) {
             return;
         }
-        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.extract_sound_id_successful")), false);
+        context.getSource().sendSuccess(() -> ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.extract_audio_id_successful")), false);
     }
 
     @Command("info")
