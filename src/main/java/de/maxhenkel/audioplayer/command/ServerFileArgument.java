@@ -60,7 +60,7 @@ public class ServerFileArgument {
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
             Path uploadFolder = AudioStorageManager.getUploadFolder();
             try (Stream<Path> uploadFiles = Files.list(uploadFolder)) {
-                uploadFiles.forEach(path -> builder.suggest(StringArgumentType.escapeIfRequired(path.getFileName().toString())));
+                uploadFiles.filter(Files::isRegularFile).forEach(path -> builder.suggest(StringArgumentType.escapeIfRequired(path.getFileName().toString())));
             } catch (IOException e) {
                 AudioPlayerMod.LOGGER.error("Failed to list upload folder", e);
                 return builder.buildFuture();
