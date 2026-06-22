@@ -8,6 +8,7 @@ import de.maxhenkel.audioplayer.utils.FileUtils;
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -68,7 +69,6 @@ public class FileMetadataManager {
             meta.put(uuid, Metadata.fromJson(uuid, files.getAsJsonObject(key)));
         }
         metadata = meta;
-        saveSync();
     }
 
     private void saveSync() {
@@ -85,7 +85,15 @@ public class FileMetadataManager {
                 files.add(entry.getKey().toString(), metaJson);
             }
             root.add("files", files);
-            Files.writeString(file, GSON.toJson(root));
+
+            String json = GSON.toJson(root);
+
+            Path backup = file.resolveSibling(file.getFileName() + ".bak");
+
+            if (Files.exists(file)) {
+                Files.move(file, backup, StandardCopyOption.REPLACE_EXISTING);
+            }
+            Files.writeString(file, json);
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to save metadata", e);
         }
