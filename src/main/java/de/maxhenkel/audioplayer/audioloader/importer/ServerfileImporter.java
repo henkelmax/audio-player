@@ -3,6 +3,7 @@ package de.maxhenkel.audioplayer.audioloader.importer;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
@@ -16,16 +17,13 @@ import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.UUID;
 
 public class ServerfileImporter implements AudioImporter {
 
-    private final UUID soundId;
     private final String fileName;
     private Path file;
 
     public ServerfileImporter(String fileName) {
-        this.soundId = UUID.randomUUID();
         this.fileName = fileName;
     }
 
@@ -43,7 +41,7 @@ public class ServerfileImporter implements AudioImporter {
         }
         long size = Files.size(file);
         ChatUtils.checkFileSize(size);
-        return new AudioImportInfo(soundId, getFileNameFromPath(file));
+        return new AudioImportInfo(getFileNameFromPath(file));
     }
 
     @Nullable
@@ -64,7 +62,7 @@ public class ServerfileImporter implements AudioImporter {
     }
 
     @Override
-    public void onPostprocess(@Nullable ServerPlayer player) throws Exception {
+    public void onPostprocess(@Nullable ServerPlayer player, ImportedAudio importedAudio) throws Exception {
         try {
             Files.delete(file);
             if (player != null) {
