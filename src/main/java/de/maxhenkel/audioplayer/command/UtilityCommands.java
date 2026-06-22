@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.admiral.arguments.GreedyString;
+import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
@@ -68,18 +69,18 @@ public class UtilityCommands {
     }
 
     @Command("info")
-    public void info(CommandContext<CommandSourceStack> context, @Name("id") UUID id) {
+    public void info(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("audio") AudioFileMetadata metadata) throws CommandSyntaxException {
+        UUID id;
+        if (metadata == null) {
+            id = getHeldItemId(context);
+            if (id == null) {
+                return;
+            }
+        } else {
+            id = metadata.getAudioId();
+        }
         if (!AudioStorageManager.instance().checkSoundExists(id)) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_id_found", id.toString()));
-            return;
-        }
-        context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(id), false);
-    }
-
-    @Command("info")
-    public void info(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        UUID id = getHeldItemId(context);
-        if (id == null) {
             return;
         }
         context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(id), false);
