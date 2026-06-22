@@ -90,6 +90,8 @@ public interface AudioPlayerApi {
 
     Optional<AudioData> getAudioData(ItemStack stack);
 
+    AudioData createAudioData(AudioFileMetadata audio);
+
     Optional<AudioFileMetadata> getAudioFileMetadata(@Nonnull UUID audioId);
 
     Collection<AudioFileMetadata> getAllMetadata();
