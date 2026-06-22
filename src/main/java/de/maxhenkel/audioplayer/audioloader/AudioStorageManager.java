@@ -10,6 +10,7 @@ import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
+import de.maxhenkel.audioplayer.utils.FileUtils;
 import de.maxhenkel.audioplayer.utils.upgrade.MetadataUpgrader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -25,6 +26,7 @@ import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -229,10 +231,12 @@ public class AudioStorageManager {
             IOUtils.write(data, outputStream);
         }
 
-        String finalFileName = fileName;
+        String sha256 = FileUtils.sha256(data);
+
         fileMetadataManager.modifyMetadata(id, metadata -> {
-            metadata.setFileName(finalFileName);
+            metadata.setFileName(fileName);
             metadata.setCreated(System.currentTimeMillis());
+            metadata.setSha256(sha256);
             if (player != null) {
                 metadata.setOwner(Metadata.Owner.of(player));
             }
