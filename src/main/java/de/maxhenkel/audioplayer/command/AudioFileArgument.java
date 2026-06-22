@@ -74,7 +74,7 @@ public class AudioFileArgument {
             String input = builder.getRemaining();
 
             if (input.startsWith("\"")) {
-                if (input.endsWith("\"")) {
+                if (input.endsWith("\"") && input.length() > 1) {
                     input = input.substring(1, input.length() - 1);
                 } else {
                     input = input.substring(1);
