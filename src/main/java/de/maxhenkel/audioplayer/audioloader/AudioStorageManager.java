@@ -148,7 +148,12 @@ public class AudioStorageManager {
                 }
                 ChatUtils.checkFileSize(bytes.length);
                 String fileName = audioDownloadInfo.getName();
-                Optional<Metadata> duplicate = fileMetadataManager.getAudioMetadataByHash(FileUtils.sha256(bytes));
+                Optional<Metadata> duplicate;
+                if (AudioPlayerMod.SERVER_CONFIG.deduplicate.get()) {
+                    duplicate = fileMetadataManager.getAudioMetadataByHash(FileUtils.sha256(bytes));
+                } else {
+                    duplicate = Optional.empty();
+                }
                 ImportedAudioImpl audio;
                 if (duplicate.isEmpty()) {
                     UUID id = UUID.randomUUID();

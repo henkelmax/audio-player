@@ -30,6 +30,7 @@ public class ServerConfig {
     public final ConfigEntry<Boolean> runWebServer;
     public final ConfigEntry<Boolean> useFfmpeg;
     public final ConfigEntry<String> ffmpegPath;
+    public final ConfigEntry<Boolean> deduplicate;
 
     public ServerConfig(ConfigBuilder builder) {
         configVersion = builder
@@ -179,6 +180,13 @@ public class ServerConfig {
                 "",
                 "The path to the FFmpeg executable",
                 "If empty, the mod will try to find FFmpeg in the system path"
+        );
+        deduplicate = builder.booleanEntry(
+                "deduplicate",
+                true,
+                "If the mod should deduplicate already existing audio files on import",
+                "If this is enabled, the mod will check if an audio file with the same name and ID already exists",
+                "If it does, the import will just be referred to the existing audio file"
         );
     }
 
