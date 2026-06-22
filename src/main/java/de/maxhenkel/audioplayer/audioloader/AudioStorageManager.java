@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer.audioloader;
 
 import de.maxhenkel.audioplayer.*;
 import de.maxhenkel.audioplayer.api.MessageReceiver;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import de.maxhenkel.audioplayer.apiimpl.ImportedAudioImpl;
 import de.maxhenkel.audioplayer.audioloader.cache.AudioCache;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
@@ -136,8 +137,8 @@ public class AudioStorageManager {
         return FabricLoader.getInstance().getGameDir().resolve("audioplayer_uploads");
     }
 
-    public CompletableFuture<AudioImportInfo> handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages) {
-        CompletableFuture<AudioImportInfo> future = new CompletableFuture<>();
+    public CompletableFuture<ImportedAudio> handleImport(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages) {
+        CompletableFuture<ImportedAudio> future = new CompletableFuture<>();
         //TODO Prevent this from hanging infinitely
         executor.execute(() -> {
             try {
@@ -175,7 +176,7 @@ public class AudioStorageManager {
                 }
                 importer.onPostprocess(player, audio);
                 runOnMain(() -> {
-                    future.complete(audioDownloadInfo);
+                    future.complete(audio);
                 });
             } catch (Exception e) {
                 runOnMain(() -> {

@@ -10,8 +10,8 @@ import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
-import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.command.AudioFileArgument;
@@ -58,7 +58,7 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
-    public CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages) {
+    public CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages) {
         return AudioStorageManager.instance().handleImport(importer, messageReceiver, player, sendMessages);
     }
 
