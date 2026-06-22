@@ -66,9 +66,9 @@ public class UploadCommands {
 
     @Command("filebin")
     @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_FILEBIN_PERMISSION_STRING)
-    public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID sound) {
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
-        AudioPlayerApiImpl.INSTANCE.importAudio(new FilebinImporter(sound), context.getSource());
+    public void filebinUpload(CommandContext<CommandSourceStack> context, @Name("id") UUID audioId) {
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_audio"), false);
+        AudioPlayerApiImpl.INSTANCE.importAudio(new FilebinImporter(audioId), context.getSource());
     }
 
     @Command("url")
@@ -88,7 +88,7 @@ public class UploadCommands {
     @Command("url")
     @RequiresPermission(AudioPlayerPermissionManager.UPLOAD_URL_PERMISSION_STRING)
     public void urlUpload(CommandContext<CommandSourceStack> context, @Name("url") String url) {
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_sound"), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.downloading_audio"), false);
         AudioPlayerApiImpl.INSTANCE.importAudio(new UrlImporter(url), context.getSource());
     }
 

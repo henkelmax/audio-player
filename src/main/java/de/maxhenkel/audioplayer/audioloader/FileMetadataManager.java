@@ -183,8 +183,15 @@ public class FileMetadataManager {
         return fileName.equals(name);
     }
 
-    public Optional<UUID> getAudioIdByHash(String hash) {
+    public Optional<UUID> getAudioIdByHash(@Nullable String hash) {
+        if (hash == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(hashes.get(hash));
+    }
+
+    public Optional<Metadata> getAudioMetadataByHash(@Nullable String hash) {
+        return getAudioIdByHash(hash).flatMap(this::getMetadata);
     }
 
     public AudioStorageManager getAudioStorageManager() {
