@@ -26,6 +26,7 @@ import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -147,15 +148,26 @@ public class AudioStorageManager {
                 }
                 ChatUtils.checkFileSize(bytes.length);
                 String fileName = audioDownloadInfo.getName();
-                //TODO Check duplicate
-                UUID id = UUID.randomUUID();
-                Metadata metadata = saveSound(id, fileName, bytes, player);
-                if (sendMessages) {
-                    runOnMain(() -> {
-                        messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
-                    });
+                Optional<Metadata> duplicate = fileMetadataManager.getAudioMetadataByHash(FileUtils.sha256(bytes));
+                ImportedAudioImpl audio;
+                if (duplicate.isEmpty()) {
+                    UUID id = UUID.randomUUID();
+                    Metadata metadata = saveSound(id, fileName, bytes, player);
+                    if (sendMessages) {
+                        runOnMain(() -> {
+                            messageReceiver.sendMessage(ChatUtils.createApplyMessage(id, Lang.translatable("audioplayer.import_successful")));
+                        });
+                    }
+                    audio = new ImportedAudioImpl(id, metadata, false);
+                } else {
+                    Metadata metadata = duplicate.get();
+                    audio = new ImportedAudioImpl(metadata.getAudioId(), metadata, true);
+                    if (sendMessages) {
+                        runOnMain(() -> {
+                            messageReceiver.sendMessage(ChatUtils.createApplyMessage(metadata.getAudioId(), Lang.translatable("audioplayer.import_duplicate")));
+                        });
+                    }
                 }
-                ImportedAudioImpl audio = new ImportedAudioImpl(id, metadata, false);
                 importer.onPostprocess(player, audio);
                 runOnMain(() -> {
                     future.complete(audioDownloadInfo);
