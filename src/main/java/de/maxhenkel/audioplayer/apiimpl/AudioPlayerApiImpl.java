@@ -114,6 +114,11 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     }
 
     @Override
+    public AudioData createAudioData(AudioFileMetadata audio) {
+        return de.maxhenkel.audioplayer.audioloader.AudioData.withSoundAndRange(audio.getAudioId(), null);
+    }
+
+    @Override
     public Optional<AudioFileMetadata> getAudioFileMetadata(@Nonnull UUID audioId) {
         Objects.requireNonNull(audioId);
         return AudioStorageManager.instance().getFileMetadataManager().getMetadata(audioId).map(metadata -> metadata);
