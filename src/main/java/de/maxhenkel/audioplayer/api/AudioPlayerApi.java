@@ -1,5 +1,7 @@
 package de.maxhenkel.audioplayer.api;
 
+import de.maxhenkel.admiral.argumenttype.ArgumentTypeConverter;
+import de.maxhenkel.admiral.argumenttype.ArgumentTypeSupplier;
 import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
@@ -95,5 +97,9 @@ public interface AudioPlayerApi {
     long getMaxUploadSize();
 
     Path getUploadFolder();
+
+    ArgumentTypeSupplier<CommandSourceStack, AudioFileMetadata, String> metadataArgumentTypeSupplier();
+
+    ArgumentTypeConverter<CommandSourceStack, String, AudioFileMetadata> metadataArgumentTypeConverter();
 
 }

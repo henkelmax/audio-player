@@ -1,5 +1,7 @@
 package de.maxhenkel.audioplayer.apiimpl;
 
+import de.maxhenkel.admiral.argumenttype.ArgumentTypeConverter;
+import de.maxhenkel.admiral.argumenttype.ArgumentTypeSupplier;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.AudioPlayerApi;
 import de.maxhenkel.audioplayer.api.ChannelReference;
@@ -12,11 +14,13 @@ import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
+import de.maxhenkel.audioplayer.command.AudioFileArgument;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -128,6 +132,16 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public Path getUploadFolder() {
         return AudioStorageManager.getUploadFolder();
+    }
+
+    @Override
+    public ArgumentTypeSupplier<CommandSourceStack, AudioFileMetadata, String> metadataArgumentTypeSupplier() {
+        return new AudioFileArgument.Supplier();
+    }
+
+    @Override
+    public ArgumentTypeConverter<CommandSourceStack, String, AudioFileMetadata> metadataArgumentTypeConverter() {
+        return new AudioFileArgument.TypeConverter();
     }
 
 }
