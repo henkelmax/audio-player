@@ -11,7 +11,6 @@ import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
 import de.maxhenkel.audioplayer.utils.FileUtils;
-import de.maxhenkel.audioplayer.utils.upgrade.MetadataUpgrader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
@@ -26,7 +25,6 @@ import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -53,9 +51,8 @@ public class AudioStorageManager {
         Path audioDataFolder = getAudioDataFolder();
         Files.createDirectories(audioDataFolder);
         Path metaPath = audioDataFolder.resolve("meta.json");
-        fileMetadataManager = new FileMetadataManager(metaPath);
         audioCache = new AudioCache();
-
+        fileMetadataManager = new FileMetadataManager(this, metaPath);
     }
 
     public static void onInitialize() {
