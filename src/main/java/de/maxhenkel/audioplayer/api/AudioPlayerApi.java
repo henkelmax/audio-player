@@ -6,8 +6,8 @@ import de.maxhenkel.audioplayer.api.data.AudioData;
 import de.maxhenkel.audioplayer.api.data.AudioDataModule;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.api.data.ModuleKey;
-import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
@@ -37,11 +37,11 @@ public interface AudioPlayerApi {
 
     <T extends AudioDataModule> ModuleKey<T> registerModuleType(Identifier id, Supplier<T> constructor);
 
-    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
+    default CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, @Nullable ServerPlayer player) {
         return importAudio(importer, player, true);
     }
 
-    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, @Nullable ServerPlayer player, boolean sendMessages) {
+    default CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, @Nullable ServerPlayer player, boolean sendMessages) {
         return importAudio(importer, message -> {
             if (player != null && sendMessages) {
                 player.sendSystemMessage(message);
@@ -49,17 +49,17 @@ public interface AudioPlayerApi {
         }, player, sendMessages);
     }
 
-    CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages);
+    CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player, boolean sendMessages);
 
-    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
+    default CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, MessageReceiver messageReceiver, @Nullable ServerPlayer player) {
         return importAudio(importer, messageReceiver, player, true);
     }
 
-    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, CommandSourceStack source, boolean sendMessages) {
+    default CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, CommandSourceStack source, boolean sendMessages) {
         return importAudio(importer, message -> source.sendSuccess(() -> message, false), source.getPlayer(), sendMessages);
     }
 
-    default CompletableFuture<AudioImportInfo> importAudio(AudioImporter importer, CommandSourceStack source) {
+    default CompletableFuture<ImportedAudio> importAudio(AudioImporter importer, CommandSourceStack source) {
         return importAudio(importer, source, true);
     }
 
