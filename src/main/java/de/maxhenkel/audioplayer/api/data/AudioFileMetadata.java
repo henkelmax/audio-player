@@ -17,6 +17,9 @@ public interface AudioFileMetadata {
     Long getCreated();
 
     @Nullable
+    String getSha256();
+
+    @Nullable
     AudioFileOwner getOwner();
 
 }
