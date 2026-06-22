@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileUtils {
 
@@ -48,6 +50,24 @@ public class FileUtils {
             AudioPlayerMod.LOGGER.error("Failed to calculate SHA256 hash", e);
             return null;
         }
+    }
+
+    public static String stripFileExtension(String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex > 0) ? fileName.substring(0, dotIndex) : fileName;
+    }
+
+    private static final Pattern DUPLICATE_NAME_PATTERN = Pattern.compile("^(.*) \\((\\d+)\\)$");
+
+    public static String deduplicateName(String name) {
+        Matcher matcher = DUPLICATE_NAME_PATTERN.matcher(name);
+        if (matcher.matches()) {
+            return "%s (%d)".formatted(matcher.group(1), Integer.parseInt(matcher.group(2)) + 1);
+        }
+        return "%s (1)".formatted(name);
     }
 
 }
