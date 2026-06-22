@@ -6,3 +6,4 @@
 - Made audio file names unique
 - Create backup of metadata before upgrade
 - Allow applying new audio data to an item
+- Fixed serverfile suggestions suggesting folders
