@@ -20,7 +20,7 @@ public class FileMetadataManager {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final int META_VERSION = 1;
+    private static final int META_VERSION = 2;
 
     private static final ExecutorService SAVE_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable);
@@ -29,16 +29,18 @@ public class FileMetadataManager {
         return thread;
     });
 
+    private final AudioStorageManager audioStorageManager;
     private final Path file;
     private Map<UUID, Metadata> metadata;
 
-    public FileMetadataManager(Path file) throws Exception {
+    public FileMetadataManager(AudioStorageManager manager, Path file) throws Exception {
+        this.audioStorageManager = manager;
         this.file = file;
         this.metadata = new ConcurrentHashMap<>();
 
         boolean initial = !Files.exists(file);
-        MetadataUpgrader.upgrade(this, initial);
-        
+        MetadataUpgrader.legacyUpgrade(manager, this, initial);
+
         load();
     }
 
@@ -57,7 +59,7 @@ public class FileMetadataManager {
         } else {
             metaVersion = metaVersionElement.getAsInt();
         }
-        //TODO Check meta version
+        boolean changed = MetadataUpgrader.upgrade(this, root, metaVersion, META_VERSION);
 
         JsonObject files = root.getAsJsonObject("files");
         if (files == null) {
@@ -74,6 +76,12 @@ public class FileMetadataManager {
             meta.put(uuid, Metadata.fromJson(uuid, files.getAsJsonObject(key)));
         }
         metadata = meta;
+
+        boolean changedPost = MetadataUpgrader.upgradePostLoad(this, root, metaVersion, META_VERSION);
+
+        if (changed || changedPost) {
+            saveSync();
+        }
     }
 
     private void saveSync() {
@@ -120,6 +128,10 @@ public class FileMetadataManager {
         return Collections.unmodifiableCollection(metadata.values());
     }
 
+    public Map<UUID, Metadata> getMetadata() {
+        return metadata;
+    }
+
     public void modifyMetadata(UUID uuid, Consumer<Metadata> metadataConsumer) {
         Metadata metadata = this.metadata.computeIfAbsent(uuid, Metadata::new);
         metadataConsumer.accept(metadata);
@@ -158,4 +170,7 @@ public class FileMetadataManager {
         return fileName.equals(name);
     }
 
+    public AudioStorageManager getAudioStorageManager() {
+        return audioStorageManager;
+    }
 }

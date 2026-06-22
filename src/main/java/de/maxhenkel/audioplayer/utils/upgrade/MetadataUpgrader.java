@@ -1,12 +1,15 @@
 package de.maxhenkel.audioplayer.utils.upgrade;
 
+import com.google.gson.JsonObject;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.FileMetadataManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.utils.FileUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -15,17 +18,17 @@ import java.util.stream.Stream;
 
 public class MetadataUpgrader {
 
-    public static void upgrade(FileMetadataManager fileMetadataManager, boolean initial) {
+    public static void legacyUpgrade(AudioStorageManager manager, FileMetadataManager fileMetadataManager, boolean initial) {
         if (initial) {
-            upgradeCreationDates(fileMetadataManager);
+            upgradeCreationDates(manager, fileMetadataManager);
         }
-        upgradeFileNameManager(fileMetadataManager);
-        upgradeVolumeOverrideManager(fileMetadataManager);
+        upgradeFileNameManager(manager, fileMetadataManager);
+        upgradeVolumeOverrideManager(manager, fileMetadataManager);
     }
 
-    private static void upgradeCreationDates(FileMetadataManager metadataManager) {
+    private static void upgradeCreationDates(AudioStorageManager manager, FileMetadataManager metadataManager) {
         AudioPlayerMod.LOGGER.info("Upgrading creation dates");
-        try (Stream<Path> paths = Files.list(AudioStorageManager.instance().getAudioDataFolder())) {
+        try (Stream<Path> paths = Files.list(manager.getAudioDataFolder())) {
             paths.forEach(path -> {
                 String name = FileUtils.fileNameWithoutExtension(path.getFileName().toString());
                 UUID uuid;
@@ -41,18 +44,18 @@ public class MetadataUpgrader {
         }
     }
 
-    private static void upgradeFileNameManager(FileMetadataManager manager) {
-        Path filenameMappings = AudioStorageManager.instance().getAudioDataFolder().resolve("file-name-mappings.json");
+    private static void upgradeFileNameManager(AudioStorageManager manager, FileMetadataManager metadataManager) {
+        Path filenameMappings = manager.getAudioDataFolder().resolve("file-name-mappings.json");
         if (!Files.exists(filenameMappings)) {
             return;
         }
         AudioPlayerMod.LOGGER.info("Upgrading file name mappings");
         FileNameManager fileNameManager = new FileNameManager(filenameMappings);
         for (Map.Entry<UUID, String> entry : fileNameManager.getFileNames().entrySet()) {
-            Metadata metadata = manager.getOrCreateMetadata(entry.getKey());
+            Metadata metadata = metadataManager.getOrCreateMetadata(entry.getKey());
             metadata.setFileName(entry.getValue());
         }
-        manager.saveAsync();
+        metadataManager.saveAsync();
         try {
             Files.delete(filenameMappings);
             AudioPlayerMod.LOGGER.info("Deleted old file name mappings config");
@@ -61,15 +64,15 @@ public class MetadataUpgrader {
         }
     }
 
-    private static void upgradeVolumeOverrideManager(FileMetadataManager manager) {
-        Path volumeOverrides = AudioStorageManager.instance().getAudioDataFolder().resolve("volume-overrides.json");
+    private static void upgradeVolumeOverrideManager(AudioStorageManager manager, FileMetadataManager metadataManager) {
+        Path volumeOverrides = manager.getAudioDataFolder().resolve("volume-overrides.json");
         if (!Files.exists(volumeOverrides)) {
             return;
         }
         AudioPlayerMod.LOGGER.info("Upgrading volume overrides");
         VolumeOverrideManager volumeOverrideManager = new VolumeOverrideManager(volumeOverrides);
         for (Map.Entry<UUID, Float> entry : volumeOverrideManager.getVolumes().entrySet()) {
-            Metadata metadata = manager.getOrCreateMetadata(entry.getKey());
+            Metadata metadata = metadataManager.getOrCreateMetadata(entry.getKey());
             Float logVolume = entry.getValue();
             if (logVolume == null) {
                 continue;
@@ -79,12 +82,65 @@ public class MetadataUpgrader {
                 metadata.setVolume(volumeFactor);
             }
         }
-        manager.saveAsync();
+        metadataManager.saveAsync();
         try {
             Files.delete(volumeOverrides);
             AudioPlayerMod.LOGGER.info("Deleted old volume overrides config");
         } catch (IOException e) {
             AudioPlayerMod.LOGGER.error("Failed to delete old volume overrides", e);
+        }
+    }
+
+    public static boolean upgrade(FileMetadataManager fileMetadataManager, JsonObject root, int oldVersion, int newVersion) {
+        boolean changed = false;
+        if (oldVersion < 0) {
+            AudioPlayerMod.LOGGER.error("Failed to detect metadata version");
+            return changed;
+        }
+        if (oldVersion == newVersion) {
+            return changed;
+        }
+
+        // Upgrades go here
+
+        return changed;
+    }
+
+    public static boolean upgradePostLoad(FileMetadataManager fileMetadataManager, JsonObject root, int oldVersion, int newVersion) {
+        boolean changed = false;
+        if (oldVersion < 0) {
+            AudioPlayerMod.LOGGER.error("Failed to detect metadata version");
+            return changed;
+        }
+        if (oldVersion == newVersion) {
+            return changed;
+        }
+
+        if (oldVersion == 1) {
+            postUpgradeV1ToV2(fileMetadataManager, root);
+            oldVersion = 2;
+            changed = true;
+        }
+
+        // Other post-upgrades go here
+        return changed;
+    }
+
+    private static void postUpgradeV1ToV2(FileMetadataManager metaManager, JsonObject root) {
+        AudioPlayerMod.LOGGER.info("Generating audio file hashes (This may take a while)");
+        for (Metadata meta : metaManager.getMetadata().values()) {
+            try {
+                Path file = metaManager.getAudioStorageManager().getExistingSoundFile(meta.getAudioId());
+                try (InputStream is = Files.newInputStream(file)) {
+                    String hash = FileUtils.sha256(is);
+                    meta.setSha256(hash);
+                    AudioPlayerMod.LOGGER.info("Generated hash for audio {}: {}", meta.getAudioId(), hash);
+                }
+            } catch (FileNotFoundException e) {
+                AudioPlayerMod.LOGGER.error("Failed to find audio file {}", meta.getAudioId());
+            } catch (Exception e) {
+                AudioPlayerMod.LOGGER.error("Failed to generate hash for audio file {}", meta.getAudioId());
+            }
         }
     }
 
