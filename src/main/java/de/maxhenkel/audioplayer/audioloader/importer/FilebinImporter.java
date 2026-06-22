@@ -7,13 +7,13 @@ import com.google.gson.JsonParser;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,17 +33,17 @@ public class FilebinImporter implements AudioImporter {
 
     public static final String USER_AGENT = "AudioPlayer/curl";
 
-    private final UUID soundId;
+    private final UUID fileId;
     @Nullable
     private URL fileUrl;
 
-    public FilebinImporter(UUID soundId) {
-        this.soundId = soundId;
+    public FilebinImporter(UUID fileId) {
+        this.fileId = fileId;
     }
 
     @Override
     public AudioImportInfo onPreprocess(@Nullable ServerPlayer player) throws Exception {
-        URI url = getBin(soundId);
+        URI url = getBin(fileId);
 
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
@@ -87,7 +87,7 @@ public class FilebinImporter implements AudioImporter {
                     String filename = file.get("filename").getAsString();
                     URI uri = new URI(url + "/" + new URI(null, null, filename, null).toASCIIString());
                     fileUrl = uri.toURL();
-                    return new AudioImportInfo(soundId, filename);
+                    return new AudioImportInfo(filename);
                 }
             }
             throw new ComponentException(Lang.translatable("audioplayer.no_valid_audio_files_uploaded"));
@@ -108,7 +108,7 @@ public class FilebinImporter implements AudioImporter {
     }
 
     @Override
-    public void onPostprocess(@Nullable ServerPlayer player) throws Exception {
+    public void onPostprocess(@Nullable ServerPlayer player, ImportedAudio audio) throws Exception {
         if (fileUrl != null) {
             deleteBin(fileUrl.toURI());
         }

@@ -33,15 +33,20 @@ public class FileMetadataManager {
     private final Path file;
     private Map<UUID, Metadata> metadata;
 
+    private final Map<String, UUID> hashes;
+
     public FileMetadataManager(AudioStorageManager manager, Path file) throws Exception {
         this.audioStorageManager = manager;
         this.file = file;
         this.metadata = new ConcurrentHashMap<>();
+        this.hashes = new ConcurrentHashMap<>();
 
         boolean initial = !Files.exists(file);
         MetadataUpgrader.legacyUpgrade(manager, this, initial);
 
         load();
+
+        loadHashCache();
     }
 
     private void load() throws Exception {
@@ -112,6 +117,13 @@ public class FileMetadataManager {
         }
     }
 
+    private void loadHashCache() {
+        hashes.clear();
+        for (Metadata metadata : metadata.values()) {
+            hashes.put(metadata.getSha256(), metadata.getAudioId());
+        }
+    }
+
     public void saveAsync() {
         SAVE_EXECUTOR_SERVICE.execute(this::saveSync);
     }
@@ -132,10 +144,11 @@ public class FileMetadataManager {
         return metadata;
     }
 
-    public void modifyMetadata(UUID uuid, Consumer<Metadata> metadataConsumer) {
+    public Metadata modifyMetadata(UUID uuid, Consumer<Metadata> metadataConsumer) {
         Metadata metadata = this.metadata.computeIfAbsent(uuid, Metadata::new);
         metadataConsumer.accept(metadata);
         saveAsync();
+        return metadata;
     }
 
     public void setVolumeOverride(UUID uuid, @Nullable Float volume) {
@@ -168,6 +181,10 @@ public class FileMetadataManager {
             return true;
         }
         return fileName.equals(name);
+    }
+
+    public Optional<UUID> getAudioIdByHash(String hash) {
+        return Optional.ofNullable(hashes.get(hash));
     }
 
     public AudioStorageManager getAudioStorageManager() {
