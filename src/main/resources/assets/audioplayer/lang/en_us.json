@@ -1,6 +1,6 @@
 {
-  "audioplayer.no_audio_file_name_found": "No audio file with name '%s' found",
-  "audioplayer.no_audio_files_name_found": "No audio files with name '%s' found",
+  "audioplayer.unknown_audio_id_name": "Unknown audio ID or name '%s'",
+  "audioplayer.multiple_audios_with_name": "There are multiple audios named '%s'",
   "audioplayer.search_results": "Found %s file(s) containing '%s'",
   "audioplayer.multiple_audio_files_name_found": "Multiple files with name '%s' found:",
   "audioplayer.no_audio_file_id_found": "No audio with ID '%s' found",
