@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer;
 
 import de.maxhenkel.admiral.MinecraftAdmiral;
 import de.maxhenkel.audioplayer.api.AudioPlayerModule;
+import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
 import de.maxhenkel.audioplayer.audioloader.converter.FfmpegConverter;
 import de.maxhenkel.audioplayer.command.*;
@@ -42,6 +43,7 @@ public class AudioPlayerMod implements ModInitializer {
                     ).setPermissionManager(AudioPlayerPermissionManager.INSTANCE)
                     .addArgumentTypes(registry -> {
                         registry.register(ServerFileArgument.class, new ServerFileArgument.ServerFileArgumentSupplier(), new ServerFileArgument.ServerFileArgumentTypeConverter());
+                        registry.register(AudioFileMetadata.class, new AudioFileArgument.Supplier(), new AudioFileArgument.TypeConverter());
                     })
                     .build();
         });

@@ -4,13 +4,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.audioplayer.api.AudioPlayerModule;
+import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
-import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
-import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.NonNullList;
@@ -34,19 +33,8 @@ import java.util.function.Function;
 public class ApplyCommands {
 
     @Command("apply")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("file_name") String fileName, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        UUID id = getId(context, fileName);
-        if (id == null) {
-            return;
-        }
-        applyBulk(context, AudioData.withSoundAndRange(id, null), customName);
-    }
-
-    // The apply commands for UUIDs must be below the ones with file names, so that the file name does not overwrite the UUID argument
-
-    @Command("apply")
-    public void apply(CommandContext<CommandSourceStack> context, @Name("sound_id") UUID sound, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
-        applyBulk(context, AudioData.withSoundAndRange(sound, null), customName);
+    public void apply(CommandContext<CommandSourceStack> context, @Name("audio") AudioFileMetadata audio, @OptionalArgument @Name("custom_name") String customName) throws CommandSyntaxException {
+        applyBulk(context, AudioData.withSoundAndRange(audio.getAudioId(), null), customName);
     }
 
     @Command("range")
@@ -63,31 +51,6 @@ public class ApplyCommands {
             return true;
         });
         sendUpdateFeedBack(context, amount);
-    }
-
-    @Nullable
-    private static UUID getId(CommandContext<CommandSourceStack> context, String fileName) {
-        try {
-            return UUID.fromString(fileName);
-        } catch (Exception ignored) {
-        }
-
-        List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(fileName, true);
-
-        if (metadata.isEmpty()) {
-            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_name_found", fileName));
-            return null;
-        }
-
-        if (metadata.size() == 1) {
-            return metadata.getFirst().getAudioId();
-        }
-
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.multiple_audio_files_name_found", fileName), false);
-        for (Metadata meta : metadata) {
-            context.getSource().sendSuccess(() -> ChatUtils.createInfoMessage(meta.getAudioId()), false);
-        }
-        return null;
     }
 
     private static <T> int forEachHeldAudioItem(CommandContext<CommandSourceStack> context, Function<ItemStack, T> shouldProcess, ApplyFunction<T> process) throws CommandSyntaxException {

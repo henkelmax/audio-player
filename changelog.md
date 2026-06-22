@@ -1,6 +1,1 @@
-- Made import API return a future
-- Added audio file metadata access to the API
-- Added a way to list all audio file metadata with the API
-- Added a way to get the maximum upload size with the API
-- Added a way to get upload folder with the API
-- Allow silently importing audio as a player using the API
+- Added better audio file name and ID command suggestion provider
