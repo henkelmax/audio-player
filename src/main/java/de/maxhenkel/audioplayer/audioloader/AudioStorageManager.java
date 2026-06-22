@@ -53,10 +53,9 @@ public class AudioStorageManager {
         Path audioDataFolder = getAudioDataFolder();
         Files.createDirectories(audioDataFolder);
         Path metaPath = audioDataFolder.resolve("meta.json");
-        boolean initial = !Files.exists(metaPath);
         fileMetadataManager = new FileMetadataManager(metaPath);
         audioCache = new AudioCache();
-        MetadataUpgrader.upgrade(this, initial);
+
     }
 
     public static void onInitialize() {
