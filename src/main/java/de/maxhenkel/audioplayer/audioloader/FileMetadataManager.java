@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -64,7 +66,9 @@ public class FileMetadataManager {
         } else {
             metaVersion = metaVersionElement.getAsInt();
         }
-        //TODO Save backup before upgrading
+        if (metaVersion != META_VERSION) {
+            saveBackup();
+        }
         boolean changed = MetadataUpgrader.upgrade(this, root, metaVersion, META_VERSION);
 
         JsonObject files = root.getAsJsonObject("files");
@@ -91,6 +95,8 @@ public class FileMetadataManager {
         }
     }
 
+    private static final DateTimeFormatter BACKUP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
+
     private void saveSync() {
         try {
             Files.createDirectories(file.getParent());
@@ -108,7 +114,7 @@ public class FileMetadataManager {
 
             String json = GSON.toJson(root);
 
-            Path backup = file.resolveSibling(file.getFileName() + ".bak");
+            Path backup = file.resolveSibling(FileUtils.stripFileExtension(file.getFileName().toString()) + ".bak");
 
             if (Files.exists(file)) {
                 Files.move(file, backup, StandardCopyOption.REPLACE_EXISTING);
@@ -116,6 +122,18 @@ public class FileMetadataManager {
             Files.writeString(file, json);
         } catch (Exception e) {
             AudioPlayerMod.LOGGER.error("Failed to save metadata", e);
+        }
+    }
+
+    private void saveBackup() {
+        String timestamp = LocalDateTime.now().format(BACKUP_FORMATTER);
+        Path backup = file.resolveSibling(FileUtils.stripFileExtension(file.getFileName().toString()) + "-" + timestamp + ".bak");
+        AudioPlayerMod.LOGGER.info("Saving metadata backup to {}", backup.getFileName());
+        try {
+            Files.createDirectories(file.getParent());
+            Files.copy(file, backup, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            AudioPlayerMod.LOGGER.error("Failed to save backup", e);
         }
     }
 
