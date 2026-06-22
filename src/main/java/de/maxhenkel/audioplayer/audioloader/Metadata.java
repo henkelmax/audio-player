@@ -22,6 +22,8 @@ public class Metadata implements AudioFileMetadata {
     private Long created;
     @Nullable
     private AudioFileOwner owner;
+    @Nullable
+    private String sha256;
 
     public Metadata(UUID audioId) {
         this.audioId = audioId;
@@ -64,6 +66,16 @@ public class Metadata implements AudioFileMetadata {
 
     @Nullable
     @Override
+    public String getSha256() {
+        return sha256;
+    }
+
+    public void setSha256(@Nullable String sha256) {
+        this.sha256 = sha256;
+    }
+
+    @Nullable
+    @Override
     public AudioFileOwner getOwner() {
         return owner;
     }
@@ -80,6 +92,8 @@ public class Metadata implements AudioFileMetadata {
         metadata.volume = volumeElement == null ? null : Math.max(Math.min(volumeElement.getAsFloat(), 1F), 0F);
         JsonElement createdElement = json.get("created");
         metadata.created = createdElement == null ? null : createdElement.getAsLong();
+        JsonElement sha256Element = json.get("sha256");
+        metadata.sha256 = sha256Element == null ? null : sha256Element.getAsString();
         JsonObject ownerJson = json.getAsJsonObject("owner");
         if (ownerJson != null) {
             try {
@@ -108,6 +122,9 @@ public class Metadata implements AudioFileMetadata {
         }
         if (created != null) {
             json.addProperty("created", created);
+        }
+        if (sha256 != null) {
+            json.addProperty("sha256", sha256);
         }
         if (owner != null) {
             JsonObject ownerJson = new JsonObject();
