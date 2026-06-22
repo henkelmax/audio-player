@@ -4,6 +4,7 @@ import com.google.gson.*;
 import de.maxhenkel.audioplayer.AudioPlayerMod;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.utils.FileUtils;
+import de.maxhenkel.audioplayer.utils.upgrade.MetadataUpgrader;
 
 import javax.annotation.Nullable;
 import java.nio.file.Files;
@@ -34,6 +35,10 @@ public class FileMetadataManager {
     public FileMetadataManager(Path file) throws Exception {
         this.file = file;
         this.metadata = new ConcurrentHashMap<>();
+
+        boolean initial = !Files.exists(file);
+        MetadataUpgrader.upgrade(this, initial);
+        
         load();
     }
 

@@ -15,18 +15,17 @@ import java.util.stream.Stream;
 
 public class MetadataUpgrader {
 
-    public static void upgrade(AudioStorageManager audioStorageManager, boolean initial) {
+    public static void upgrade(FileMetadataManager fileMetadataManager, boolean initial) {
         if (initial) {
-            upgradeCreationDates(audioStorageManager);
+            upgradeCreationDates(fileMetadataManager);
         }
-        upgradeFileNameManager(audioStorageManager);
-        upgradeVolumeOverrideManager(audioStorageManager);
+        upgradeFileNameManager(fileMetadataManager);
+        upgradeVolumeOverrideManager(fileMetadataManager);
     }
 
-    private static void upgradeCreationDates(AudioStorageManager audioStorageManager) {
+    private static void upgradeCreationDates(FileMetadataManager metadataManager) {
         AudioPlayerMod.LOGGER.info("Upgrading creation dates");
-        try (Stream<Path> paths = Files.list(audioStorageManager.getAudioDataFolder())) {
-            FileMetadataManager metadataManager = audioStorageManager.getFileMetadataManager();
+        try (Stream<Path> paths = Files.list(AudioStorageManager.instance().getAudioDataFolder())) {
             paths.forEach(path -> {
                 String name = FileUtils.fileNameWithoutExtension(path.getFileName().toString());
                 UUID uuid;
@@ -42,14 +41,13 @@ public class MetadataUpgrader {
         }
     }
 
-    private static void upgradeFileNameManager(AudioStorageManager audioStorageManager) {
-        Path filenameMappings = audioStorageManager.getAudioDataFolder().resolve("file-name-mappings.json");
+    private static void upgradeFileNameManager(FileMetadataManager manager) {
+        Path filenameMappings = AudioStorageManager.instance().getAudioDataFolder().resolve("file-name-mappings.json");
         if (!Files.exists(filenameMappings)) {
             return;
         }
         AudioPlayerMod.LOGGER.info("Upgrading file name mappings");
         FileNameManager fileNameManager = new FileNameManager(filenameMappings);
-        FileMetadataManager manager = audioStorageManager.getFileMetadataManager();
         for (Map.Entry<UUID, String> entry : fileNameManager.getFileNames().entrySet()) {
             Metadata metadata = manager.getOrCreateMetadata(entry.getKey());
             metadata.setFileName(entry.getValue());
@@ -63,14 +61,13 @@ public class MetadataUpgrader {
         }
     }
 
-    private static void upgradeVolumeOverrideManager(AudioStorageManager audioStorageManager) {
-        Path volumeOverrides = audioStorageManager.getAudioDataFolder().resolve("volume-overrides.json");
+    private static void upgradeVolumeOverrideManager(FileMetadataManager manager) {
+        Path volumeOverrides = AudioStorageManager.instance().getAudioDataFolder().resolve("volume-overrides.json");
         if (!Files.exists(volumeOverrides)) {
             return;
         }
         AudioPlayerMod.LOGGER.info("Upgrading volume overrides");
         VolumeOverrideManager volumeOverrideManager = new VolumeOverrideManager(volumeOverrides);
-        FileMetadataManager manager = audioStorageManager.getFileMetadataManager();
         for (Map.Entry<UUID, Float> entry : volumeOverrideManager.getVolumes().entrySet()) {
             Metadata metadata = manager.getOrCreateMetadata(entry.getKey());
             Float logVolume = entry.getValue();
