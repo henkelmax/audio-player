@@ -142,7 +142,7 @@ public class MetadataUpgrader {
             }
         }
 
-        AudioPlayerMod.LOGGER.info("Stripping file extensions from name");
+        AudioPlayerMod.LOGGER.info("Stripping file extensions from audio names");
         for (Metadata meta : metaManager.getMetadata().values()) {
             meta.setFileName(FileUtils.stripFileExtension(meta.getFileName()));
         }

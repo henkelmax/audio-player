@@ -4,3 +4,4 @@
 - Added deduplicate config option
 - Removed file extensions from audio file names
 - Made audio file names unique
+- Create backup of metadata before upgrade
