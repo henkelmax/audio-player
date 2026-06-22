@@ -2,6 +2,7 @@ package de.maxhenkel.audioplayer.audioloader.importer;
 
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
@@ -9,25 +10,22 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.UUID;
 
 public class UrlImporter implements AudioImporter {
 
     public static final String USER_AGENT = "AudioPlayer";
 
-    private final UUID soundId;
     private final String urlString;
     private URL url;
 
     public UrlImporter(String url) {
-        this.soundId = UUID.randomUUID();
         this.urlString = url;
     }
 
     @Override
     public AudioImportInfo onPreprocess(@Nullable ServerPlayer player) throws Exception {
         url = new URI(urlString).toURL();
-        return new AudioImportInfo(soundId, getFileNameFromUrl(url.toString()));
+        return new AudioImportInfo(getFileNameFromUrl(url.toString()));
     }
 
     @Nullable
@@ -50,7 +48,7 @@ public class UrlImporter implements AudioImporter {
     }
 
     @Override
-    public void onPostprocess(@Nullable ServerPlayer player) throws Exception {
+    public void onPostprocess(@Nullable ServerPlayer player, ImportedAudio importedAudio) throws Exception {
 
     }
 

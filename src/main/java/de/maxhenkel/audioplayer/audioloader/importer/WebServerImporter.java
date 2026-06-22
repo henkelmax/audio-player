@@ -2,27 +2,25 @@ package de.maxhenkel.audioplayer.audioloader.importer;
 
 import de.maxhenkel.audioplayer.api.importer.AudioImportInfo;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
+import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 
 public class WebServerImporter implements AudioImporter {
 
-    private final UUID soundId;
     private final byte[] data;
     @Nullable
     private final String fileName;
 
-    public WebServerImporter(UUID soundId, byte[] data, @Nullable String fileName) {
-        this.soundId = soundId;
+    public WebServerImporter(byte[] data, @Nullable String fileName) {
         this.data = data;
         this.fileName = fileName;
     }
 
     @Override
     public AudioImportInfo onPreprocess(@Nullable ServerPlayer player) throws Exception {
-        return new AudioImportInfo(soundId, fileName);
+        return new AudioImportInfo(fileName);
     }
 
     @Override
@@ -31,7 +29,7 @@ public class WebServerImporter implements AudioImporter {
     }
 
     @Override
-    public void onPostprocess(@Nullable ServerPlayer player) throws Exception {
+    public void onPostprocess(@Nullable ServerPlayer player, ImportedAudio importedAudio) throws Exception {
 
     }
 
