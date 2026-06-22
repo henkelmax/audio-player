@@ -1,1 +1,2 @@
 - Added better audio file name and ID command suggestion provider
+- Save a backup of the metadata file before saving
