@@ -9,3 +9,4 @@
 - Fixed serverfile suggestions suggesting folders
 - Added rename command
 - Added rename function to the API
+- Added clear item function to the API

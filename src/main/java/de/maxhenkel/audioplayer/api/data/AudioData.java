@@ -1,6 +1,7 @@
 package de.maxhenkel.audioplayer.api.data;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -29,5 +30,9 @@ public interface AudioData extends ModuleAccessor {
     void saveToItem(ItemStack stack);
 
     void saveToItem(ItemStack stack, @Nullable Component lore);
+
+    static boolean clear(MinecraftServer server, ItemStack stack) {
+        return de.maxhenkel.audioplayer.audioloader.AudioData.clearItem(server, stack);
+    }
 
 }
