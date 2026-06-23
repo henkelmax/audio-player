@@ -100,6 +100,14 @@ public interface AudioPlayerApi {
 
     Path getUploadFolder();
 
+    /**
+     * @param audio           the audio file metadata of the audio to rename
+     * @param name            the new name or <code>null</code> to remove the name
+     * @param removeIfInvalid if true, the name will be removed if it is invalid
+     * @return true if the name was changed, false if the provided name is invalid and removeIfInvalid is false
+     */
+    boolean rename(AudioFileMetadata audio, @Nullable String name, boolean removeIfInvalid);
+
     ArgumentTypeSupplier<CommandSourceStack, AudioFileMetadata, String> metadataArgumentTypeSupplier();
 
     ArgumentTypeConverter<CommandSourceStack, String, AudioFileMetadata> metadataArgumentTypeConverter();

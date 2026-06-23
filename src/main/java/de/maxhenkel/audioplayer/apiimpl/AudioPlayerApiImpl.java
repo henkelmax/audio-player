@@ -13,9 +13,11 @@ import de.maxhenkel.audioplayer.api.data.ModuleKey;
 import de.maxhenkel.audioplayer.api.importer.AudioImporter;
 import de.maxhenkel.audioplayer.api.importer.ImportedAudio;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioloader.FileMetadataManager;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
 import de.maxhenkel.audioplayer.command.AudioFileArgument;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
+import de.maxhenkel.audioplayer.utils.FileUtils;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
@@ -34,6 +36,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class AudioPlayerApiImpl implements AudioPlayerApi {
@@ -137,6 +140,30 @@ public class AudioPlayerApiImpl implements AudioPlayerApi {
     @Override
     public Path getUploadFolder() {
         return AudioStorageManager.getUploadFolder();
+    }
+
+    @Override
+    public boolean rename(AudioFileMetadata audio, @Nullable String name, boolean removeIfInvalid) {
+        FileMetadataManager metaManager = AudioStorageManager.metadataManager();
+        AtomicBoolean changed = new AtomicBoolean(false);
+        metaManager.modifyMetadataIfExists(audio.getAudioId(), m -> {
+            if (name == null) {
+                m.setFileName(null);
+                changed.set(true);
+                return;
+            }
+            String fixedName = FileUtils.fixName(name);
+            if (fixedName.isBlank()) {
+                if (removeIfInvalid) {
+                    m.setFileName(null);
+                    changed.set(true);
+                }
+                return;
+            }
+            changed.set(true);
+            metaManager.setUniqueFileName(m, fixedName);
+        });
+        return changed.get();
     }
 
     @Override
