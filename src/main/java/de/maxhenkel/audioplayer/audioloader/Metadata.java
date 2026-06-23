@@ -40,6 +40,11 @@ public class Metadata implements AudioFileMetadata {
         return fileName;
     }
 
+    /**
+     * <b>WARNING</b>: Don't use this directly! Use {@link FileMetadataManager#setUniqueFileName(Metadata, String)} instead.
+     *
+     * @param fileName the file name - <b>MUST</b> be unique
+     */
     public void setFileName(@Nullable String fileName) {
         this.fileName = fileName;
     }

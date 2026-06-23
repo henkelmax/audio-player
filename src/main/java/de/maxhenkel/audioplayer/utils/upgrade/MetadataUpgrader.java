@@ -160,6 +160,12 @@ public class MetadataUpgrader {
             if (name == null) {
                 continue;
             }
+            name = FileUtils.fixName(name);
+            if (name.isBlank()) {
+                metadata.setFileName(null);
+                changed = true;
+                continue;
+            }
             while (names.contains(name)) {
                 name = FileUtils.deduplicateName(name);
                 changed = true;

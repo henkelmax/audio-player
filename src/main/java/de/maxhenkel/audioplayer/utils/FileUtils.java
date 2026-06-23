@@ -70,4 +70,8 @@ public class FileUtils {
         return "%s (1)".formatted(name);
     }
 
+    public static String fixName(String name) {
+        return name.trim().replace("\"", "");
+    }
+
 }
