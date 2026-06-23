@@ -78,20 +78,19 @@ public class UtilityCommands {
         }
 
         FileMetadataManager metaManager = AudioStorageManager.metadataManager();
-        String fixedName  = FileUtils.fixName(name);
-        if(fixedName.isBlank()) {
+        String fixedName = FileUtils.fixName(name);
+        if (fixedName.isBlank()) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.rename_invalid_name"));
             return;
         }
-        List<Metadata> results = metaManager.searchByFileName(fixedName, true);
-        if (!results.isEmpty()) {
-            context.getSource().sendFailure(Lang.translatable("audioplayer.rename_duplicate", fixedName));
-            return;
-        }
-        metaManager.modifyMetadataIfExists(metadata.getAudioId(), m -> {
+        Metadata resultMeta = metaManager.modifyMetadataIfExists(metadata.getAudioId(), m -> {
             metaManager.setUniqueFileName(m, fixedName);
         });
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.rename_successful", fixedName), false);
+        if (resultMeta == null) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.rename_invalid_name"));
+            return;
+        }
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.rename_successful", resultMeta.getFileName()), false);
     }
 
     @Command("id")

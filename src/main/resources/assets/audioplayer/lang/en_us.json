@@ -11,7 +11,6 @@
   "audioplayer.item_rename_tooltip_successful": "Successfully renamed item tooltip",
   "audioplayer.rename_successful": "Successfully renamed audio file to '%s'",
   "audioplayer.rename_not_owner": "You are not the owner of this audio file",
-  "audioplayer.rename_duplicate": "A file named '%s' already exists",
   "audioplayer.rename_invalid_name": "Invalid name",
   "audioplayer.play_successful": "Successfully played %s",
   "audioplayer.stop_streams_successful": "Successfully stopped %s stream(s)",
