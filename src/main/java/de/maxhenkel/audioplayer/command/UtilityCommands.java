@@ -6,15 +6,14 @@ import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.admiral.arguments.GreedyString;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
 import de.maxhenkel.audioplayer.api.data.AudioFileOwner;
+import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
-import de.maxhenkel.audioplayer.audioloader.FileMetadataManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
-import de.maxhenkel.audioplayer.utils.FileUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,20 +76,12 @@ public class UtilityCommands {
             }
         }
 
-        FileMetadataManager metaManager = AudioStorageManager.metadataManager();
-        String fixedName = FileUtils.fixName(name);
-        if (fixedName.isBlank()) {
+        boolean changed = AudioPlayerApiImpl.INSTANCE.rename(metadata, name, false);
+        if (!changed || metadata.getFileName() == null) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.rename_invalid_name"));
             return;
         }
-        Metadata resultMeta = metaManager.modifyMetadataIfExists(metadata.getAudioId(), m -> {
-            metaManager.setUniqueFileName(m, fixedName);
-        });
-        if (resultMeta == null) {
-            context.getSource().sendFailure(Lang.translatable("audioplayer.rename_invalid_name"));
-            return;
-        }
-        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.rename_successful", resultMeta.getFileName()), false);
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.rename_successful", metadata.getFileName()), false);
     }
 
     @Command("id")
