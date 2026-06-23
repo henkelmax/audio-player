@@ -188,18 +188,22 @@ public class FileMetadataManager {
             toChange.setFileName(null);
             return;
         }
-        boolean duplicate = false;
+        while (isDuplicate(toChange, name)) {
+            name = FileUtils.deduplicateName(name);
+        }
+        toChange.setFileName(name);
+    }
+
+    private boolean isDuplicate(Metadata self, String name) {
         for (Metadata meta : metadata.values()) {
+            if (meta.getAudioId().equals(self.getAudioId())) {
+                continue;
+            }
             if (name.equals(meta.getFileName())) {
-                duplicate = true;
-                break;
+                return true;
             }
         }
-        if (!duplicate) {
-            toChange.setFileName(name);
-            return;
-        }
-        toChange.setFileName(FileUtils.deduplicateName(name));
+        return false;
     }
 
     public List<Metadata> searchByFileName(String fileName, boolean exact) {
