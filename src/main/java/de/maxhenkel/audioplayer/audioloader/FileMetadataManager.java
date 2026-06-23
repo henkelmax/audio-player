@@ -35,20 +35,15 @@ public class FileMetadataManager {
     private final Path file;
     private Map<UUID, Metadata> metadata;
 
-    private final Map<String, UUID> hashes;
-
     public FileMetadataManager(AudioStorageManager manager, Path file) throws Exception {
         this.audioStorageManager = manager;
         this.file = file;
         this.metadata = new ConcurrentHashMap<>();
-        this.hashes = new ConcurrentHashMap<>();
 
         boolean initial = !Files.exists(file);
         MetadataUpgrader.legacyUpgrade(manager, this, initial);
 
         load();
-
-        loadHashCache();
     }
 
     private void load() throws Exception {
@@ -137,13 +132,6 @@ public class FileMetadataManager {
         }
     }
 
-    private void loadHashCache() {
-        hashes.clear();
-        for (Metadata metadata : metadata.values()) {
-            hashes.put(metadata.getSha256(), metadata.getAudioId());
-        }
-    }
-
     public void saveAsync() {
         SAVE_EXECUTOR_SERVICE.execute(this::saveSync);
     }
@@ -171,6 +159,17 @@ public class FileMetadataManager {
         return metadata;
     }
 
+    @Nullable
+    public Metadata modifyMetadataIfExists(UUID uuid, Consumer<Metadata> metadataConsumer) {
+        Metadata metadata = this.metadata.get(uuid);
+        if (metadata == null) {
+            return null;
+        }
+        metadataConsumer.accept(metadata);
+        saveAsync();
+        return metadata;
+    }
+
     public void setVolumeOverride(UUID uuid, @Nullable Float volume) {
         modifyMetadata(uuid, metadata -> metadata.setVolume(volume));
     }
@@ -179,12 +178,31 @@ public class FileMetadataManager {
         return getMetadata(uuid).map(Metadata::getVolume);
     }
 
-    @Nullable
-    public String getFileName(UUID uuid) {
-        return getMetadata(uuid).map(Metadata::getFileName).orElse(null);
+    public void setUniqueFileName(Metadata toChange, @Nullable String name) {
+        if (name == null) {
+            toChange.setFileName(null);
+            return;
+        }
+        name = FileUtils.fixName(name);
+        if (name.isBlank()) {
+            toChange.setFileName(null);
+            return;
+        }
+        boolean duplicate = false;
+        for (Metadata meta : metadata.values()) {
+            if (name.equals(meta.getFileName())) {
+                duplicate = true;
+                break;
+            }
+        }
+        if (!duplicate) {
+            toChange.setFileName(name);
+            return;
+        }
+        toChange.setFileName(FileUtils.deduplicateName(name));
     }
 
-    public List<Metadata> getByFileName(String fileName, boolean exact) {
+    public List<Metadata> searchByFileName(String fileName, boolean exact) {
         return metadata.values().stream().filter(metadata -> matchesName(metadata, fileName, exact)).sorted(Comparator.comparingLong(o -> o.getCreated() == null ? 0L : o.getCreated())).toList();
     }
 
@@ -196,22 +214,19 @@ public class FileMetadataManager {
         if (!exact) {
             return fileName.toLowerCase().contains(name.toLowerCase());
         }
-        String withoutExt = FileUtils.fileNameWithoutExtension(fileName);
-        if (withoutExt.equals(name)) {
-            return true;
-        }
         return fileName.equals(name);
     }
 
-    public Optional<UUID> getAudioIdByHash(@Nullable String hash) {
+    public Optional<Metadata> getAudioMetadataByHash(@Nullable String hash) {
         if (hash == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(hashes.get(hash));
-    }
-
-    public Optional<Metadata> getAudioMetadataByHash(@Nullable String hash) {
-        return getAudioIdByHash(hash).flatMap(this::getMetadata);
+        for (Metadata meta : metadata.values()) {
+            if (hash.equals(meta.getSha256())) {
+                return Optional.of(meta);
+            }
+        }
+        return Optional.empty();
     }
 
     public AudioStorageManager getAudioStorageManager() {

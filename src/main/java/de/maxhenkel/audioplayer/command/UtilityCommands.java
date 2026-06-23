@@ -5,16 +5,21 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.admiral.annotations.*;
 import de.maxhenkel.admiral.arguments.GreedyString;
 import de.maxhenkel.audioplayer.api.data.AudioFileMetadata;
+import de.maxhenkel.audioplayer.api.data.AudioFileOwner;
 import de.maxhenkel.audioplayer.audioloader.AudioData;
 import de.maxhenkel.audioplayer.audioloader.AudioStorageManager;
+import de.maxhenkel.audioplayer.audioloader.FileMetadataManager;
 import de.maxhenkel.audioplayer.audioloader.Metadata;
 import de.maxhenkel.audioplayer.audioplayback.PlayerType;
 import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.permission.AudioPlayerPermissionManager;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
+import de.maxhenkel.audioplayer.utils.FileUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.*;
 
@@ -45,7 +50,7 @@ public class UtilityCommands {
 
     @RequiresPermission(AudioPlayerPermissionManager.APPLY_PERMISSION_STRING)
     @Command("tooltip")
-    public void tooltip(CommandContext<CommandSourceStack> context, @Name("name") GreedyString name) throws CommandSyntaxException {
+    public void tooltip(CommandContext<CommandSourceStack> context, @Name("name") String name) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
@@ -55,8 +60,38 @@ public class UtilityCommands {
             return;
         }
 
-        audioData.saveToItem(itemInHand, Component.literal(name.get()));
+        audioData.saveToItem(itemInHand, Component.literal(name));
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.item_rename_tooltip_successful"), false);
+    }
+
+    @RequiresPermission(AudioPlayerPermissionManager.RENAME_PERMISSION_STRING)
+    @Command("rename")
+    public void rename(CommandContext<CommandSourceStack> context, @Name("audio") AudioFileMetadata metadata, @Name("new_name") String name) throws CommandSyntaxException {
+        boolean isAdmin = context.getSource().permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.ADMINS));
+        if (!isAdmin) {
+            AudioFileOwner owner = metadata.getOwner();
+            ServerPlayer player = context.getSource().getPlayer();
+            if (owner == null || player == null || !player.getGameProfile().id().equals(owner.getUUID())) {
+                context.getSource().sendFailure(Lang.translatable("audioplayer.rename_not_owner"));
+                return;
+            }
+        }
+
+        FileMetadataManager metaManager = AudioStorageManager.metadataManager();
+        String fixedName  = FileUtils.fixName(name);
+        if(fixedName.isBlank()) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.rename_invalid_name"));
+            return;
+        }
+        List<Metadata> results = metaManager.searchByFileName(fixedName, true);
+        if (!results.isEmpty()) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.rename_duplicate", fixedName));
+            return;
+        }
+        metaManager.modifyMetadataIfExists(metadata.getAudioId(), m -> {
+            metaManager.setUniqueFileName(m, fixedName);
+        });
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.rename_successful", fixedName), false);
     }
 
     @Command("id")
@@ -88,7 +123,7 @@ public class UtilityCommands {
 
     @Command("search")
     public void search(CommandContext<CommandSourceStack> context, @Name("file_name") String name) throws CommandSyntaxException {
-        List<Metadata> metadata = AudioStorageManager.metadataManager().getByFileName(name, false);
+        List<Metadata> metadata = AudioStorageManager.metadataManager().searchByFileName(name, false);
 
         if (metadata.isEmpty()) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_files_name_found", name));
