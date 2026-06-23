@@ -250,7 +250,7 @@ public class AudioStorageManager {
         String sha256 = FileUtils.sha256(data);
 
         return fileMetadataManager.modifyMetadata(id, metadata -> {
-            metadata.setFileName(fileName);
+            fileMetadataManager.setUniqueFileName(metadata, fileName);
             metadata.setCreated(System.currentTimeMillis());
             metadata.setSha256(sha256);
             if (player != null) {
