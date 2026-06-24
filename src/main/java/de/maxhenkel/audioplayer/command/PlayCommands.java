@@ -41,7 +41,7 @@ public class PlayCommands {
         if (count > 0) {
             context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.stop_streams_successful", count), false);
         } else {
-            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_id_found", metadata));
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_audio_file_id_found", metadata.getAudioId()));
         }
         return count;
     }
