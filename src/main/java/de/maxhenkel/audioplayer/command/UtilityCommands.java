@@ -17,8 +17,6 @@ import de.maxhenkel.audioplayer.utils.ChatUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.*;
 
@@ -66,7 +64,7 @@ public class UtilityCommands {
     @RequiresPermission(AudioPlayerPermissionManager.RENAME_PERMISSION_STRING)
     @Command("rename")
     public void rename(CommandContext<CommandSourceStack> context, @Name("audio") AudioFileMetadata metadata, @Name("new_name") String name) throws CommandSyntaxException {
-        boolean isAdmin = context.getSource().permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.ADMINS));
+        boolean isAdmin = context.getSource().hasPermission(2);
         if (!isAdmin) {
             AudioFileOwner owner = metadata.getOwner();
             ServerPlayer player = context.getSource().getPlayer();
