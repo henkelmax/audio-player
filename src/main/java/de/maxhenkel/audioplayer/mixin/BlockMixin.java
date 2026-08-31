@@ -56,7 +56,8 @@ public class BlockMixin {
             if (!(blockItem.getBlock() instanceof SkullBlock)) {
                 continue;
             }
-            data.saveToItem(stack);
+            // Adds the "Has custom audio" lore to the head
+            data.saveToItemDefaultLore(stack);
         }
     }
 
