@@ -27,8 +27,17 @@ public interface AudioData extends ModuleAccessor {
     @Nullable
     <T extends AudioDataModule> T removeModule(ModuleKey<T> moduleKey);
 
+    /**
+     * Saves the audio data to the provided item without touching the lore.
+     * @param stack the stack
+     */
     void saveToItem(ItemStack stack);
 
+    /**
+     * Saves the audio data to the provided item and overrides the existing lore.
+     * @param stack the stack
+     * @param lore the lore or <code>null</code> to reset it to default
+     */
     void saveToItem(ItemStack stack, @Nullable Component lore);
 
     static boolean clear(MinecraftServer server, ItemStack stack) {

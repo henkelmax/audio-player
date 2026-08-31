@@ -232,13 +232,13 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
         valueOutput.putString(AUDIOPLAYER_CUSTOM_DATA, GSON.toJson(toJson()));
     }
 
-    public void saveToItemIgnoreLore(ItemStack stack) {
-        saveToItem(stack, null, false);
+    public void saveToItemDefaultLore(ItemStack stack) {
+        saveToItem(stack, null, true);
     }
 
     @Override
     public void saveToItem(ItemStack stack) {
-        saveToItem(stack, (Component) null);
+        saveToItem(stack, null, false);
     }
 
     public void saveToItem(ItemStack stack, @Nullable String loreString) {

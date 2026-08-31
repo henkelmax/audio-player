@@ -1,12 +1,1 @@
-- Added better audio file name and ID command suggestion provider
-- Save a backup of the metadata file before saving
-- Deduplicate already existing audio files
-- Added deduplicate config option
-- Removed file extensions from audio file names
-- Made audio file names unique
-- Create backup of metadata before upgrade
-- Allow applying new audio data to an item
-- Fixed serverfile suggestions suggesting folders
-- Added rename command
-- Added rename function to the API
-- Added clear item function to the API
+- Fixed range command clearing the item lore
