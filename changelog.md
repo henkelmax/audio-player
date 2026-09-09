@@ -1,1 +1,1 @@
-- Fixed range command clearing the item lore
+- Updated dependencies of the web upload frontend
