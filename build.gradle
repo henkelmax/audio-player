@@ -17,7 +17,6 @@ java {
 
 dependencies {
     include(implementation("maven.modrinth:admiral:${admiral_version}+fabric"))
-    implementation "me.lucko:fabric-permissions-api:${fabric_permission_api_version}"
 
     implementation("com.googlecode.soundlibs:mp3spi:${mp3spi_version}") {
         exclude group: 'junit', module: 'junit'

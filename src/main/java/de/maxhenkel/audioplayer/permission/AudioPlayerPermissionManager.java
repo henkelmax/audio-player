@@ -1,128 +1,76 @@
 package de.maxhenkel.audioplayer.permission;
 
 import de.maxhenkel.admiral.permissions.PermissionManager;
-import de.maxhenkel.audioplayer.AudioPlayerMod;
-import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.server.permissions.Permissions;
 
-import java.util.List;
+import java.util.Map;
 
 public class AudioPlayerPermissionManager implements PermissionManager<CommandSourceStack> {
 
     public static final AudioPlayerPermissionManager INSTANCE = new AudioPlayerPermissionManager();
 
-    public static final String VOLUME_PERMISSION_STRING = "audioplayer.volume";
-    public static final String UPLOAD_FILEBIN_PERMISSION_STRING = "audioplayer.upload.filebin";
-    public static final String UPLOAD_SERVERFILE_PERMISSION_STRING = "audioplayer.upload.serverfile";
-    public static final String UPLOAD_URL_PERMISSION_STRING = "audioplayer.upload.url";
-    public static final String UPLOAD_WEB_PERMISSION_STRING = "audioplayer.upload.web";
-    public static final String APPLY_PERMISSION_STRING = "audioplayer.apply";
-    public static final String RENAME_PERMISSION_STRING = "audioplayer.rename";
-    public static final String PLAY_COMMAND_PERMISSION_STRING = "audioplayer.play_command";
+    public static final String VOLUME_PERMISSION_STRING = "audioplayer:volume";
+    public static final String UPLOAD_FILEBIN_PERMISSION_STRING = "audioplayer:upload.filebin";
+    public static final String UPLOAD_SERVERFILE_PERMISSION_STRING = "audioplayer:upload.serverfile";
+    public static final String UPLOAD_URL_PERMISSION_STRING = "audioplayer:upload.url";
+    public static final String UPLOAD_WEB_PERMISSION_STRING = "audioplayer:upload.web";
+    public static final String APPLY_PERMISSION_STRING = "audioplayer:apply";
+    public static final String RENAME_PERMISSION_STRING = "audioplayer:rename";
+    public static final String PLAY_COMMAND_PERMISSION_STRING = "audioplayer:play_command";
 
-    private static final Permission VOLUME_PERMISSION = new Permission(VOLUME_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission UPLOAD_FILEBIN_PERMISSION = new Permission(UPLOAD_FILEBIN_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission UPLOAD_SERVERFILE_PERMISSION = new Permission(UPLOAD_SERVERFILE_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission UPLOAD_URL_PERMISSION = new Permission(UPLOAD_URL_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission UPLOAD_WEB_PERMISSION = new Permission(UPLOAD_WEB_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission APPLY_PERMISSION = new Permission(APPLY_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission RENAME_PERMISSION = new Permission(RENAME_PERMISSION_STRING, PermissionType.EVERYONE);
-    private static final Permission PLAY_COMMAND_PERMISSION = new Permission(PLAY_COMMAND_PERMISSION_STRING, PermissionType.OPS);
+    private static final Permission VOLUME_PERMISSION = new Permission(VOLUME_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission UPLOAD_FILEBIN_PERMISSION = new Permission(UPLOAD_FILEBIN_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission UPLOAD_SERVERFILE_PERMISSION = new Permission(UPLOAD_SERVERFILE_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission UPLOAD_URL_PERMISSION = new Permission(UPLOAD_URL_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission UPLOAD_WEB_PERMISSION = new Permission(UPLOAD_WEB_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission APPLY_PERMISSION = new Permission(APPLY_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission RENAME_PERMISSION = new Permission(RENAME_PERMISSION_STRING, PermissionLevel.ALL);
+    private static final Permission PLAY_COMMAND_PERMISSION = new Permission(PLAY_COMMAND_PERMISSION_STRING, PermissionLevel.ADMINS);
 
-    private static final List<Permission> PERMISSIONS = List.of(
-            VOLUME_PERMISSION,
-            UPLOAD_FILEBIN_PERMISSION,
-            UPLOAD_SERVERFILE_PERMISSION,
-            UPLOAD_URL_PERMISSION,
-            UPLOAD_WEB_PERMISSION,
-            APPLY_PERMISSION,
-            RENAME_PERMISSION,
-            PLAY_COMMAND_PERMISSION
+    private static final Map<String, Permission> PERMISSIONS = Map.of(
+            VOLUME_PERMISSION.permissionString(), VOLUME_PERMISSION,
+            UPLOAD_FILEBIN_PERMISSION.permissionString(), UPLOAD_FILEBIN_PERMISSION,
+            UPLOAD_SERVERFILE_PERMISSION.permissionString(), UPLOAD_SERVERFILE_PERMISSION,
+            UPLOAD_URL_PERMISSION.permissionString(), UPLOAD_URL_PERMISSION,
+            UPLOAD_WEB_PERMISSION.permissionString(), UPLOAD_WEB_PERMISSION,
+            APPLY_PERMISSION.permissionString(), APPLY_PERMISSION,
+            RENAME_PERMISSION.permissionString(), RENAME_PERMISSION,
+            PLAY_COMMAND_PERMISSION.permissionString(), PLAY_COMMAND_PERMISSION
     );
 
     @Override
-    public boolean hasPermission(CommandSourceStack stack, String permission) {
-        for (Permission p : PERMISSIONS) {
-            if (!p.permission.equals(permission)) {
-                continue;
-            }
-            if (!p.canUse()) {
-                return false;
-            }
-            if (stack.isPlayer()) {
-                return p.hasPermission(stack.getPlayer());
-            }
-            return stack.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_MODERATOR);
+    public boolean hasPermission(CommandSourceStack stack, String permissionString) {
+        Permission permission = PERMISSIONS.get(permissionString);
+        if (permission == null) {
+            return false;
         }
-        return false;
-    }
-
-    private static Boolean loaded;
-
-    private static boolean isFabricPermissionsAPILoaded() {
-        if (loaded == null) {
-            loaded = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
-            if (loaded) {
-                AudioPlayerMod.LOGGER.info("Using Fabric Permissions API");
-            }
+        if (stack.isPlayer()) {
+            return permission.hasPermission(stack.getPlayer());
         }
-        return loaded;
+        return stack.permissions().hasPermission(Permissions.COMMANDS_MODERATOR);
     }
 
     private static class Permission {
-        private final String permission;
-        private final PermissionType type;
 
-        public Permission(String permission, PermissionType type) {
-            this.permission = permission;
-            this.type = type;
-        }
+        private final Identifier permission;
+        private final PermissionLevel level;
 
-        public boolean canUse() {
-            return true;
+        public Permission(String permission, PermissionLevel level) {
+            this.permission = Identifier.parse(permission);
+            this.level = level;
         }
 
         public boolean hasPermission(ServerPlayer player) {
-            if (isFabricPermissionsAPILoaded()) {
-                return checkFabricPermission(player);
-            }
-            return type.hasPermission(player);
+            return player.checkPermission(permission, level);
         }
 
-        private boolean checkFabricPermission(ServerPlayer player) {
-            TriState permissionValue = Permissions.getPermissionValue(player, permission);
-            return switch (permissionValue) {
-                case DEFAULT -> type.hasPermission(player);
-                case TRUE -> true;
-                default -> false;
-            };
+        public String permissionString() {
+            return permission.toString();
         }
-
-        public PermissionType getType() {
-            return type;
-        }
-
-        public String getPermission() {
-            return permission;
-        }
-    }
-
-    private static enum PermissionType {
-
-        EVERYONE, NOONE, OPS;
-
-        boolean hasPermission(ServerPlayer player) {
-            return switch (this) {
-                case EVERYONE -> true;
-                case NOONE -> false;
-                case OPS ->
-                        player != null && player.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_ADMIN);
-            };
-        }
-
     }
 
 }

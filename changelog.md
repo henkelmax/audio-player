@@ -1,1 +1,2 @@
-- Fixed range command clearing the item lore
+- Switched to fabric-permission-api-v1
+- Removed Lucko's fabric-permissions-api
