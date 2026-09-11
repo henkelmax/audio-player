@@ -59,7 +59,7 @@ public class ApplyCommands {
 
         BundleContents bundle = itemInHand.get(DataComponents.BUNDLE_CONTENTS);
         if (bundle != null) {
-            List<ItemStack> bundleContents = bundle.itemCopyStream().toList();
+            List<ItemStack> bundleContents = bundle.itemCopies().toList();
             int amount = 0;
             for (ItemStack itemStack : bundleContents) {
                 T value = shouldProcess.apply(itemStack);

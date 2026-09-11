@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class ComponentUtils {
 
-    public static final InstrumentComponent EMPTY_INSTRUMENT = new InstrumentComponent(Holder.direct(new Instrument(Holder.direct(SoundEvents.EMPTY), 140, 256F, Component.empty())));
+    public static final InstrumentComponent EMPTY_INSTRUMENT = new InstrumentComponent(Holder.direct(new Instrument(Holder.direct(SoundEvents.EMPTY), 140, 256F, 0, Component.empty())));
 
     public static final ResourceKey<JukeboxSong> CUSTOM_JUKEBOX_SONG_KEY = ResourceKey.create(Registries.JUKEBOX_SONG, Identifier.fromNamespaceAndPath(AudioPlayerMod.MODID, "custom"));
     private static JukeboxPlayable customPlayable;
