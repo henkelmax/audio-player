@@ -1,1 +1,3 @@
 - Improved translatability
+- Added Chinese translation
+- Added translation support for error messages
