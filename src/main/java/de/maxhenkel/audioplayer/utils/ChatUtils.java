@@ -15,7 +15,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -79,9 +78,9 @@ public class ChatUtils {
         return createApplyMessage(audioID, base);
     }
 
-    public static void checkFileSize(long size) throws IOException {
+    public static void checkFileSize(long size) throws ComponentException {
         if (size > AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get()) {
-            throw new IOException("Maximum file size exceeded (%sMB>%sMB)".formatted(Math.round((float) size / 1_000_000F), Math.round(AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
+            throw new ComponentException(Lang.translatable("audioplayer.max_file_size_exceeded", Math.round((float) size / 1_000_000F), Math.round(AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get().floatValue() / 1_000_000F)));
         }
     }
 

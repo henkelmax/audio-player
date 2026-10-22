@@ -13,6 +13,7 @@ import de.maxhenkel.audioplayer.utils.AudioUtils;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.utils.ComponentException;
 import de.maxhenkel.audioplayer.utils.FileUtils;
+import de.maxhenkel.audioplayer.utils.UnsupportedAudioException;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -199,7 +199,7 @@ public class AudioStorageManager {
         server.execute(runnable);
     }
 
-    private Metadata saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+    private Metadata saveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws IOException, FfmpegConverter.FfmpegException, ComponentException {
         AudioUtils.AudioType audioType = AudioUtils.getAudioType(data);
         if (AudioPlayerMod.SERVER_CONFIG.useFfmpeg.get() && shouldConvertToMp3(audioType)) {
             return convertAndSaveSound(id, fileName, data, player);
@@ -207,7 +207,7 @@ public class AudioStorageManager {
         checkExtensionAllowed(audioType);
         try {
             return saveSound0(audioType, id, fileName, data, player);
-        } catch (UnsupportedAudioFileException e) {
+        } catch (UnsupportedAudioException e) {
             if (!AudioPlayerMod.SERVER_CONFIG.useFfmpeg.get()) {
                 throw e;
             }
@@ -220,21 +220,21 @@ public class AudioStorageManager {
         }
     }
 
-    private Metadata convertAndSaveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+    private Metadata convertAndSaveSound(UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws IOException, FfmpegConverter.FfmpegException, ComponentException {
         AudioPlayerMod.LOGGER.info("Converting audio {} to mp3 using FFmpeg", id);
         FfmpegConverter.ConvertedAudio converted = FfmpegConverter.convert(fileName, data);
         return saveSound0(converted.audioType(), id, converted.fileName(), converted.data(), player);
     }
 
-    private Metadata saveSound0(AudioUtils.AudioType audioType, UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws UnsupportedAudioFileException, IOException, FfmpegConverter.FfmpegException {
+    private Metadata saveSound0(AudioUtils.AudioType audioType, UUID id, @Nullable String fileName, byte[] data, @Nullable ServerPlayer player) throws IOException, FfmpegConverter.FfmpegException, ComponentException {
         float lengthSeconds = AudioUtils.getLengthSeconds(data);
         if (lengthSeconds < 0.1F) {
             // Uploading mp4 files will cause java to detect an mp3 container,
             // but actually decoding it will basically result in a tiny audio file
-            throw new UnsupportedAudioFileException("Audio is too short");
+            throw new UnsupportedAudioException(Lang.translatable("audioplayer.audio_too_short"));
         }
         if (lengthSeconds > AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()) {
-            throw new IOException("Maximum upload duration exceeded (%.1fs>%.1fs)".formatted(lengthSeconds, AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get()));
+            throw new ComponentException(Lang.translatable("audioplayer.max_upload_duration_exceeded", "%.1f".formatted(lengthSeconds), "%.1f".formatted(AudioPlayerMod.SERVER_CONFIG.maxUploadDuration.get())));
         }
 
         Path soundFile = getSoundFile(id, audioType.getExtension());
@@ -270,18 +270,18 @@ public class AudioStorageManager {
         return false;
     }
 
-    private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioFileException {
+    private static void checkExtensionAllowed(@Nullable AudioUtils.AudioType audioType) throws UnsupportedAudioException {
         if (audioType == null) {
-            throw new UnsupportedAudioFileException("Unsupported audio format");
+            throw new UnsupportedAudioException();
         }
         if (audioType.equals(AudioUtils.AudioType.MP3)) {
             if (!AudioPlayerMod.SERVER_CONFIG.allowMp3Upload.get()) {
-                throw new UnsupportedAudioFileException("Importing mp3 files is not allowed on this server");
+                throw new UnsupportedAudioException(Lang.translatable("audioplayer.mp3_upload_not_allowed"));
             }
         }
         if (audioType.equals(AudioUtils.AudioType.WAV)) {
             if (!AudioPlayerMod.SERVER_CONFIG.allowWavUpload.get()) {
-                throw new UnsupportedAudioFileException("Importing wav files is not allowed on this server");
+                throw new UnsupportedAudioException(Lang.translatable("audioplayer.wav_upload_not_allowed"));
             }
         }
     }
