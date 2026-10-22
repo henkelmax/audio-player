@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 public class ServerfileImporter implements AudioImporter {
@@ -37,7 +36,7 @@ public class ServerfileImporter implements AudioImporter {
         }
 
         if (!Files.exists(file) || !Files.isRegularFile(file)) {
-            throw new NoSuchFileException("The file %s does not exist".formatted(file.toString()));
+            throw new ComponentException(Lang.translatable("audioplayer.server_file_not_found", file.toString()));
         }
         long size = Files.size(file);
         ChatUtils.checkFileSize(size);
