@@ -1,4 +1,1 @@
-- Switched to fabric-permission-api-v1
-- Removed Lucko's fabric-permissions-api
-- Updated dependencies of the web upload frontend
-- Updated to 26.3
+- Improved translatability
