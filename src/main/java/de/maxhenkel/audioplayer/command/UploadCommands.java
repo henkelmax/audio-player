@@ -27,34 +27,31 @@ public class UploadCommands {
     @Command
     public void audioPlayer(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
-                        Lang.translatable("audioplayer.upload_filebin")
-                                .append(" ")
-                                .append(Lang.translatable("audioplayer.here").withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_filebin",
+                                Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.RunCommand("/audioplayer filebin"))
                                             .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
-                                }).withStyle(ChatFormatting.GREEN))
-                                .append(".")
+                                }).withStyle(ChatFormatting.GREEN)
+                        )
                 , false);
         context.getSource().sendSuccess(() ->
-                        Lang.translatable("audioplayer.upload_serverfile")
-                                .append(" ")
-                                .append(Lang.translatable("audioplayer.here").withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_serverfile",
+                                Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.RunCommand("/audioplayer serverfile"))
                                             .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
-                                }).withStyle(ChatFormatting.GREEN))
-                                .append(".")
+                                }).withStyle(ChatFormatting.GREEN)
+                        )
                 , false);
         context.getSource().sendSuccess(() ->
-                        Lang.translatable("audioplayer.upload_url")
-                                .append(" ")
-                                .append(Lang.translatable("audioplayer.here").withStyle(style -> {
+                        Lang.translatable("audioplayer.upload_url",
+                                Lang.translatable("audioplayer.here").withStyle(style -> {
                                     return style
                                             .withClickEvent(new ClickEvent.RunCommand("/audioplayer url"))
                                             .withHoverEvent(new HoverEvent.ShowText(Lang.translatable("audioplayer.click_show_more")));
-                                }).withStyle(ChatFormatting.GREEN))
-                                .append(".")
+                                }).withStyle(ChatFormatting.GREEN)
+                        )
                 , false);
     }
 
