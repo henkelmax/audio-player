@@ -44,6 +44,15 @@ public class ApplyCommands {
             return;
         }
 
+        setRange(context, range);
+    }
+
+    @Command({"range", "reset"})
+    public void range(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        setRange(context, null);
+    }
+
+    private static void setRange(CommandContext<CommandSourceStack> context, @Nullable Float range) throws CommandSyntaxException {
         int amount = forEachHeldAudioItem(context, AudioData::of, (itemStack, data) -> {
             Optional<AudioPlayerModule> module = data.getModule(AudioPlayerModule.KEY);
             if (module.isEmpty()) {
