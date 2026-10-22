@@ -1,5 +1,4 @@
 {
-  "modmenu.descriptionTranslation.audioplayer": "AudioPlayer is a server-side mod that allows players to upload custom audio and apply it to music discs and goat horns."
   "audioplayer.unknown_audio_id_name": "Unknown audio ID or name '%s'",
   "audioplayer.multiple_audios_with_name": "There are multiple audios named '%s'",
   "audioplayer.search_results": "Found %s file(s) containing '%s'",
