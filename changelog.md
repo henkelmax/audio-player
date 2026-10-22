@@ -1,1 +1,1 @@
-- Updated dependencies of the web upload frontend
+- Improved translatability
