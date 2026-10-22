@@ -3,3 +3,4 @@
 - Added translation support for error messages
 - Added command to get item range
 - Fixed command response for play and stop command
+- Added reset command for range
