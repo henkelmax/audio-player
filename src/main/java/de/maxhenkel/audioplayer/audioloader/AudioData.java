@@ -12,6 +12,7 @@ import de.maxhenkel.audioplayer.apiimpl.AudioPlayerApiImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ApplyEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.ClearEventImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.GetSoundIdEventImpl;
+import de.maxhenkel.audioplayer.lang.Lang;
 import de.maxhenkel.audioplayer.utils.ComponentUtils;
 import de.maxhenkel.audioplayer.utils.upgrade.ItemUpgrader;
 import de.maxhenkel.configbuilder.entry.ConfigEntry;
@@ -38,8 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
 
     public static final String AUDIOPLAYER_CUSTOM_DATA = "audioplayer";
-
-    public static final String DEFAULT_HEAD_LORE = "Has custom audio";
 
     public static final Gson GSON = new GsonBuilder().create();
 
@@ -271,7 +270,7 @@ public class AudioData implements de.maxhenkel.audioplayer.api.data.AudioData {
             saveToNbt(blockEntityTag);
             stack.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(BlockEntityType.SKULL, blockEntityTag));
             if (lore == null) {
-                l = new ItemLore(Collections.singletonList(Component.literal(DEFAULT_HEAD_LORE).withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
+                l = new ItemLore(Collections.singletonList(Lang.translatable("audioplayer.has_custom_audio").withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)));
             }
         }
         if (lore != null) {

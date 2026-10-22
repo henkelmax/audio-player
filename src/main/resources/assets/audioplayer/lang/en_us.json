@@ -58,6 +58,7 @@
   "audioplayer.play_audio_failed": "Failed to play audio: %s",
   "audioplayer.no_files_uploaded": "No files uploaded",
   "audioplayer.no_valid_audio_files_uploaded": "No valid audio files uploaded",
+  "audioplayer.has_custom_audio": "Has custom audio",
   "audioplayer.category.music_discs": "Music discs",
   "audioplayer.category.music_discs.description": "The volume of all custom music discs",
   "audioplayer.category.note_blocks": "Note blocks",
