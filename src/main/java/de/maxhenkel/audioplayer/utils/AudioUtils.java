@@ -60,7 +60,7 @@ public class AudioUtils {
         return (float) sampleLength / AudioUtils.FORMAT.getSampleRate();
     }
 
-    public static float getLengthSeconds(byte[] file) throws UnsupportedAudioFileException, IOException {
+    public static float getLengthSeconds(byte[] file) throws UnsupportedAudioException, IOException {
         return getLengthSeconds(convert(file));
     }
 
@@ -72,15 +72,15 @@ public class AudioUtils {
         }
     }
 
-    public static short[] convert(Path file) throws IOException, UnsupportedAudioFileException {
+    public static short[] convert(Path file) throws IOException, UnsupportedAudioException {
         return convert(() -> new BufferedInputStream(Files.newInputStream(file)), getAudioType(file));
     }
 
-    public static short[] convert(byte[] file) throws IOException, UnsupportedAudioFileException {
+    public static short[] convert(byte[] file) throws IOException, UnsupportedAudioException {
         return convert(() -> new ByteArrayInputStream(file), getAudioType(file));
     }
 
-    public static short[] convert(Path file, @Nullable Float volume) throws IOException, UnsupportedAudioFileException {
+    public static short[] convert(Path file, @Nullable Float volume) throws IOException, UnsupportedAudioException {
         short[] converted = convert(file);
         if (volume != null) {
             adjustVolume(converted, volume);
@@ -88,22 +88,22 @@ public class AudioUtils {
         return converted;
     }
 
-    private static short[] convert(InputStreamSupplier inputStreamSupplier, AudioType audioType) throws IOException, UnsupportedAudioFileException {
+    private static short[] convert(InputStreamSupplier inputStreamSupplier, AudioType audioType) throws IOException, UnsupportedAudioException {
         if (audioType == AudioType.WAV) {
             return convertWav(inputStreamSupplier);
         } else if (audioType == AudioType.MP3) {
             return convertMp3(inputStreamSupplier);
         }
-        throw new UnsupportedAudioFileException("Unsupported audio type");
+        throw new UnsupportedAudioException();
     }
 
-    private static short[] convertWav(InputStreamSupplier inputStreamSupplier) throws IOException, UnsupportedAudioFileException {
-        try (AudioInputStream source = AudioSystem.getAudioInputStream(inputStreamSupplier.get())) {
+    private static short[] convertWav(InputStreamSupplier inputStreamSupplier) throws IOException, UnsupportedAudioException {
+        try (AudioInputStream source = getAudioInputStream(inputStreamSupplier.get())) {
             return convert(source);
         }
     }
 
-    private static short[] convertMp3(InputStreamSupplier inputStreamSupplier) throws IOException, UnsupportedAudioFileException {
+    private static short[] convertMp3(InputStreamSupplier inputStreamSupplier) throws IOException, UnsupportedAudioException {
         try {
             Mp3Decoder mp3Decoder = VoicechatAudioPlayerPlugin.voicechatApi.createMp3Decoder(inputStreamSupplier.get());
             if (mp3Decoder == null) {
@@ -123,7 +123,15 @@ public class AudioUtils {
             } else {
                 AudioPlayerMod.LOGGER.debug("Could not convert mp3 using native decoder, using fallback");
             }
-            return convert(AudioSystem.getAudioInputStream(inputStreamSupplier.get()));
+            return convert(getAudioInputStream(inputStreamSupplier.get()));
+        }
+    }
+
+    private static AudioInputStream getAudioInputStream(InputStream stream) throws IOException, UnsupportedAudioException {
+        try {
+            return AudioSystem.getAudioInputStream(stream);
+        } catch (UnsupportedAudioFileException e) {
+            throw new UnsupportedAudioException(e);
         }
     }
 

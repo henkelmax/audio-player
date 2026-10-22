@@ -54,13 +54,13 @@ public class FilebinImporter implements AudioImporter {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                throw new IOException("%s responded with status %s".formatted(url, response.statusCode()));
+                throw new ComponentException(Lang.translatable("audioplayer.http_status_error", url.toString(), response.statusCode()));
             }
 
             JsonElement json = JsonParser.parseString(response.body());
 
             if (!(json instanceof JsonObject object)) {
-                throw new IOException("Invalid response");
+                throw new ComponentException(Lang.translatable("audioplayer.invalid_response"));
             }
 
             JsonElement filesElement = object.get("files");
