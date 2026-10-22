@@ -39,6 +39,7 @@
   "audioplayer.audio_file_not_found": "Audio file does not exist",
   "audioplayer.current_volume": "Current volume is %s%%",
   "audioplayer.set_volume_successful": "Successfully set audio volume to %s%%, this will apply next time the audio plays",
+  "audioplayer.current_range": "Current range is %s blocks",
   "audioplayer.copy_id": "Copy ID",
   "audioplayer.copy_id_tooltip": "Copy audio ID",
   "audioplayer.put_on_item": "Put on item",
