@@ -37,7 +37,12 @@ public class ApplyCommands {
     }
 
     @Command("range")
-    public void range(CommandContext<CommandSourceStack> context, @Name("range") @Min("0") float range) throws CommandSyntaxException {
+    public void range(CommandContext<CommandSourceStack> context, @OptionalArgument @Name("range") @Min("0") Float range) throws CommandSyntaxException {
+        if (range == null) {
+            getRange(context);
+            return;
+        }
+
         int amount = forEachHeldAudioItem(context, AudioData::of, (itemStack, data) -> {
             Optional<AudioPlayerModule> module = data.getModule(AudioPlayerModule.KEY);
             if (module.isEmpty()) {
@@ -50,6 +55,36 @@ public class ApplyCommands {
             return true;
         });
         sendUpdateFeedBack(context, amount);
+    }
+
+    private void getRange(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+        AudioData data = AudioData.of(itemInHand);
+        if (data == null) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
+            return;
+        }
+
+        Optional<AudioPlayerModule> module = data.getModule(AudioPlayerModule.KEY);
+        if (module.isEmpty()) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
+            return;
+        }
+
+        Float rangeOverride = module.get().getRange();
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
+        if (rangeOverride == null && playerType == null) { // if explicit range AND player type don't exist then do failure
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_valid_item_in_hand"));
+            return;
+        }
+
+        float currentRange = rangeOverride != null
+            ? rangeOverride
+            : playerType.getDefaultRange().get();
+
+        context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.current_range", currentRange), false);
     }
 
     private static <T> int forEachHeldAudioItem(CommandContext<CommandSourceStack> context, Function<ItemStack, T> shouldProcess, ApplyFunction<T> process) throws CommandSyntaxException {
