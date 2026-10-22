@@ -1,5 +1,4 @@
 {
-  "modmenu.descriptionTranslation.audioplayer": "AudioPlayer 是一款使玩家能够上传自定义音频并将其加持于音乐唱片及山羊角的服务端模组。",
   "audioplayer.unknown_audio_id_name": "未知的音频 ID 或名称 '%s'",
   "audioplayer.multiple_audios_with_name": "存在多个名为 '%s' 的音频",
   "audioplayer.search_results": "找到了 %s 个包含 '%s' 的文件",
