@@ -80,9 +80,7 @@ public class ApplyCommands {
             return;
         }
 
-        float currentRange = rangeOverride != null
-            ? rangeOverride
-            : playerType.getDefaultRange().get();
+        float currentRange = playerType != null ? data.getRange(playerType) : rangeOverride;
 
         context.getSource().sendSuccess(() -> Lang.translatable("audioplayer.current_range", currentRange), false);
     }
