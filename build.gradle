@@ -102,7 +102,7 @@ tasks.buildWeb.dependsOn(npmInstall)
 tasks.register('copyWeb', Copy) {
     group 'web'
     from 'web/dist'
-    into webResourcesDir.get().dir("web")
+    into webResourcesDir.get().dir("audioplayer/web")
 }
 tasks.copyWeb.dependsOn(buildWeb)
 tasks.processResources.dependsOn(copyWeb)
