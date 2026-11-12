@@ -44,7 +44,7 @@ public class WebServer implements AutoCloseable {
                 .withMaxRequestSize(AudioPlayerMod.SERVER_CONFIG.maxUploadSize.get().intValue())
                 .build();
 
-        staticFileCache = StaticFileCache.of("web");
+        staticFileCache = StaticFileCache.of("audioplayer/web");
 
         eventLoop = new EventLoop(options, NoopLogger.instance(), this::handleRequest);
         eventLoop.start();
